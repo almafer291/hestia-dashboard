@@ -3,197 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HestiaLake | Premium Control</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>HestiaLake | Organic Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bronce-dark: #4a2c1d;
-            --bronce-mid: #8c5624;
+            --bronce: #b87333;
             --bronce-light: #d9a06f;
-            --gold: #c5934c;
-            --bg: #050505;
-            --card-bg: rgba(255, 255, 255, 0.04);
-            --border: rgba(217, 160, 111, 0.15);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(217, 160, 111, 0.2);
+            --bg: #080808;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
             background: var(--bg);
-            background-image: radial-gradient(circle at 50% 0%, #2a1b10 0%, #050505 70%);
-            color: #f0f0f0; margin: 0; padding: 0; min-height: 100vh;
+            background-image: radial-gradient(circle at bottom right, #2a1b10 0%, #080808 60%);
+            color: #e0e0e0; margin: 0; display: flex; min-height: 100vh;
         }
 
-        /* --- LOGO LLAMA PREMIUM --- */
-        .header { text-align: center; padding: 50px 20px 30px; }
-        .logo-box { width: 90px; height: 90px; margin: 0 auto 15px; filter: drop-shadow(0 0 20px var(--bronce-mid)); }
-        .brand {
-            font-family: 'Cinzel', serif; font-size: 3rem; margin: 0;
-            background: linear-gradient(to bottom, #fff 30%, var(--bronce-light) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 10px; font-weight: 700;
+        /* --- MENÚ LATERAL ORGÁNICO --- */
+        nav {
+            width: 260px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+            position: fixed; height: 100vh;
         }
 
-        /* --- MENÚ --- */
-        .nav { display: flex; justify-content: center; gap: 12px; margin-bottom: 40px; }
+        .logo-area { text-align: center; margin-bottom: 50px; }
+        .logo-svg { width: 70px; filter: drop-shadow(0 0 15px var(--bronce)); }
+        .brand { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 4px; color: var(--bronce-light); margin-top: 10px; }
+
         .nav-btn {
-            background: var(--card-bg); border: 1px solid var(--border);
-            color: var(--bronce-light); padding: 12px 24px; border-radius: 40px;
-            cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.75rem;
-            letter-spacing: 2px; transition: 0.4s; backdrop-filter: blur(10px);
+            background: none; border: none; color: #888;
+            padding: 15px; text-align: left; font-family: 'Cinzel', serif;
+            cursor: pointer; transition: 0.4s; border-radius: 15px;
+            margin-bottom: 5px; font-size: 0.9rem;
         }
-        .nav-btn.active { 
-            background: var(--bronce-mid); color: white; border-color: var(--gold);
-            box-shadow: 0 0 25px rgba(140, 86, 36, 0.4);
-        }
+        .nav-btn:hover, .nav-btn.active { background: var(--glass); color: var(--bronce-light); padding-left: 25px; }
 
-        /* --- CONTENIDO --- */
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px 50px; }
-        .panel { display: none; animation: fadeIn 0.8s ease; }
+        /* --- CONTENIDO PRINCIPAL --- */
+        main { flex: 1; margin-left: 300px; padding: 40px; }
+
+        .panel { display: none; animation: fadeIn 0.8s ease forwards; }
         .panel.active { display: block; }
-        
+
         .card {
-            background: var(--card-bg); border: 1px solid var(--border);
-            padding: 30px; border-radius: 25px; margin-bottom: 20px;
-            backdrop-filter: blur(15px);
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 30px; padding: 30px; margin-bottom: 25px;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .label { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-        .data-main { font-size: 3.5rem; font-weight: 300; color: #fff; margin: 10px 0; }
-        
-        /* Gasolineras List */
-        .gas-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .gas-info b { color: var(--bronce-light); text-transform: uppercase; font-size: 0.9rem; }
-        .gas-info small { color: #888; display: block; margin-top: 4px; }
-        .price-val { font-family: 'Cinzel', serif; font-size: 1.4rem; color: #fff; }
+        h2 { font-family: 'Cinzel'; color: var(--bronce-light); font-weight: 400; margin-top: 0; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- CONTROLES RELÉ --- */
+        .relay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .relay-card {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 20px; text-align: center;
+        }
+        .switch {
+            position: relative; display: inline-block; width: 50px; height: 26px; margin-top: 10px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--bronce); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* --- TABLAS GASOLINERA --- */
+        .gas-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .gas-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .p-gas { color: #fff; font-weight: bold; }
+        .p-die { color: var(--bronce-light); font-weight: bold; }
+
+        /* --- METEO FORECAST --- */
+        .forecast { display: flex; justify-content: space-between; margin-top: 20px; }
+        .f-day { text-align: center; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 20px; width: 30%; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo-box">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 5C50 5 80 35 80 65C80 81.5 66.5 95 50 95C33.5 95 20 81.5 20 65C20 35 50 5 50 5Z" fill="url(#ll)" opacity="0.2"/>
-            <path d="M50 20C50 20 72 45 72 65C72 77.1 62.1 87 50 87C37.9 87 28 77.1 28 65C28 45 50 20 50 20Z" fill="url(#ll)"/>
-            <path d="M50 40C50 40 60 55 60 70C60 75.5 55.5 80 50 80C44.5 80 40 75.5 40 70C40 55 50 40 50 40Z" fill="#fff" opacity="0.4"/>
-            <defs><linearGradient id="ll" x1="50" y1="5" x2="50" y2="100"><stop stop-color="#d9a06f"/><stop offset="1" stop-color="#4a2c1d"/></linearGradient></defs>
+<nav>
+    <div class="logo-area">
+        <svg class="logo-svg" viewBox="0 0 100 100" fill="none">
+            <path d="M50 10C50 10 80 40 80 65C80 81 67 94 50 94C33 94 20 81 20 65C20 40 50 10 50 10Z" fill="url(#L)" />
+            <path d="M50 45C50 45 60 55 60 70C60 75 56 79 50 79C44 79 40 75 40 70C40 55 50 45 50 45Z" fill="white" opacity="0.4"/>
+            <defs><linearGradient id="L" x1="50" y1="10" x2="50" y2="94"><stop stop-color="#d9a06f"/><stop offset="1" stop-color="#b87333"/></linearGradient></defs>
         </svg>
+        <div class="brand">HESTIALAKE</div>
     </div>
-    <h1 class="brand">HESTIALAKE</h1>
-</div>
-
-<nav class="nav">
-    <button class="nav-btn active" onclick="tab('meteo', this)">Meteo</button>
-    <button class="nav-btn" onclick="tab('energy', this)">Energía</button>
-    <button class="nav-btn" onclick="tab('gas', this)">Gasolina</button>
+    <button class="nav-btn active" onclick="tab('meteo', this)">Estación Meteo</button>
+    <button class="nav-btn" onclick="tab('luz', this)">Precio Energía</button>
+    <button class="nav-btn" onclick="tab('gas', this)">Gasolineras</button>
+    <button class="nav-btn" onclick="tab('reles', this)">Control Relés</button>
 </nav>
 
-<div class="container">
+<main>
     <div id="meteo" class="panel active">
         <div class="card">
-            <span class="label">Almería Capital (Ext)</span>
-            <div id="ext-t" class="data-main">--°C</div>
-            <div id="ext-d" style="color: var(--bronce-light)">CARGANDO ESTACIÓN...</div>
-        </div>
-        <div class="card">
-            <span class="label">Interior Hestia</span>
-            <div class="data-main">22.5°C</div>
-            <div style="color: var(--bronce-light)">HUMEDAD: 45% | CONFORT: ÓPTIMO</div>
+            <h2>Tiempo en Almería</h2>
+            <div style="display: flex; align-items: center; gap: 40px;">
+                <div style="font-size: 4rem; font-weight: 200;" id="curr-temp">--°C</div>
+                <div>
+                    <div id="curr-desc" style="text-transform: uppercase; letter-spacing: 2px;">Sincronizando...</div>
+                    <small>Interior Casa: 23.1°C | Humedad: 48%</small>
+                </div>
+            </div>
+            <div class="forecast" id="forecast-area">
+                </div>
         </div>
     </div>
 
-    <div id="energy" class="panel">
+    <div id="luz" class="panel">
         <div class="card">
-            <span class="label">Precio Luz PVPC</span>
-            <div id="luz-p" class="data-main">-- €</div>
-            <div id="luz-status" style="color: var(--bronce-light)">CONSULTANDO RED ELÉCTRICA...</div>
-        </div>
-        <div class="card">
-            <span class="label">Relés en Automático</span>
-            <p>R1: Termostato Salón <span style="color:#50fa7b; float:right">● ON</span></p>
-            <p>R2: Depuradora <span style="color:#ff5555; float:right">○ OFF</span></p>
+            <h2>Precio de la Luz (Hoy)</h2>
+            <canvas id="luzChart" height="100"></canvas>
+            <div style="text-align: center; margin-top: 20px;">
+                <small>Precio Actual:</small>
+                <div id="luz-actual" style="font-size: 2.5rem; color: var(--bronce-light);">-- €/kWh</div>
+            </div>
         </div>
     </div>
 
     <div id="gas" class="panel">
         <div class="card">
-            <span class="label">Top 10 Almería Municipio</span>
-            <div id="gas-list">Sincronizando con Ministerio...</div>
+            <h2>Combustible en Almería Capital</h2>
+            <table class="gas-table">
+                <thead>
+                    <tr style="color: var(--bronce-light); font-size: 0.7rem; letter-spacing: 1px;">
+                        <th align="left">ESTACIÓN</th>
+                        <th align="right">G95</th>
+                        <th align="right">DIESEL</th>
+                    </tr>
+                </thead>
+                <tbody id="gas-body">
+                    </tbody>
+            </table>
         </div>
     </div>
-</div>
+
+    <div id="reles" class="panel">
+        <div class="card">
+            <h2>Control Maestro de Relés</h2>
+            <div class="relay-grid">
+                <div class="relay-card">
+                    <small>RELÉ 1</small><br><b>Salón</b><br>
+                    <label class="switch"><input type="checkbox" onchange="toggleRelay(1, this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="relay-card">
+                    <small>RELÉ 2</small><br><b>Caldera</b><br>
+                    <label class="switch"><input type="checkbox" onchange="toggleRelay(2, this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="relay-card">
+                    <small>RELÉ 3</small><br><b>Riego</b><br>
+                    <label class="switch"><input type="checkbox" onchange="toggleRelay(3, this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="relay-card">
+                    <small>RELÉ 4</small><br><b>Luces</b><br>
+                    <label class="switch"><input type="checkbox" onchange="toggleRelay(4, this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="relay-card">
+                    <small>RELÉ 5</small><br><b>Puerta</b><br>
+                    <label class="switch"><input type="checkbox" onchange="toggleRelay(5, this.checked)"><span class="slider"></span></label>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 
 <script>
-    // Función de cambio de pestaña
-    function tab(id, b) {
+    let chart;
+
+    function tab(id, btn) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        b.classList.add('active');
-        
-        if(id === 'gas') fetchGas();
-        if(id === 'energy') fetchLuz();
-        if(id === 'meteo') fetchMeteo();
+        btn.classList.add('active');
+        if(id === 'luz') loadLuz();
+        if(id === 'gas') loadGas();
+        if(id === 'meteo') loadMeteo();
     }
 
-    // CORRECCIÓN API LUZ (Uso de API alternativa más estable)
-    async function fetchLuz() {
+    // --- ENERGÍA CON GRÁFICA ---
+    async function loadLuz() {
         try {
-            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
-            const d = await r.json();
-            const h = new Date().getHours();
-            const key = Object.keys(d)[h];
-            const precioVal = d[key].price / 1000;
-            document.getElementById('luz-p').innerText = precioVal.toFixed(4) + " €/kWh";
-            document.getElementById('luz-status').innerText = "TRAMO: " + d[key].units;
-        } catch(e) { 
-            document.getElementById('luz-p').innerText = "Error"; 
-            document.getElementById('luz-status').innerText = "API saturada, reintente en un momento.";
-        }
-    }
-
-    // CORRECCIÓN GASOLINERAS (Mapeo de nombres corregido)
-    async function fetchGas() {
-        const container = document.getElementById('gas-list');
-        try {
-            const r = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04');
-            const d = await r.json();
+            const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const d = JSON.parse((await res.json()).contents);
+            const labels = Object.keys(d).map(h => h.split('-')[0] + 'h');
+            const values = Object.values(d).map(o => o.price / 1000);
             
-            // Filtro estricto por Municipio Almería y orden por precio Gasolina 95
-            const listado = d.ListaEESSPrecio
-                .filter(e => e['Municipio'].toUpperCase() === "ALMERÍA")
-                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
-                .slice(0, 10);
+            const hour = new Date().getHours();
+            document.getElementById('luz-actual').innerText = values[hour].toFixed(4) + ' €/kWh';
 
-            container.innerHTML = listado.map(e => `
-                <div class="gas-item">
-                    <div class="gas-info">
-                        <b>${e['Rótulo'] || 'Estación'}</b>
-                        <small>${e['Dirección']}</small>
-                    </div>
-                    <div class="price-val">${e['Precio Gasolina 95 E5']}€</div>
-                </div>
-            `).join('');
-        } catch(e) { container.innerText = "Error al conectar con la base de datos de Almería."; }
+            if(chart) chart.destroy();
+            const ctx = document.getElementById('luzChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Precio €/kWh',
+                        data: values,
+                        borderColor: '#b87333',
+                        backgroundColor: 'rgba(184, 115, 51, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+        } catch(e) { console.error("Error luz"); }
     }
 
-    // METEO PRECISA
-    async function fetchMeteo() {
+    // --- GASOLINERAS (GASOLINA + DIESEL) ---
+    async function loadGas() {
+        const body = document.getElementById('gas-body');
         try {
-            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.8381&longitude=-2.4597&current_weather=true');
-            const d = await r.json();
-            document.getElementById('ext-t').innerText = d.current_weather.temperature + "°C";
-            document.getElementById('ext-d').innerText = "VIENTO: " + d.current_weather.windspeed + " KM/H | ALMERÍA CAPITAL";
+            const res = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04');
+            const data = await res.json();
+            const capital = data.ListaEESSPrecio.filter(e => e.Municipio.toUpperCase() === "ALMERÍA").slice(0, 12);
+
+            body.innerHTML = capital.map(e => `
+                <tr>
+                    <td><b>${e.Rótulo}</b><br><small>${e.Dirección}</small></td>
+                    <td align="right" class="p-gas">${e['Precio Gasolina 95 E5'] || '--'}€</td>
+                    <td align="right" class="p-die">${e['Precio Gasoleo A'] || '--'}€</td>
+                </tr>
+            `).join('');
+        } catch(e) { body.innerHTML = "Error cargando datos oficiales."; }
+    }
+
+    // --- METEO + PREVISIÓN ---
+    async function loadMeteo() {
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe/Madrid');
+            const d = await res.json();
+            document.getElementById('curr-temp').innerText = d.current_weather.temperature + "°C";
+            document.getElementById('curr-desc').innerText = "Viento: " + d.current_weather.windspeed + " km/h";
+
+            let html = '';
+            for(let i=1; i<4; i++) {
+                html += `
+                <div class="f-day">
+                    <small>Día ${i}</small>
+                    <div style="color:var(--bronce-light); font-weight:600">${d.daily.temperature_2m_max[i]}°</div>
+                    <div style="font-size:0.7rem">${d.daily.temperature_2m_min[i]}°</div>
+                </div>`;
+            }
+            document.getElementById('forecast-area').innerHTML = html;
         } catch(e) {}
     }
 
-    // Carga inicial
-    fetchMeteo();
-</script>
+    function toggleRelay(num, state) {
+        console.log(`HestiaLake: Relé ${num} cambiado a ${state ? 'ENCENDIDO' : 'APAGADO'}`);
+        // Aquí iría el envío por MQTT o API a tu ESP32/Raspberry
+    }
 
+    loadMeteo(); // Carga inicial
+</script>
 </body>
 </html>
