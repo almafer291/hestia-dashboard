@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HestiaLake | Organic Dashboard</title>
+    <title>HestiaLake | Organic Bronze v7</title>
     <link href="https://fonts.googleapis.com/css2?family=Federo&family=Tenor+Sans&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -11,29 +11,30 @@
             --bronce: #c5934c;
             --bronce-deep: #8c5624;
             --bg: #030303;
-            --glass: rgba(25, 20, 15, 0.6);
-            --border: rgba(197, 147, 76, 0.2);
+            --glass: rgba(30, 25, 20, 0.7);
+            --border: rgba(197, 147, 76, 0.25);
         }
 
         body {
             font-family: 'Tenor Sans', sans-serif;
             background: var(--bg);
-            background-image: radial-gradient(circle at 10% 10%, #1a120b 0%, #030303 60%);
-            color: #e0d0c0; margin: 0; display: flex; min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 10%, #1a120b 0%, #030303 80%);
+            color: #e0d0c0; margin: 0; display: flex; min-height: 100vh; overflow: hidden;
         }
 
-        /* --- NAVEGACIÓN LATERAL --- */
+        /* --- NAVEGACIÓN --- */
         nav {
-            width: 280px; background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(30px); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 60px 20px;
+            width: 260px; background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(40px); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 50px 20px;
             position: fixed; height: 100vh; z-index: 1000;
-            border-radius: 0 50px 50px 0;
+            border-radius: 0 40px 40px 0;
         }
 
         .brand {
             font-family: 'Federo', sans-serif; font-size: 1.8rem;
-            color: #fff; text-align: center; margin-bottom: 50px;
+            color: #fff; text-align: center; margin-bottom: 40px;
+            letter-spacing: 3px;
             background: linear-gradient(to bottom, #fff, var(--bronce));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
@@ -41,124 +42,131 @@
         .nav-btn {
             background: none; border: none; color: #a09080;
             padding: 18px 25px; text-align: left; font-family: 'Federo', sans-serif;
-            cursor: pointer; transition: 0.4s; border-radius: 30px;
-            margin-bottom: 10px; font-size: 1rem;
+            cursor: pointer; transition: 0.5s; border-radius: 30px;
+            margin-bottom: 10px; font-size: 1rem; outline: none;
         }
 
-        .nav-btn.active { background: var(--glass); color: #fff; box-shadow: 0 0 15px rgba(197, 147, 76, 0.2); }
+        .nav-btn.active { background: var(--glass); color: #fff; box-shadow: 0 0 20px rgba(197, 147, 76, 0.15); }
 
         /* --- CONTENIDO --- */
-        main { flex: 1; margin-left: 320px; padding: 60px 40px; max-width: 1200px; }
-        .panel { display: none; animation: fadeIn 0.8s ease; }
+        main { flex: 1; margin-left: 300px; padding: 40px; overflow-y: auto; height: 100vh; }
+        .panel { display: none; animation: organicFade 0.8s ease-out; }
         .panel.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes organicFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .card {
             background: var(--glass); border: 1px solid var(--border);
             border-radius: 40px; padding: 35px; margin-bottom: 30px;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
         }
 
-        h2 { font-family: 'Federo', sans-serif; color: var(--bronce); margin: 0 0 20px 0; font-size: 1.5rem; }
+        h2 { font-family: 'Federo', sans-serif; color: var(--bronce); margin-top: 0; font-weight: 400; }
 
-        /* --- ENERGÍA --- */
-        .energy-stats { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
-        .e-stat { flex: 1; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
-        .e-val { display: block; font-size: 1.6rem; color: #fff; margin-top: 5px; }
+        /* --- ENERGÍA GRID --- */
+        .e-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .e-card { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 25px; text-align: center; border: 1px solid var(--border); }
+        .e-val { font-size: 1.6rem; color: #fff; display: block; margin-top: 5px; }
 
         /* --- GASOLINERAS --- */
-        .gas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
-        .gas-card { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 25px; border: 1px solid var(--border); }
+        .gas-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .gas-card { background: rgba(10,10,10,0.4); padding: 20px; border-radius: 30px; border: 1px solid var(--border); }
 
         /* --- RELÉS --- */
-        .relay-grid { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        .r-btn { background: none; border: 1px solid var(--border); color: #ff5555; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-family: 'Federo'; transition: 0.3s; }
-        .r-btn.on { color: #50fa7b; border-color: #50fa7b; box-shadow: 0 0 15px rgba(80,250,123,0.3); }
+        .relay-ctrl { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .r-btn { 
+            background: none; border: 1px solid var(--border); color: #ff5555; 
+            padding: 20px 35px; border-radius: 50px; cursor: pointer; 
+            font-family: 'Federo'; font-size: 1.1rem; transition: 0.4s;
+        }
+        .r-btn.on { color: #50fa7b; border-color: #50fa7b; box-shadow: 0 0 20px rgba(80,250,123,0.2); }
     </style>
 </head>
 <body>
 
 <nav>
     <div class="brand">HESTIALAKE</div>
-    <button class="nav-btn active" onclick="tab('meteo', this)">Atmosfera</button>
-    <button class="nav-btn" onclick="tab('luz', this)">Energía</button>
-    <button class="nav-btn" onclick="tab('gas', this)">Combustible</button>
-    <button class="nav-btn" onclick="tab('reles', this)">Domótica</button>
+    <button class="nav-btn active" onclick="show('meteo', this)">Atmósfera</button>
+    <button class="nav-btn" onclick="show('luz', this)">Energía</button>
+    <button class="nav-btn" onclick="show('gas', this)">Gasolineras</button>
+    <button class="nav-btn" onclick="show('reles', this)">Domótica</button>
 </nav>
 
 <main>
     <div id="meteo" class="panel active">
         <div class="card">
             <h2>Almería Capital</h2>
-            <div id="m-temp" style="font-size: 5rem; font-weight: 200; color:#fff;">--°C</div>
-            <div id="m-info" style="color:var(--bronce); letter-spacing: 2px;">SINCRONIZANDO TIEMPO...</div>
+            <div id="temp-val" style="font-size: 6rem; font-weight: 100; color: #fff;">--°C</div>
+            <div id="meteo-info" style="color: var(--bronce); letter-spacing: 2px;">SINCRONIZANDO...</div>
+        </div>
+        <div class="card" style="padding:0; height:350px; overflow:hidden; border-radius:40px;">
+            <iframe width="100%" height="100%" src="https://www.windy.com/?36.838,-2.459,11" frameborder="0"></iframe>
         </div>
     </div>
 
     <div id="luz" class="panel">
         <div class="card">
-            <h2>Luz PVPC España</h2>
-            <div class="energy-stats">
-                <div class="e-stat"><span>Mínimo</span><b id="e-min" class="e-val" style="color:#50fa7b">--</b></div>
-                <div class="e-stat"><span>Actual</span><b id="e-now" class="e-val" style="color:var(--bronce)">--</b></div>
-                <div class="e-stat"><span>Máximo</span><b id="e-max" class="e-val" style="color:#ff5555">--</b></div>
+            <h2>Precio Electricidad PVPC</h2>
+            <div class="e-grid">
+                <div class="e-card"><small>MÍN</small><b id="l-min" class="e-val" style="color:#50fa7b">--</b></div>
+                <div class="e-card"><small>ACTUAL</small><b id="l-now" class="e-val" style="color:var(--bronce)">--</b></div>
+                <div class="e-card"><small>MÁX</small><b id="l-max" class="e-val" style="color:#ff5555">--</b></div>
             </div>
-            <canvas id="luzChart" height="110"></canvas>
+            <canvas id="luzChart" height="120"></canvas>
         </div>
     </div>
 
     <div id="gas" class="panel">
         <div class="card">
-            <h2>Precios en Almería</h2>
-            <div id="gas-list" class="gas-grid">Cargando estaciones oficiales...</div>
+            <h2>Combustible Almería</h2>
+            <div id="gas-box" class="gas-list">Obteniendo datos oficiales...</div>
         </div>
     </div>
 
     <div id="reles" class="panel">
         <div class="card">
-            <h2>Control Relés (5 Canales)</h2>
-            <div class="relay-grid">
-                <button class="r-btn" onclick="tgl(1,this)">R1 OFF</button>
-                <button class="r-btn" onclick="tgl(2,this)">R2 OFF</button>
-                <button class="r-btn" onclick="tgl(3,this)">R3 OFF</button>
-                <button class="r-btn" onclick="tgl(4,this)">R4 OFF</button>
-                <button class="r-btn" onclick="tgl(5,this)">R5 OFF</button>
+            <h2>Relés Maestro</h2>
+            <div class="relay-ctrl">
+                <button class="r-btn" onclick="toggleR(1, this)">R1 OFF</button>
+                <button class="r-btn" onclick="toggleR(2, this)">R2 OFF</button>
+                <button class="r-btn" onclick="toggleR(3, this)">R3 OFF</button>
+                <button class="r-btn" onclick="toggleR(4, this)">R4 OFF</button>
+                <button class="r-btn" onclick="toggleR(5, this)">R5 OFF</button>
             </div>
         </div>
     </div>
 </main>
 
 <script>
-    let chartObj = null;
+    let chartInstance = null;
+    const proxy = "https://api.allorigins.win/get?url=";
 
-    function tab(id, b) {
+    function show(id, btn) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        b.classList.add('active');
+        btn.classList.add('active');
+        
+        if(id === 'meteo') fetchMeteo();
         if(id === 'luz') fetchLuz();
         if(id === 'gas') fetchGas();
-        if(id === 'meteo') fetchMeteo();
     }
 
-    // --- TIEMPO (Fuente Directa Sin Proxy para Evitar Fallos) ---
+    // --- METEO (OPEN-METEO: Sin CORS) ---
     async function fetchMeteo() {
         try {
-            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.8381&longitude=-2.4597&current_weather=true&hourly=relativehumidity_2m');
+            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=relativehumidity_2m');
             const d = await r.json();
-            document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature) + "°C";
-            document.getElementById('m-info').innerText = `HUMEDAD: ${d.hourly.relativehumidity_2m[0]}% | VIENTO: ${d.current_weather.windspeed} km/h`;
-        } catch(e) {
-            document.getElementById('m-info').innerText = "ERROR DE CONEXIÓN METEO";
-        }
+            document.getElementById('temp-val').innerText = Math.round(d.current_weather.temperature) + "°C";
+            document.getElementById('meteo-info').innerText = `Humedad: ${d.hourly.relativehumidity_2m[0]}% | Viento: ${d.current_weather.windspeed} km/h`;
+        } catch(e) { document.getElementById('meteo-info').innerText = "Sin conexión con el satélite."; }
     }
 
-    // --- ENERGÍA (Uso de Proxy para saltar bloqueo CORS) ---
+    // --- ENERGÍA (PVPC) ---
     async function fetchLuz() {
         try {
-            // Proxy AllOrigins para saltar el bloqueo del navegador
-            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB')}`);
+            const target = encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const res = await fetch(proxy + target);
             const json = await res.json();
             const data = JSON.parse(json.contents);
             
@@ -166,13 +174,13 @@
             const hours = Object.keys(data).map(h => h.split('-')[0] + 'h');
             const now = new Date().getHours();
 
-            document.getElementById('e-min').innerText = Math.min(...prices).toFixed(4) + '€';
-            document.getElementById('e-max').innerText = Math.max(...prices).toFixed(4) + '€';
-            document.getElementById('e-now').innerText = prices[now].toFixed(4) + '€';
+            document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
+            document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
+            document.getElementById('l-now').innerText = prices[now].toFixed(4);
 
-            if(chartObj) chartObj.destroy();
+            if(chartInstance) chartInstance.destroy();
             const ctx = document.getElementById('luzChart').getContext('2d');
-            chartObj = new Chart(ctx, {
+            chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: hours,
@@ -182,43 +190,40 @@
                         tension: 0.4, pointRadius: 0
                     }]
                 },
-                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#666'} } } }
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#807060'} } } }
             });
-        } catch(e) {
-            document.getElementById('e-now').innerText = "ERROR API";
-        }
+        } catch(e) { document.getElementById('l-now').innerText = "Err API"; }
     }
 
     // --- GASOLINERAS ---
     async function fetchGas() {
         try {
-            const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04')}`);
-            const json = await r.json();
+            const target = encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04');
+            const res = await fetch(proxy + target);
+            const json = await res.json();
             const d = JSON.parse(json.contents);
-            const capital = d.ListaEESSPrecio.filter(e => e['Municipio'].toUpperCase() === "ALMERÍA").slice(0, 10);
+            const list = d.ListaEESSPrecio.filter(e => e['Municipio'].toUpperCase() === "ALMERÍA").slice(0, 10);
             
-            document.getElementById('gas-list').innerHTML = capital.map(e => `
+            document.getElementById('gas-box').innerHTML = list.map(e => `
                 <div class="gas-card">
                     <div style="font-family:Federo; color:#fff">${e['Rótulo']}</div>
                     <div style="font-size:0.7rem; color:#807060; margin-bottom:10px">${e['Dirección']}</div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.9rem">
+                    <div style="display:flex; justify-content:space-between">
                         <b>G95: ${e['Precio Gasolina 95 E5']}€</b>
                         <b style="color:var(--bronce)">Dsl: ${e['Precio Gasoleo A']}€</b>
                     </div>
                 </div>
             `).join('');
-        } catch(e) {
-            document.getElementById('gas-list').innerText = "ERROR AL CONECTAR CON MINISTERIO";
-        }
+        } catch(e) { document.getElementById('gas-box').innerText = "No se pudo obtener la lista oficial."; }
     }
 
-    function tgl(n, b) {
+    function toggleR(n, b) {
         b.classList.toggle('on');
         b.innerText = `R${n} ${b.classList.contains('on') ? 'ON' : 'OFF'}`;
     }
 
-    // Carga inicial obligatoria
-    fetchMeteo();
+    // Ejecución inicial automática
+    window.onload = fetchMeteo;
 </script>
 </body>
 </html>
