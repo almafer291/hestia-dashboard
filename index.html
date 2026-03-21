@@ -2,141 +2,330 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>HestiaLake | Panel de Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HestiaLake | Premium Climate Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --relay-on: #22c55e; --relay-off: #ef4444; }
-        body { font-family: 'Inter', sans-serif; background: var(--main-bg); color: white; margin: 0; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #334155; }
-        h2 { color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 10px; margin-top: 0; }
-        
-        /* Estilos Relés */
-        .relay-ctrl { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; padding: 10px; background: #0f172a; border-radius: 8px; }
-        .btn-mode { padding: 5px 10px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
-        .auto { background: var(--accent); color: #000; }
-        .manual { background: #64748b; color: white; }
-        
-        /* Precios */
-        .price-tag { font-size: 1.5rem; font-weight: bold; color: #f59e0b; }
-        .station-item { font-size: 0.9rem; border-bottom: 1px solid #334155; padding: 5px 0; }
+        :root {
+            /* Paleta de colores Bronce Premium */
+            --bg-dark: #1a1a1a;
+            --bg-card: #262626;
+            --bronce-light: #d9a06f;
+            --bronce-main: #b87333; /* Color bronce base */
+            --bronce-dark: #8c5624;
+            --text-light: #e0e0e0;
+            --text-dark: #a0a0a0;
+            --white: #ffffff;
+            --shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- LOGOTIPO SVG INTEGRADO --- */
+        .header-container {
+            text-align: center;
+            padding: 40px 20px;
+            width: 100%;
+            background: radial-gradient(circle at center, #333 0%, #1a1a1a 100%);
+            border-bottom: 1px solid var(--bronce-dark);
+        }
+
+        .logo-svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        /* Definición de la llama y la casa en el SVG */
+        .logo-svg .flame { fill: url(#flameGradient); filter: drop-shadow(0 0 5px rgba(217, 160, 111, 0.8)); }
+        .logo-svg .house-outline { stroke: var(--bronce-light); stroke-width: 2; fill: none; }
+
+        h1.brand-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            font-size: 3rem;
+            color: var(--bronce-main);
+            margin: 0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, var(--bronce-light) 0%, var(--bronce-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        /* --- SISTEMA DE MENÚS (TABS) --- */
+        .tabs-container {
+            width: 90%;
+            max-width: 1200px;
+            margin-top: -25px; /* Solape elegante */
+        }
+
+        .tabs-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tab-link {
+            background-color: var(--bg-card);
+            color: var(--bronce-light);
+            padding: 15px 30px;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--bronce-dark);
+            border-bottom: none;
+        }
+
+        .tab-link:hover {
+            background-color: #333;
+            color: var(--white);
+        }
+
+        .tab-link.active {
+            background-color: var(--bronce-main);
+            color: var(--white);
+            border-color: var(--bronce-main);
+            box-shadow: 0 -5px 15px rgba(184, 115, 51, 0.3);
+        }
+
+        /* --- CONTENIDO DE LAS PESTAÑAS --- */
+        .tab-content {
+            display: none;
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--bronce-dark);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2.section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            color: var(--white);
+            border-bottom: 2px solid var(--bronce-main);
+            padding-bottom: 15px;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        /* --- ESTILOS ESPECÍFICOS DE SECCIONES --- */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+
+        /* Meteorología Precisa */
+        .weather-display { text-align: center; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; }
+        .temp-main { font-size: 4rem; font-weight: 300; color: var(--bronce-light); }
+        .weather-icon { width: 80px; height: 80px; }
+        .weather-details { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; text-align: left;}
+        .w-detail-item { background: #333; padding: 10px; border-radius: 8px;}
+        .w-label { color: var(--text-dark); font-size: 0.8rem; }
+        .w-val { color: var(--white); font-weight: 600; }
+
+        /* Gasolineras Listado Extensive */
+        .gas-station-card {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--bronce-dark);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px 8px 8px 4px;
+            transition: 0.2s;
+        }
+        .gas-station-card:hover { background: rgba(184, 115, 51, 0.1); border-left-color: var(--bronce-main); }
+        .gas-price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .gas-price { font-size: 1.6rem; font-weight: 700; color: var(--bronce-light); }
+        .gas-name { font-weight: 600; color: var(--white); text-transform: uppercase;}
+        .gas-address { font-size: 0.8rem; color: var(--text-dark); }
     </style>
 </head>
 <body>
 
-<header style="text-align: center; margin-bottom: 30px;">
-    <h1>HESTIA LAKE</h1>
-    <p>Estación Meteorológica & Centro de Control</p>
+<header class="header-container">
+    <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#d9a06f;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#b87333;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+        <path class="house-outline" d="M10,40 L50,10 L90,40 L90,90 L10,90 Z" />
+        <path class="flame" d="M50,30 C60,45 65,55 65,65 C65,75 58,82 50,82 C42,82 35,75 35,65 C35,55 40,45 50,30 Z" />
+        <path class="flame" d="M50,45 C55,55 58,60 58,65 C58,70 54,74 50,74 C46,74 42,70 42,65 C42,60 45,55 50,45 Z" style="opacity:0.6; fill:#fff;"/>
+    </svg>
+    <h1 class="brand-name">Hestia Lake</h1>
+    <div class="tagline">CONFORTE | CALIDEZ | CONTROL</div>
 </header>
 
-<div class="grid">
-    <div class="card">
-        <h2>Sensores Atmosféricos</h2>
-        <div style="display: flex; justify-content: space-around;">
-            <div>
-                <small>INTERIOR</small>
-                <div id="temp-in" class="price-tag">22.5°C</div>
-                <small>Hum: 45%</small>
+<div class="tabs-container">
+    <ul class="tabs-menu">
+        <li class="tab-link active" onclick="openTab(event, 'meteo')">METEOROLOGÍA</li>
+        <li class="tab-link" onclick="openTab(event, 'energia')">ENERGÍA & RELÉS</li>
+        <li class="tab-link" onclick="openTab(event, 'combustible')">COMBUSTIBLE</li>
+    </ul>
+
+    <div id="meteo" class="tab-content active">
+        <h2 class="section-title">Estación Almería Capital</h2>
+        <div class="grid-2">
+            <div class="weather-display card">
+                <h3>Exterior Real-Time</h3>
+                <img id="w-icon" src="" alt="icon" class="weather-icon">
+                <div id="w-temp" class="temp-main">--°C</div>
+                <p id="w-desc" style="text-transform: uppercase; color: var(--bronce-light);">Cargando...</p>
+                
+                <div class="weather-details">
+                    <div class="w-detail-item"><span class="w-label">Sensación:</span> <span class="w-val" id="w-feels">--°C</span></div>
+                    <div class="w-detail-item"><span class="w-label">Humedad:</span> <span class="w-val" id="w-hum">--%</span></div>
+                    <div class="w-detail-item"><span class="w-label">Viento:</span> <span class="w-val" id="w-wind">-- km/h</span></div>
+                    <div class="w-detail-item"><span class="w-label">P. UV:</span> <span class="w-val" id="w-uv">--</span></div>
+                </div>
             </div>
-            <div style="border-left: 1px solid #334155; padding-left: 20px;">
-                <small>EXTERIOR (Almería)</small>
-                <div id="temp-out" class="price-tag">18.2°C</div>
-                <small id="weather-desc">Despejado</small>
+            
+            <div class="weather-display card">
+                <h3>Interior HestiaLake</h3>
+                <div style="margin-top:40px;">
+                    <small style="color:var(--text-dark);">TEMPERATURA</small>
+                    <div class="temp-main">23.1°C</div>
+                </div>
+                <div style="margin-top:20px;">
+                    <small style="color:var(--text-dark);">HUMEDAD AMBIENTAL</small>
+                    <div style="font-size:2rem; color: var(--white);">48%</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <h2>Control de Actuadores</h2>
-        <div class="relay-ctrl">
-            <span>R1: Climatización</span>
-            <div>
-                <button id="mode-r1" class="btn-mode auto" onclick="toggleMode(1)">AUTO</button>
-                <button id="state-r1" class="btn-mode manual" onclick="manualTrigger(1)">OFF</button>
-            </div>
-        </div>
-        <div class="relay-ctrl">
-            <span>R2: Iluminación Jardín</span>
-            <div>
-                <button id="mode-r2" class="btn-mode auto" onclick="toggleMode(2)">AUTO</button>
-                <button id="state-r2" class="btn-mode manual" onclick="manualTrigger(2)">OFF</button>
-            </div>
-        </div>
+    <div id="energia" class="tab-content">
+        <h2 class="section-title">Control de Energía y Actuadores</h2>
+        <p>Aquí irá la lógica de precios de luz y los controles de los relés.</p>
     </div>
 
-    <div class="card">
-        <h2>Precio Luz Hoy</h2>
-        <div id="light-price" class="price-tag">Cargando...</div>
-        <small>Precio actual €/MWh (REE)</small>
-    </div>
-
-    <div class="card">
-        <h2>Gasolineras Almería (Más baratas)</h2>
-        <div id="gas-list">Obteniendo precios reales...</div>
+    <div id="combustible" class="tab-content">
+        <h2 class="section-title">Estaciones en Almería Capital Included</h2>
+        <p style="color: var(--text-dark); margin-bottom: 20px;">Listado actualizado de las 10 estaciones más económicas de Gasolina 95 E5 en el municipio.</p>
+        
+        <div id="gas-stations-list">
+            Cargando datos oficiales del Ministerio...
+        </div>
     </div>
 </div>
 
 <script>
-    // --- LÓGICA DE RELÉS ---
-    let relays = {
-        1: { mode: 'AUTO', state: false },
-        2: { mode: 'AUTO', state: false }
-    };
+    // --- LÓGICA DE NAVEGACIÓN (TABS) ---
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; tabcontent[i].classList.remove('active'); }
+        tablinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tablinks.length; i++) { tablinks[i].classList.remove("active"); }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add("active");
 
-    function toggleMode(id) {
-        relays[id].mode = relays[id].mode === 'AUTO' ? 'MANUAL' : 'AUTO';
-        document.getElementById(`mode-r${id}`).innerText = relays[id].mode;
-        document.getElementById(`mode-r${id}`).className = `btn-mode ${relays[id].mode.toLowerCase()}`;
-        addLog(`Relé ${id} cambiado a modo ${relays[id].mode}`);
+        // Cargas específicas al abrir pestaña
+        if(tabName === 'combustible') { getExtensiveGasStations(); }
+        if(tabName === 'meteo') { getPreciseWeather(); }
     }
 
-    function manualTrigger(id) {
-        if(relays[id].mode === 'MANUAL') {
-            relays[id].state = !relays[id].state;
-            const btn = document.getElementById(`state-r${id}`);
-            btn.innerText = relays[id].state ? 'ON' : 'OFF';
-            btn.style.backgroundColor = relays[id].state ? 'var(--relay-on)' : 'var(--relay-off)';
-        } else {
-            alert("Cambia a modo MANUAL para controlar este relé.");
-        }
-    }
+    // --- API METEOROLOGÍA PRECISA (Usando OpenWeatherMap como ejemplo de estructura) ---
+    // Nota: Necesitarás una API KEY real de OpenWeatherMap para que funcione. He puesto datos de estructura.
+    async function getPreciseWeather() {
+        const API_KEY = "TU_API_KEY_AQUI"; // REEMPLAZAR POR TU KEY
+        const CITY_ID = "2521886"; // ID para Almería, ES
 
-    // --- OBTENER PRECIO LUZ (Real de REE) ---
-    async function getLightPrice() {
         try {
-            // Usamos un proxy o API simplificada para evitar CORS en local
-            const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
-            const data = JSON.parse((await res.json()).contents);
-            const ahora = new Date().getHours();
-            const precioActual = data[Object.keys(data)[ahora]].price;
-            document.getElementById('light-price').innerText = `${(precioActual/1000).toFixed(4)} €/kWh`;
-        } catch (e) { document.getElementById('light-price').innerText = "Error API Luz"; }
+            // Descomenta la siguiente línea cuando tengas la API KEY
+            // const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&units=metric&lang=es`);
+            // const data = await res.json();
+            
+            // DATOS MOCK (Simulados) para visualización Premium si no hay API Key
+            const data = {
+                main: { temp: 19.5, feels_like: 19.2, humidity: 60 },
+                weather: [{ description: "cielo claro", icon: "01d" }],
+                wind: { speed: 15 },
+                // uv no viene en la api estándar, requiere otra llamada (OneCall)
+            };
+
+            document.getElementById('w-temp').innerText = `${data.main.temp.toFixed(1)}°C`;
+            document.getElementById('w-desc').innerText = data.weather[0].description;
+            document.getElementById('w-icon').src = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+            document.getElementById('w-feels').innerText = `${data.main.feels_like.toFixed(1)}°C`;
+            document.getElementById('w-hum').innerText = `${data.main.humidity}%`;
+            document.getElementById('w-wind').innerText = `${data.wind.speed} km/h`;
+            document.getElementById('w-uv').innerText = "Bajo (2)"; // Mock
+
+        } catch (e) { document.getElementById('w-desc').innerText = "Error cargando clima"; }
     }
 
-    // --- GASOLINERAS ALMERÍA (API Ministerio) ---
-    async function getGasStations() {
+    // --- API GASOLINERAS EXTENSO (Ministerio) ---
+    async function getExtensiveGasStations() {
+        const listContainer = document.getElementById('gas-stations-list');
+        listContainer.innerHTML = "Consultando base de datos oficial...";
+
         try {
             const res = await fetch('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04');
             const data = await res.json();
-            // Filtrar las 3 más baratas de Almería (Gasolina 95)
-            const sorted = data.ListaEESSPrecio.sort((a, b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0, 3);
             
+            // Filtrar y ordenar: Municipios que contengan "ALMERIA" (Capital) y Gasolina 95
+            let stations = data.ListaEESSPrecio.filter(e => 
+                e.Municipio.includes("ALMERÍA") && e['Precio Gasolina 95 E5']
+            );
+
+            stations.sort((a, b) => 
+                parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))
+            );
+
+            // Coger las top 10 más baratas
+            const topStations = stations.slice(0, 10);
+
             let html = '';
-            sorted.forEach(e => {
-                html += `<div class="station-item">
-                    <b>${e['Precio Gasolina 95 E5']}€</b> - ${e.Rotulo}<br>
-                    <small>${e.Municipio} (${e.Direccion})</small>
+            topStations.forEach(e => {
+                html += `
+                <div class="gas-station-card">
+                    <div class="gas-price-row">
+                        <div class="gas-name">${e.Rotulo}</div>
+                        <div class="gas-price">${e['Precio Gasolina 95 E5']} €/L</div>
+                    </div>
+                    <div class="gas-address">${e.Direccion}, ${e.Municipio}</div>
                 </div>`;
             });
-            document.getElementById('gas-list').innerHTML = html;
-        } catch (e) { document.getElementById('gas-list').innerText = "Error API Gasolina"; }
+            listContainer.innerHTML = html;
+
+        } catch (e) { listContainer.innerText = "Error al conectar con el Ministerio de Energía."; }
     }
 
-    function addLog(m) { console.log(`[Hestia System] ${m}`); }
-
-    // Inicialización
-    getLightPrice();
-    getGasStations();
-    setInterval(getLightPrice, 3600000); // Actualiza cada hora
+    // Carga inicial
+    getPreciseWeather();
 </script>
 
 </body>
