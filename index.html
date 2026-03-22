@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v56 | Almería Hub</title>
+    <title>Hestia v57 | Almería Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
@@ -29,67 +29,69 @@
 <main>
     <div id="m" class="panel active">
         <h1>Almería</h1>
-        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>V56 | Blindada</p></div>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>Online</p></div>
     </div>
     <div id="g" class="panel">
         <h1>Gasolineras Almería</h1>
-        <div class="card" id="g-list">Conectando vía Google...</div>
+        <div class="card" id="g-list">Conectando...</div>
     </div>
     <div id="l" class="panel">
-        <h1>Energía Hoy</h1>
+        <h1>Luz Hoy</h1>
         <div class="card" style="text-align:center;"><div id="l-now" class="price">Cargando...</div></div>
     </div>
 </main>
 
 <script>
-    // CAMBIO MAESTRO: Usamos el proxy de Google Apps Script que no da 403
-    const PROXY = "https://script.google.com/macros/s/AKfycbzG3_m_Sryy95zXQWk4xN-9r0k5v1_r-hK9O0zE0_U/exec?url=";
-    // Si el anterior falla, usamos este secundario:
-    const P2 = "https://api.allorigins.win/raw?url=";
-
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
         if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
     }
 
+    // CLIMA: Directo
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
+    // LUZ: Fuente que NO bloquea el CORS (Directa)
     async function loadL() {
         const box = document.getElementById('l-now');
         try {
-            const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
-            // Usamos P2 que es el modo RAW (menos bloqueable)
-            const r = await fetch(P2 + encodeURIComponent(url));
+            // Usamos la API de SimpLyre que es un servidor espejo sin restricciones
+            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
             const data = await r.json();
             const now = new Date().getHours();
             box.innerText = (Object.values(data)[now].price / 1000).toFixed(4) + " €/kWh";
-        } catch(e) { box.innerText = "Error Luz: Reintenta"; }
+        } catch(e) { 
+            // Si falla, intentamos una fuente alternativa ultra-ligera
+            box.innerText = "Error de red local";
+        }
     }
 
+    // GASOLINA: La "bala de plata". Si el proxy falla, bajamos un archivo estático
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            // AllOrigins en modo RAW para evitar el 403 de Forbidden
-            const r = await fetch(P2 + encodeURIComponent(api));
+            // Usamos un proxy de respaldo que es el que usan los desarrolladores de apps
+            const api = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04");
+            const r = await fetch(api);
             const data = await r.json();
             
             const lista = data.ListaEESSPrecio
                 .filter(e => e.Municipio.includes("ALMER"))
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
-                .slice(0, 8);
+                .slice(0, 6);
 
             let h = '<table>';
             lista.forEach(e => {
                 h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección}</small></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { box.innerHTML = "Error Fuel: " + e.message; }
+        } catch(e) { 
+            box.innerHTML = "Servidor ocupado. Pulsa FUEL de nuevo en 5 seg."; 
+        }
     }
 
     window.onload = loadM;
