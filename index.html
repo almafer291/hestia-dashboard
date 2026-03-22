@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v30 | Direct Data</title>
+    <title>Hestia v31 | Real-Time</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.4); --text: #fff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         nav { width: 80px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; transition: 0.3s; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
         main { flex: 1; padding: 40px; overflow-y: auto; background: #000; }
         .panel { display: none; } .panel.active { display: block; }
@@ -16,7 +16,7 @@
         .big { font-size: 5rem; font-weight: 100; margin: 0; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 12px; border-bottom: 1px solid #111; font-size: 0.85rem; }
-        .price { color: var(--bronce); font-weight: bold; font-family: monospace; }
+        .p-95 { color: var(--bronce); font-weight: bold; }
         .r-btn { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; }
         .r-btn.on { color: #00ff88; border-color: #00ff88; }
     </style>
@@ -24,7 +24,7 @@
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v30</div>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v31</div>
     <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
     <button class="n-btn" onclick="tab('l', this)">LUZ</button>
     <button class="n-btn" onclick="tab('g', this)">FUEL</button>
@@ -41,11 +41,11 @@
     </div>
 
     <div id="l" class="panel">
-        <h1>Precio Luz (Directo)</h1>
+        <h1>Luz en Tiempo Real</h1>
         <div class="card">
             <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom:20px;">
                 <div>MIN<br><b id="lmin" style="color:#00ff88">--</b></div>
-                <div>ACTUAL<br><b id="lnow" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
+                <div>AHORA<br><b id="lnow" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
                 <div>MAX<br><b id="lmax" style="color:#ff4444">--</b></div>
             </div>
             <canvas id="cl" height="100"></canvas>
@@ -53,8 +53,8 @@
     </div>
 
     <div id="g" class="panel">
-        <h1>Gasolineras Almería (Directo)</h1>
-        <div class="card"><table id="gt"><tr><td>Cargando datos en tiempo real...</td></tr></table></div>
+        <h1>Gasolineras Almería</h1>
+        <div class="card"><table id="gt"><tr><td>Cargando datos reales...</td></tr></table></div>
     </div>
 
     <div id="i" class="panel">
@@ -72,6 +72,8 @@
 
 <script>
     let chs = {};
+    // Nuevo Proxy más permisivo
+    const PROXY = "https://corsproxy.io/?";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -83,19 +85,13 @@
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m&timezone=auto');
         const d = await r.json();
         document.getElementById('mt').innerText = Math.round(d.current_weather.temperature)+'°';
-        if(chs.t) chs.t.destroy();
-        chs.t = new Chart(document.getElementById('ct'), {
-            type:'line', data:{ labels:[1,2,3,4,5], datasets:[{data:d.hourly.temperature_2m.slice(0,5), borderColor:'#a67c52', tension:0.4, pointRadius:0}]},
-            options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
-        });
     }
 
     async function loadL() {
         try {
-            // Usamos una API que SIEMPRE permite acceso desde archivos locales
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
-            const res = await r.json();
-            const d = JSON.parse(res.contents);
+            const url = encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const r = await fetch(PROXY + url);
+            const d = await r.json();
             const prices = Object.values(d).map(h => h.price/1000);
             const now = new Date().getHours();
             
@@ -108,23 +104,22 @@
                 type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'#222')}]},
                 options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
             });
-        } catch(e) { document.getElementById('lnow').innerText = "Error Red"; }
+        } catch(e) { document.getElementById('lnow').innerText = "Error API"; }
     }
 
     async function loadG() {
         try {
-            // Esta fuente es mágica: es un espejo del Ministerio pero con CORS abierto
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
-            const res = await r.json();
-            const d = JSON.parse(res.contents);
+            const url = encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04');
+            const r = await fetch(PROXY + url);
+            const d = await r.json();
             const list = d.ListaEESSPrecio.filter(e => e.Municipio.toUpperCase()==="ALMERÍA").sort((a,b)=>parseFloat(a['Precio Gasolina 95 E5'].replace(',','.'))-parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0,10);
             
             document.getElementById('gt').innerHTML = list.map(e => `
                 <tr>
                     <td><b>${e['Rótulo']}</b><br><small style="color:#555">${e['Dirección']}</small></td>
-                    <td style="text-align:right"><span class="price">${e['Precio Gasolina 95 E5']}</span><br><small style="color:#444">${e['Precio Gasoleo A']} dsl</small></td>
+                    <td style="text-align:right"><span class="p-95">${e['Precio Gasolina 95 E5']}</span><br><small style="color:#444">${e['Precio Gasoleo A']} dsl</small></td>
                 </tr>`).join('');
-        } catch(e) { document.getElementById('gt').innerHTML = "Error de conexión temporal."; }
+        } catch(e) { document.getElementById('gt').innerHTML = "Error de Red"; }
     }
 
     function t(b,n) { b.classList.toggle('on'); b.innerText = b.classList.contains('on')?`R${n} ON`:`R${n} OFF`; }
