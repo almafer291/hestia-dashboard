@@ -2,27 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v80 | Almería</title>
+    <title>Hestia v88 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.15); }
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Navegación */
         nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
+        
+        /* Contenido */
         main { flex: 1; padding: 25px; overflow-y: auto; }
-        .panel { display: none; } .panel.active { display: block; }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        
+        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; text-align: center; }
         .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; border-left: 3px solid var(--bronce); display: flex; justify-content: space-between; align-items: center; }
+        .name { font-size: 0.75rem; color: #888; text-transform: uppercase; }
         .price { color: var(--bronce); font-weight: bold; font-size: 1.3rem; font-family: monospace; }
-        h1 { font-size: 0.85rem; color: var(--bronce); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; text-align: center; }
+        
+        .loading { text-align: center; color: #333; font-size: 0.8rem; margin-top: 50px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
-    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
-    <button class="n-btn" onclick="tab('l', this)">LUZ</button>
+    <button id="btn-m" class="n-btn active" onclick="tab('m')">CLIMA</button>
+    <button id="btn-g" class="n-btn" onclick="tab('g')">FUEL</button>
+    <button id="btn-l" class="n-btn" onclick="tab('l')">LUZ</button>
 </nav>
 
 <main>
@@ -30,63 +39,61 @@
         <h1>ALMERÍA</h1>
         <div class="card" style="justify-content:center; padding:50px;"><div id="t" style="font-size:5rem;">--°</div></div>
     </div>
+
     <div id="g" class="panel">
         <h1>GASOLINA 95</h1>
-        <div id="g-list" style="text-align:center; color:#444;">Sincronizando...</div>
+        <div id="g-list"><div class="loading">SINCRONIZANDO...</div></div>
     </div>
+
     <div id="l" class="panel">
         <h1>LUZ HOY</h1>
-        <div id="l-now" style="text-align:center; color:#444;">Buscando...</div>
+        <div id="l-now"><div class="loading">BUSCANDO...</div></div>
     </div>
 </main>
 
 <script>
-    // Este puente usa Google Apps Script para saltar todos los bloqueos
-    const BRIDGE = "https://script.google.com/macros/s/AKfycbyd5AcbAn_vL9Wv-6A9P6I07qB8j4T6X4X6/exec?url=";
+    https://hestia-proxy.almafer291.workers.dev/
+    const WORKER_URL = "https://TU-WORKER.tu-usuario.workers.dev";
 
-    function tab(id, btn) {
-        document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
+    function tab(id) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-        if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
+        document.getElementById('btn-' + id).classList.add('active');
+        if(id !== 'm') loadData();
     }
 
-    async function loadM() {
+    async function loadClima() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
-    async function loadG() {
-        const box = document.getElementById('g-list');
+    async function loadData() {
         try {
-            // API directa de respaldo que suele ser más rápida
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
-            const d = await r.json();
-            const data = JSON.parse(d.contents);
-            
-            const lista = data.ListaEESSPrecio
-                .filter(e => e.Municipio.includes("ALMERÍA"))
-                .sort((a,b) => a['Precio Gasolina 95 E5'].replace(',','.') - b['Precio Gasolina 95 E5'].replace(',','.'))
-                .slice(0, 5);
+            const r = await fetch(WORKER_URL);
+            const data = await r.json();
 
-            box.innerHTML = lista.map(e => `<div class="card"><span>${e.Rótulo}</span><span class="price">${e['Precio Gasolina 95 E5']}€</span></div>`).join('');
-        } catch(e) { box.innerHTML = "Reintentando conexión..."; setTimeout(loadG, 3000); }
+            // Dibujar Gasolina
+            document.getElementById('g-list').innerHTML = data.gasolina.map(e => `
+                <div class="card">
+                    <span class="name">${e.Rótulo}</span>
+                    <span class="price">${e['Precio Gasolina 95 E5']}€</span>
+                </div>
+            `).join('');
+
+            // Dibujar Luz
+            document.getElementById('l-now').innerHTML = `
+                <div class="card" style="flex-direction:column; padding:30px;">
+                    <div class="price" style="font-size:2.5rem;">${data.luz}</div>
+                    <div style="font-size:0.7rem; color:#444; margin-top:10px;">€/kWh ACTUAL</div>
+                </div>`;
+        } catch(e) {
+            document.getElementById('g-list').innerHTML = "<div class='card'>ERROR DE CONEXIÓN</div>";
+        }
     }
 
-    async function loadL() {
-        const box = document.getElementById('l-now');
-        try {
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
-            const d = await r.json();
-            const data = JSON.parse(d.contents);
-            const h = new Date().getHours();
-            const p = (Object.values(data)[h].price / 1000).toFixed(4);
-            box.innerHTML = `<div class="card" style="flex-direction:column; padding:30px;"><div class="price" style="font-size:2.5rem;">${p}</div><div style="font-size:0.7rem; color:#444; margin-top:10px;">€/kWh</div></div>`;
-        } catch(e) { box.innerHTML = "Buscando precio..."; setTimeout(loadL, 3000); }
-    }
-
-    window.onload = loadM;
+    window.onload = loadClima;
 </script>
 </body>
 </html>
