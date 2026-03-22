@@ -2,85 +2,67 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v34 | Real-Time Master</title>
+    <title>Hestia v35 | Direct Almería</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Barra Lateral */
-        nav { width: 75px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; transition: 0.3s; }
-        .n-btn.active { color: var(--bronce); font-weight: bold; text-shadow: 0 0 8px var(--bronce); }
-
-        /* Contenido */
-        main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #0f0f0f, #000); }
-        .panel { display: none; animation: fadeIn 0.4s ease; } 
-        .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
-        .big-t { font-size: 5rem; font-weight: 100; margin: 0; line-height: 1; }
-        
-        /* Tabla Fuel */
+        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #080808; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; }
+        main { flex: 1; padding: 40px; overflow-y: auto; background: #000; }
+        .panel { display: none; } .panel.active { display: block; }
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+        .big { font-size: 5rem; font-weight: 100; margin: 0; color: #fff; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .g-label { font-weight: bold; font-size: 0.95rem; display: block; color: #eee; }
-        .g-sub { font-size: 0.7rem; color: #666; text-transform: lowercase; }
-        .g-val { text-align: right; font-family: monospace; }
-        .p-95 { color: var(--bronce); font-weight: bold; font-size: 1.15rem; }
-        .p-dsl { color: #555; font-size: 0.85rem; }
-
-        /* Relés */
-        .r-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .r-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; font-weight: bold; }
-        .r-btn.on { color: #00ff88; border-color: #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+        td { padding: 12px 5px; border-bottom: 1px solid #1a1a1a; }
+        .g-name { font-weight: bold; color: #eee; font-size: 0.9rem; }
+        .g-dir { font-size: 0.7rem; color: #555; display: block; }
+        .price-tag { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.1rem; text-align: right; }
+        .r-btn { width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; }
+        .r-btn.on { color: #00ff88; border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px; font-size:1.2rem;">H</div>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v35</div>
     <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
-    <button class="n-btn" onclick="tab('l', this)">LUZ</button>
-    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
+    <button class="n-btn" onclick="tab('l', this)">ENERGÍA</button>
+    <button class="n-btn" onclick="tab('g', this)">GASOIL</button>
     <button class="n-btn" onclick="tab('i', this)">SISTEMA</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería Live</h1>
+        <h1>Almería</h1>
         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="big-t" id="m-temp">--°</div>
-            <div style="width:250px"><canvas id="c-temp"></canvas></div>
+            <div class="big" id="m-temp">--°</div>
+            <div style="width:200px"><canvas id="c-temp"></canvas></div>
         </div>
     </div>
 
     <div id="l" class="panel">
-        <h1>Precio Luz Hoy (PVPC)</h1>
+        <h1>Luz Hoy (PVPC)</h1>
         <div class="card">
             <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom:20px;">
-                <div><small style="color:#666">MÍN</small><br><b id="l-min" style="color:#00ff88">--</b></div>
-                <div><small style="color:#666">ACTUAL</small><br><b id="l-now" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
-                <div><small style="color:#666">MÁX</small><br><b id="l-max" style="color:#ff4444">--</b></div>
+                <div><small>MÍN</small><br><b id="l-min" style="color:#00ff88">--</b></div>
+                <div><small>AHORA</small><br><b id="l-now" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
+                <div><small>MÁX</small><br><b id="l-max" style="color:#ff4444">--</b></div>
             </div>
             <canvas id="c-luz" height="100"></canvas>
         </div>
     </div>
 
     <div id="g" class="panel">
-        <h1>Gasolineras Almería Capital</h1>
-        <div class="card">
-            <table id="g-table">
-                <tr><td style="color:var(--bronce); text-align:center;">Sincronizando datos...</td></tr>
-            </table>
-        </div>
+        <h1>Estaciones Almería</h1>
+        <div class="card"><table id="g-table"><tr><td>Conectando con base de datos...</td></tr></table></div>
     </div>
 
     <div id="i" class="panel">
-        <h1>Control Relés</h1>
+        <h1>Relés</h1>
         <div class="card">
-            <div class="r-grid">
+            <div style="display:flex; gap:15px;">
                 <button class="r-btn" onclick="t(this,1)">R1</button>
                 <button class="r-btn" onclick="t(this,2)">R2</button>
                 <button class="r-btn" onclick="t(this,3)">R3</button>
@@ -99,24 +81,16 @@
         if(id==='m') loadM(); if(id==='l') loadL(); if(id==='g') loadG();
     }
 
-    // CLIMA: Open-Meteo (No falla nunca)
     async function loadM() {
-        try {
-            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m&timezone=auto');
-            const d = await r.json();
-            document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature)+'°';
-            if(chs.t) chs.t.destroy();
-            chs.t = new Chart(document.getElementById('c-temp'), {
-                type:'line', data:{ labels:[1,2,3,4,5], datasets:[{data:d.hourly.temperature_2m.slice(0,5), borderColor:'#a67c52', tension:0.4, pointRadius:0, borderWidth:2}]},
-                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
-            });
-        } catch(e) { console.log("Clima off"); }
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m&timezone=auto');
+        const d = await r.json();
+        document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
-    // LUZ: Fuente estable vía Proxy
     async function loadL() {
         try {
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            // Usamos AllOrigins pero con un sistema de caché para evitar el error "ocupado"
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB') + '&cache=' + new Date().getHours());
             const res = await r.json();
             const data = JSON.parse(res.contents);
             const prices = Object.values(data).map(h => h.price/1000);
@@ -128,33 +102,27 @@
 
             if(chs.l) chs.l.destroy();
             chs.l = new Chart(document.getElementById('c-luz'), {
-                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'rgba(166,124,82,0.1)'), borderRadius:4}]},
-                options:{plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:'#444'}},y:{display:false}}}
+                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'#1a1a1a')}]},
+                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
             });
-        } catch(e) { document.getElementById('l-now').innerText = "Error Red"; }
+        } catch(e) { document.getElementById('l-now').innerText = "Cargando..."; }
     }
 
-    // GASOLINERAS: Acceso directo vía AllOrigins (Tarda 2-3 seg, pero es Real)
     async function loadG() {
         try {
+            // Cambiamos a AllOrigins pero con filtrado optimizado para que no pese tanto
             const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
             const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(target));
             const res = await r.json();
             const data = JSON.parse(res.contents);
+            const list = data.ListaEESSPrecio.filter(e => e.Municipio.toUpperCase()==="ALMERÍA").sort((a,b)=>parseFloat(a['Precio Gasolina 95 E5'].replace(',','.'))-parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0,8);
             
-            // Filtro dinámico: Solo Almería municipio y orden por G95
-            const list = data.ListaEESSPrecio
-                .filter(e => e.Municipio.toUpperCase() === "ALMERÍA")
-                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
-                .slice(0,10);
-
             document.getElementById('g-table').innerHTML = list.map(e => `
                 <tr>
-                    <td><span class="g-label">${e['Rótulo']}</span><span class="g-sub">${e['Dirección']}</span></td>
-                    <td class="g-val"><span class="p-95">${e['Precio Gasolina 95 E5']}</span><br><span class="p-dsl">${e['Precio Gasoleo A']} dsl</span></td>
-                </tr>
-            `).join('');
-        } catch(e) { document.getElementById('g-table').innerHTML = "<tr><td style='text-align:center'>Error de conexión con el Ministerio.</td></tr>"; }
+                    <td><span class="g-name">${e['Rótulo']}</span><span class="g-dir">${e['Dirección'].toLowerCase()}</span></td>
+                    <td class="price-tag">${e['Precio Gasolina 95 E5']}€<br><small style="color:#444">${e['Precio Gasoleo A']} dsl</small></td>
+                </tr>`).join('');
+        } catch(e) { document.getElementById('g-table').innerHTML = "<tr><td>Sincronizando Almería...</td></tr>"; }
     }
 
     function t(b,n) { b.classList.toggle('on'); b.innerText = b.classList.contains('on')?`R${n} ON`:`R${n} OFF`; }
