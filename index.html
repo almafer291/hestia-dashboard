@@ -2,42 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v88 | Almería</title>
+    <title>Hestia v89 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.15); }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Navegación */
-        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s; }
-        .n-btn.active { color: var(--bronce); font-weight: bold; }
+        /* Barra Lateral Fija */
+        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; z-index: 100; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; transition: 0.3s; padding: 10px; outline: none; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; border-left: 2px solid var(--bronce); }
         
-        /* Contenido */
-        main { flex: 1; padding: 25px; overflow-y: auto; }
-        .panel { display: none; }
+        /* Contenido Principal */
+        main { flex: 1; padding: 25px; overflow-y: auto; position: relative; }
+        .panel { display: none; width: 100%; }
         .panel.active { display: block; }
         
-        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; text-align: center; }
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; border-left: 3px solid var(--bronce); display: flex; justify-content: space-between; align-items: center; }
-        .name { font-size: 0.75rem; color: #888; text-transform: uppercase; }
-        .price { color: var(--bronce); font-weight: bold; font-size: 1.3rem; font-family: monospace; }
+        h1 { font-size: 0.85rem; color: var(--bronce); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 15px; border-left: 3px solid var(--bronce); display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .name { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .price { color: var(--bronce); font-weight: bold; font-size: 1.4rem; font-family: 'Courier New', monospace; }
         
-        .loading { text-align: center; color: #333; font-size: 0.8rem; margin-top: 50px; letter-spacing: 2px; }
+        .loading { text-align: center; color: #333; font-size: 0.8rem; margin-top: 40px; letter-spacing: 3px; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
     </style>
 </head>
 <body>
 
-<nav>
-    <button id="btn-m" class="n-btn active" onclick="tab('m')">CLIMA</button>
-    <button id="btn-g" class="n-btn" onclick="tab('g')">FUEL</button>
-    <button id="btn-l" class="n-btn" onclick="tab('l')">LUZ</button>
+<nav id="sidebar">
+    <button onclick="tab('m', this)" class="n-btn active">CLIMA</button>
+    <button onclick="tab('g', this)" class="n-btn">FUEL</button>
+    <button onclick="tab('l', this)" class="n-btn">LUZ</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
         <h1>ALMERÍA</h1>
-        <div class="card" style="justify-content:center; padding:50px;"><div id="t" style="font-size:5rem;">--°</div></div>
+        <div class="card" style="justify-content:center; padding:60px; flex-direction:column; gap:10px;">
+            <div id="t" style="font-size:5rem; line-height:1;">--°</div>
+            <div style="font-size:0.6rem; color:#444; letter-spacing:2px;">TEMPERATURA ACTUAL</div>
+        </div>
     </div>
 
     <div id="g" class="panel">
@@ -46,27 +50,36 @@
     </div>
 
     <div id="l" class="panel">
-        <h1>LUZ HOY</h1>
-        <div id="l-now"><div class="loading">BUSCANDO...</div></div>
+        <h1>PRECIO LUZ</h1>
+        <div id="l-now"><div class="loading">CONECTANDO...</div></div>
     </div>
 </main>
 
 <script>
     https://hestia-proxy.almafer291.workers.dev/
-    const WORKER_URL = "https://TU-WORKER.tu-usuario.workers.dev";
+    const WORKER_URL = "https://tu-worker.tu-usuario.workers.dev";
 
-    function tab(id) {
+    // 2. Función para cambiar de pestaña (Blindada)
+    function tab(panelId, btn) {
+        // Quitar active de todo
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('btn-' + id).classList.add('active');
-        if(id !== 'm') loadData();
+        
+        // Activar el panel y el botón
+        document.getElementById(panelId).classList.add('active');
+        btn.classList.add('active');
+        
+        // Cargar datos
+        if(panelId === 'm') loadClima();
+        else loadData();
     }
 
     async function loadClima() {
-        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
-        const d = await r.json();
-        document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
+        try {
+            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
+            const d = await r.json();
+            document.getElementById('t').innerText = Math.round(d.current_weather.temperature) + '°';
+        } catch(e) { document.getElementById('t').innerText = "??°"; }
     }
 
     async function loadData() {
@@ -74,26 +87,32 @@
             const r = await fetch(WORKER_URL);
             const data = await r.json();
 
-            // Dibujar Gasolina
-            document.getElementById('g-list').innerHTML = data.gasolina.map(e => `
-                <div class="card">
-                    <span class="name">${e.Rótulo}</span>
-                    <span class="price">${e['Precio Gasolina 95 E5']}€</span>
-                </div>
-            `).join('');
+            // Dibujar Gasolina (usamos los campos exactos del JSON que me pasaste)
+            if(data.gasolina && data.gasolina.length > 0) {
+                document.getElementById('g-list').innerHTML = data.gasolina.map(e => `
+                    <div class="card">
+                        <span class="name">${e.Rótulo}</span>
+                        <span class="price">${e['Precio Gasolina 95 E5']}€</span>
+                    </div>
+                `).join('');
+            }
 
             // Dibujar Luz
             document.getElementById('l-now').innerHTML = `
-                <div class="card" style="flex-direction:column; padding:30px;">
-                    <div class="price" style="font-size:2.5rem;">${data.luz}</div>
-                    <div style="font-size:0.7rem; color:#444; margin-top:10px;">€/kWh ACTUAL</div>
+                <div class="card" style="flex-direction:column; padding:40px; text-align:center;">
+                    <div class="price" style="font-size:3rem; margin-bottom:10px;">${data.luz}</div>
+                    <div style="font-size:0.7rem; color:#444; letter-spacing:2px;">€/kWh HOY</div>
                 </div>`;
         } catch(e) {
-            document.getElementById('g-list').innerHTML = "<div class='card'>ERROR DE CONEXIÓN</div>";
+            console.error("Fallo al cargar:", e);
         }
     }
 
-    window.onload = loadClima;
+    // Al cargar la web, iniciar clima
+    window.onload = () => {
+        loadClima();
+        loadData(); // Lo dejamos cargando en segundo plano
+    };
 </script>
 </body>
 </html>
