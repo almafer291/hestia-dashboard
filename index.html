@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v49 | Almería Full</title>
+    <title>Hestia v50 | Almería Live</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
@@ -31,26 +31,26 @@
 <main>
     <div id="m" class="panel active">
         <h1>Almería Live</h1>
-        <div class="card"><div style="font-size:4.5rem; font-weight:100;" id="t">--°</div><p id="sky">Sincronizando...</p></div>
+        <div class="card"><div style="font-size:4.5rem; font-weight:100;" id="t">--°</div><p>Almería Capital</p></div>
     </div>
 
     <div id="g" class="panel">
         <h1>Gasolineras Almería</h1>
-        <div class="card" id="g-list">Cargando precios oficiales...</div>
+        <div class="card" id="g-list">Cargando datos...</div>
     </div>
 
     <div id="l" class="panel">
-        <h1>Precio Luz Hoy (PVPC)</h1>
+        <h1>Luz Hoy (PVPC)</h1>
         <div class="card">
-            <small style="color:#555; display:block; text-align:center;">PRECIO ACTUAL</small>
             <span id="l-now" class="price-big">-- €</span>
-            <div id="l-range" style="font-size:0.8rem; text-align:center; margin-top:10px; color:#777;">Cargando tramos...</div>
+            <div id="l-range" style="font-size:0.8rem; text-align:center; margin-top:10px; color:#777;">Sincronizando mercado...</div>
         </div>
     </div>
 </main>
 
 <script>
-    const P = "https://api.allorigins.win/get?url=";
+    // Usamos un proxy secundario más ligero y menos saturado
+    const P = "https://corsproxy.io/?";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -64,40 +64,40 @@
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
-        document.getElementById('sky').innerText = "Almería Capital";
     }
 
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
+            // Cambio a corsproxy.io que es más estable para el Ministerio
             const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
             const r = await fetch(P + encodeURIComponent(api));
-            const data = await r.json();
-            const res = JSON.parse(data.contents);
+            const res = await r.json();
+            
             const lista = res.ListaEESSPrecio.filter(e => e.Municipio === "ALMERÍA")
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
                 .slice(0, 8);
 
             let h = '<table>';
             lista.forEach(e => {
-                h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección.toLowerCase()}</small></td><td class="p-fuel">${e['Precio Gasolina 95 E5']}€</td></tr>`;
+                h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección}</small></td><td class="p-fuel">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { box.innerHTML = "Error de red en Fuel."; }
+        } catch(e) { box.innerHTML = "Error Fuel: " + e.message; }
     }
 
     async function loadL() {
         const box = document.getElementById('l-now');
         try {
+            // Fuente alternativa de Luz que no suele bloquear
             const api = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
             const r = await fetch(P + encodeURIComponent(api));
-            const data = await r.json();
-            const res = JSON.parse(data.contents);
+            const res = await r.json();
             const now = new Date().getHours();
             const prices = Object.values(res);
             
             box.innerText = (prices[now].price / 1000).toFixed(4) + " €/kWh";
-            document.getElementById('l-range').innerText = `Mín: ${(Math.min(...prices.map(p=>p.price))/1000).toFixed(4)} | Máx: ${(Math.max(...prices.map(p=>p.price))/1000).toFixed(4)}`;
+            document.getElementById('l-range').innerText = "Actualizado";
         } catch(e) { box.innerText = "Error Luz"; }
     }
 
