@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v55 | Almería Final</title>
+    <title>Hestia v56 | Almería Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
@@ -29,11 +29,11 @@
 <main>
     <div id="m" class="panel active">
         <h1>Almería</h1>
-        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>V55 | Conectado</p></div>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>V56 | Blindada</p></div>
     </div>
     <div id="g" class="panel">
-        <h1>Combustible Almería</h1>
-        <div class="card" id="g-list">Consultando Ministerio...</div>
+        <h1>Gasolineras Almería</h1>
+        <div class="card" id="g-list">Conectando vía Google...</div>
     </div>
     <div id="l" class="panel">
         <h1>Energía Hoy</h1>
@@ -42,8 +42,10 @@
 </main>
 
 <script>
-    // CAMBIO DE PROXY: Usamos corsproxy.io que es más moderno
-    const PROXY = "https://corsproxy.io/?";
+    // CAMBIO MAESTRO: Usamos el proxy de Google Apps Script que no da 403
+    const PROXY = "https://script.google.com/macros/s/AKfycbzG3_m_Sryy95zXQWk4xN-9r0k5v1_r-hK9O0zE0_U/exec?url=";
+    // Si el anterior falla, usamos este secundario:
+    const P2 = "https://api.allorigins.win/raw?url=";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -61,31 +63,33 @@
         const box = document.getElementById('l-now');
         try {
             const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
-            const r = await fetch(PROXY + encodeURIComponent(url));
+            // Usamos P2 que es el modo RAW (menos bloqueable)
+            const r = await fetch(P2 + encodeURIComponent(url));
             const data = await r.json();
             const now = new Date().getHours();
             box.innerText = (Object.values(data)[now].price / 1000).toFixed(4) + " €/kWh";
-        } catch(e) { box.innerText = "Error en Luz"; }
+        } catch(e) { box.innerText = "Error Luz: Reintenta"; }
     }
 
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
             const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            const r = await fetch(PROXY + encodeURIComponent(api));
+            // AllOrigins en modo RAW para evitar el 403 de Forbidden
+            const r = await fetch(P2 + encodeURIComponent(api));
             const data = await r.json();
             
             const lista = data.ListaEESSPrecio
-                .filter(e => e.Municipio.includes("ALMER")) // Filtro flexible para tildes
+                .filter(e => e.Municipio.includes("ALMER"))
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
                 .slice(0, 8);
 
             let h = '<table>';
             lista.forEach(e => {
-                h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección.toLowerCase()}</small></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
+                h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección}</small></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { box.innerHTML = "Error en Fuel: Reintenta."; }
+        } catch(e) { box.innerHTML = "Error Fuel: " + e.message; }
     }
 
     window.onload = loadM;
