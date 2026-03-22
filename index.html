@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v54 | Almería Hub</title>
+    <title>Hestia v55 | Almería Final</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
@@ -29,21 +29,21 @@
 <main>
     <div id="m" class="panel active">
         <h1>Almería</h1>
-        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>Sistema Activo</p></div>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>V55 | Conectado</p></div>
     </div>
     <div id="g" class="panel">
-        <h1>Gasolineras Almería</h1>
-        <div class="card" id="g-list">Sincronizando con satélite...</div>
+        <h1>Combustible Almería</h1>
+        <div class="card" id="g-list">Consultando Ministerio...</div>
     </div>
     <div id="l" class="panel">
-        <h1>Luz (PVPC)</h1>
-        <div class="card"><div id="l-now" class="price" style="text-align:center;">Cargando...</div></div>
+        <h1>Energía Hoy</h1>
+        <div class="card" style="text-align:center;"><div id="l-now" class="price">Cargando...</div></div>
     </div>
 </main>
 
 <script>
-    // CAMBIO RADICAL: Usamos el motor de Heroku App que permite JSONP (salta el CORS por completo)
-    const PROXY = "https://api.allorigins.win/get?url=";
+    // CAMBIO DE PROXY: Usamos corsproxy.io que es más moderno
+    const PROXY = "https://corsproxy.io/?";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -60,26 +60,23 @@
     async function loadL() {
         const box = document.getElementById('l-now');
         try {
-            // Intentamos obtener el dato a través de un motor de Scrapping de texto
-            const r = await fetch(PROXY + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
+            const r = await fetch(PROXY + encodeURIComponent(url));
             const data = await r.json();
-            const res = JSON.parse(data.contents);
             const now = new Date().getHours();
-            box.innerText = (Object.values(res)[now].price / 1000).toFixed(4) + " €/kWh";
-        } catch(e) { box.innerText = "Error Red Luz"; }
+            box.innerText = (Object.values(data)[now].price / 1000).toFixed(4) + " €/kWh";
+        } catch(e) { box.innerText = "Error en Luz"; }
     }
 
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            // Pedimos solo la provincia 04 (Almería)
             const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
             const r = await fetch(PROXY + encodeURIComponent(api));
             const data = await r.json();
-            const res = JSON.parse(data.contents);
             
-            const lista = res.ListaEESSPrecio
-                .filter(e => e.Municipio.includes("ALMERÍA"))
+            const lista = data.ListaEESSPrecio
+                .filter(e => e.Municipio.includes("ALMER")) // Filtro flexible para tildes
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
                 .slice(0, 8);
 
@@ -88,7 +85,7 @@
                 h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección.toLowerCase()}</small></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { box.innerHTML = "Error Ministerio: Reintenta."; }
+        } catch(e) { box.innerHTML = "Error en Fuel: Reintenta."; }
     }
 
     window.onload = loadM;
