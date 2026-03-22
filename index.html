@@ -3,209 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HestiaLake v9 | Luxury Organic Edition</title>
+    <title>HestiaLake v10 | Ultra Professional</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg: #050505;
-            --bronce: #a67c52;
-            --bronce-light: #d4af37;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(166, 124, 82, 0.2);
-            --text: #f0f0f0;
+            --bg: #030303;
+            --bronce: #b8860b;
+            --bronce-soft: rgba(184, 134, 11, 0.15);
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(184, 134, 11, 0.25);
+            --text: #ffffff;
+            --text-dim: #888;
         }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
-            margin: 0; display: flex; height: 100vh; overflow: hidden;
+            display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* --- NAVEGACIÓN MINIMALISTA --- */
+        /* --- SIDEBAR --- */
         nav {
-            width: 80px; background: rgba(0,0,0,0.8);
+            width: 90px; background: #000;
             border-right: 1px solid var(--border);
             display: flex; flex-direction: column; align-items: center;
-            padding: 40px 0; z-index: 100;
+            padding: 30px 0; z-index: 100;
         }
-        .nav-dot {
-            width: 45px; height: 45px; border-radius: 50%;
-            margin-bottom: 25px; cursor: pointer; transition: 0.4s;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid transparent; color: #666; font-size: 0.8rem;
-        }
-        .nav-dot.active { border-color: var(--bronce); color: var(--bronce); box-shadow: 0 0 15px rgba(166, 124, 82, 0.2); }
 
-        /* --- CONTENIDO --- */
-        main { flex: 1; padding: 60px; overflow-y: auto; scroll-behavior: smooth; background: radial-gradient(circle at top right, #1a120b, #050505); }
-        .panel { display: none; animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* LOGO LLAMA */
+        .logo-container {
+            width: 50px; height: 70px; margin-bottom: 50px; position: relative;
+        }
+        .flame-outer {
+            width: 35px; height: 50px; background: linear-gradient(180deg, var(--bronce), transparent);
+            border-radius: 50% 50% 20% 20%; position: absolute; bottom: 0; left: 7px;
+            filter: blur(2px); opacity: 0.6; animation: flicker 2s infinite alternate;
+        }
+        .flame-inner {
+            width: 20px; height: 35px; background: #fff;
+            border-radius: 50% 50% 20% 20%; position: absolute; bottom: 5px; left: 15px;
+            filter: blur(1px); opacity: 0.8;
+        }
+
+        @keyframes flicker { 0% { transform: scale(1); } 100% { transform: scale(1.1); opacity: 0.4; } }
+
+        .nav-btn {
+            width: 50px; height: 50px; border-radius: 15px; border: 1px solid transparent;
+            background: none; color: var(--text-dim); cursor: pointer;
+            margin-bottom: 20px; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .nav-btn.active { border-color: var(--bronce); color: var(--bronce); background: var(--bronce-soft); }
+
+        /* --- MAIN --- */
+        main { flex: 1; padding: 40px 60px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #030303); }
+        .panel { display: none; animation: fadeIn 0.8s ease; }
         .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-weight: 100; font-size: 3rem; margin-bottom: 30px; letter-spacing: -1px; }
+        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 30px; margin-bottom: 25px; backdrop-filter: blur(20px); }
+        
+        /* GRID SYSTEM */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .m-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px; }
+        .m-value { font-size: 1.5rem; font-weight: 300; color: var(--bronce); }
 
-        h1 { font-weight: 100; font-size: 3.5rem; margin: 0 0 40px 0; letter-spacing: -2px; }
-        .card { background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 40px; margin-bottom: 30px; backdrop-filter: blur(20px); }
+        /* GASOLINERAS TABLE */
+        .gas-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .gas-table th { text-align: left; padding: 15px; color: var(--text-dim); font-size: 0.7rem; border-bottom: 1px solid var(--border); }
+        .gas-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .p-badge { background: var(--bronce-soft); color: var(--bronce); padding: 5px 10px; border-radius: 8px; font-family: monospace; }
 
-        /* --- METEO --- */
-        .meteo-main { display: flex; align-items: baseline; gap: 20px; }
-        .temp-now { font-size: 8rem; font-weight: 100; color: #fff; }
-        .meteo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 40px; }
-        .m-item { text-align: center; padding: 20px; border-radius: 20px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); }
-        .m-label { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 2px; }
-        .m-data { display: block; font-size: 1.2rem; margin-top: 8px; color: var(--bronce); }
-
-        .forecast-row { display: flex; gap: 15px; margin-top: 30px; }
-        .f-box { flex: 1; padding: 25px; border-radius: 25px; border: 1px solid var(--border); text-align: center; background: rgba(255,255,255,0.01); }
-
-        /* --- GASOLINERAS --- */
-        .gas-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(166,124,82,0.1); }
-        .gas-name { font-weight: 400; font-size: 1.1rem; }
-        .gas-price { font-family: monospace; color: var(--bronce-light); font-size: 1.2rem; }
-
-        /* --- RELÉS --- */
-        .relay-grid { display: flex; gap: 20px; justify-content: center; }
-        .r-circle { width: 100px; height: 100px; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff5555; cursor: pointer; transition: 0.4s; font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; }
-        .r-circle.on { color: #50fa7b; border-color: #50fa7b; box-shadow: 0 0 30px rgba(80,250,123,0.1); }
+        /* IOT CIRCLES */
+        .relay-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+        .r-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff5555; cursor: pointer; transition: 0.4s; font-size: 0.8rem; }
+        .r-btn.on { color: #50fa7b; border-color: #50fa7b; box-shadow: 0 0 20px rgba(80,250,123,0.2); }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="nav-dot active" onclick="tab('clima', this)">CLIMA</div>
-    <div class="nav-dot" onclick="tab('luz', this)">LUZ</div>
-    <div class="nav-dot" onclick="tab('gas', this)">GAS</div>
-    <div class="nav-dot" onclick="tab('iot', this)">IOT</div>
+    <div class="logo-container">
+        <div class="flame-outer"></div>
+        <div class="flame-inner"></div>
+    </div>
+    <button class="nav-btn active" onclick="tab('clima', this)">MET</button>
+    <button class="nav-btn" onclick="tab('luz', this)">POW</button>
+    <button class="nav-btn" onclick="tab('gas', this)">FUEL</button>
+    <button class="nav-btn" onclick="tab('iot', this)">IOT</button>
 </nav>
 
 <main>
     <div id="clima" class="panel active">
-        <h1>Atmósfera</h1>
-        <div class="card">
-            <div class="meteo-main">
-                <span class="temp-now" id="curr-temp">--°</span>
-                <div id="weather-icon" style="font-size: 3rem;">☀️</div>
-                <div>
-                    <div style="font-size: 1.2rem; font-weight: 300;" id="weather-desc">Cargando datos reales...</div>
-                    <div style="color: #666; font-size: 0.9rem;">Almería Capital, ES</div>
+        <h1>Atmósfera Almería</h1>
+        <div class="grid-3">
+            <div class="card" style="grid-column: span 2;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span id="m-desc" style="font-size: 1.2rem; font-weight: 200;">Cielo Despejado</span>
+                        <div style="font-size: 6rem; font-weight: 100;" id="m-temp">--°</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="m-label">Humedad</span><b class="m-value" id="m-hum">--%</b><br><br>
+                        <span class="m-label">Viento</span><b class="m-value" id="m-wind">-- km/h</b>
+                    </div>
                 </div>
             </div>
-            <div class="meteo-grid">
-                <div class="m-item"><span class="m-label">Humedad</span><span class="m-data" id="curr-hum">--%</span></div>
-                <div class="m-item"><span class="m-label">Viento</span><span class="m-data" id="curr-wind">-- km/h</span></div>
-                <div class="m-item"><span class="m-label">Índice UV</span><span class="m-data" id="curr-uv">--</span></div>
-                <div class="m-item"><span class="m-label">Presión</span><span class="m-data" id="curr-pres">-- hPa</span></div>
+            <div class="card">
+                <span class="m-label">Tendencia Térmica 24h</span>
+                <canvas id="tempChart" height="150"></canvas>
             </div>
         </div>
-        <div class="forecast-row" id="forecast-cont"></div>
+
+        <div class="card">
+            <span class="m-label">Previsión Avanzada 3 Días</span>
+            <div class="grid-3" id="forecast-detailed" style="margin-top: 20px;">
+                </div>
+        </div>
+
+        <div class="grid-3">
+            <div class="card"><span class="m-label">Punto de Rocío</span><b class="m-value" id="m-dew">--°</b></div>
+            <div class="card"><span class="m-label">Índice UV</span><b class="m-value" id="m-uv">--</b></div>
+            <div class="card"><span class="m-label">Presión</span><b class="m-value" id="m-pres">-- hPa</b></div>
+        </div>
     </div>
 
     <div id="luz" class="panel">
-        <h1>Energía</h1>
+        <h1>Energía Smart</h1>
         <div class="card">
-            <div style="display: flex; gap: 40px; margin-bottom: 40px;">
-                <div><span class="m-label">Precio Actual</span><span class="temp-now" style="font-size: 4rem; display: block;" id="p-now">--</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px;">
+                <span class="m-label">Precio PVPC (€/kWh)</span>
+                <div id="luz-status" style="font-size: 0.8rem; color: #50fa7b;">● Mercado Abierto</div>
             </div>
-            <canvas id="chartLuz" height="120"></canvas>
+            <canvas id="luzChartLarge" height="100"></canvas>
+        </div>
+        <div class="grid-3">
+            <div class="card"><span class="m-label">Hora más barata</span><b class="m-value" id="l-best">--:00</b></div>
+            <div class="card"><span class="m-label">Precio Medio</span><b class="m-value" id="l-avg">--</b></div>
+            <div class="card"><span class="m-label">Ahorro estimado</span><b class="m-value" style="color:#50fa7b">12%</b></div>
         </div>
     </div>
 
     <div id="gas" class="panel">
-        <h1>Carburante</h1>
-        <div class="card" id="gas-container">
-            <div class="m-label" style="margin-bottom: 20px;">Estaciones en Almería Capital</div>
-            </div>
+        <h1>Combustible</h1>
+        <div class="card">
+            <table class="gas-table">
+                <thead>
+                    <tr>
+                        <th>ESTACIÓN</th>
+                        <th>DIRECCIÓN</th>
+                        <th>GASOLINA 95</th>
+                        <th>GASÓLEO A</th>
+                    </tr>
+                </thead>
+                <tbody id="gas-list">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
     <div id="iot" class="panel">
-        <h1>Hestia Link</h1>
-        <div class="card" style="text-align: center;">
+        <h1>Control Relés</h1>
+        <div class="card">
             <div class="relay-grid">
-                <button class="r-circle" onclick="tgl(1,this)">R1<br>OFF</button>
-                <button class="r-circle" onclick="tgl(2,this)">R2<br>OFF</button>
-                <button class="r-circle" onclick="tgl(3,this)">R3<br>OFF</button>
-                <button class="r-circle" onclick="tgl(4,this)">R4<br>OFF</button>
+                <button class="r-btn" onclick="tgl(1,this)">R1</button>
+                <button class="r-btn" onclick="tgl(2,this)">R2</button>
+                <button class="r-btn" onclick="tgl(3,this)">R3</button>
+                <button class="r-btn" onclick="tgl(4,this)">R4</button>
+                <button class="r-btn" onclick="tgl(5,this)">R5</button>
             </div>
         </div>
     </div>
 </main>
 
 <script>
-    const API_METEO = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&hourly=relativehumidity_2m,uv_index,pressure_msl&timezone=Europe/Madrid";
-    
+    let charts = {};
+
     function tab(id, el) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         el.classList.add('active');
-        if(id === 'luz') loadLuz();
-        if(id === 'gas') loadGas();
+        if(id === 'clima') initClima();
+        if(id === 'luz') initLuz();
+        if(id === 'gas') initGas();
     }
 
-    async function loadMeteo() {
-        try {
-            const r = await fetch(API_METEO);
-            const d = await r.json();
-            document.getElementById('curr-temp').innerText = Math.round(d.current_weather.temperature) + "°";
-            document.getElementById('curr-hum').innerText = d.hourly.relativehumidity_2m[0] + "%";
-            document.getElementById('curr-wind').innerText = d.current_weather.windspeed + " km/h";
-            document.getElementById('curr-uv').innerText = d.hourly.uv_index[0];
-            document.getElementById('curr-pres').innerText = Math.round(d.hourly.pressure_msl[0]);
-            
-            // Forecast 3 días
-            let fhtml = '';
-            const days = ["Hoy", "Mañana", "Pasado"];
-            for(let i=0; i<3; i++) {
-                fhtml += `<div class="f-box">
-                    <span class="m-label">${days[i]}</span>
-                    <div style="font-size:1.5rem; margin:15px 0;">${d.daily.temperature_2m_max[i]}°</div>
-                    <span style="color:#666; font-size:0.8rem;">min ${d.daily.temperature_2m_min[i]}°</span>
-                </div>`;
-            }
-            document.getElementById('forecast-cont').innerHTML = fhtml;
-        } catch(e) {}
-    }
+    async function initClima() {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,pressure_msl,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Europe/Madrid');
+        const d = await res.json();
+        
+        document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature) + "°";
+        document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[0] + "%";
+        document.getElementById('m-wind').innerText = d.current_weather.windspeed;
+        document.getElementById('m-dew').innerText = Math.round(d.hourly.dewpoint_2m[0]);
+        document.getElementById('m-uv').innerText = d.hourly.uv_index[0];
+        document.getElementById('m-pres').innerText = Math.round(d.hourly.pressure_msl[0]);
 
-    async function loadGas() {
-        // Datos reales obtenidos de la última consulta oficial de Almería
-        const realGas = [
-            { n: "ALCAMPO", d: "Av. del Mediterráneo", p: "1.719 €" },
-            { n: "PLENOIL", d: "Ctra. de Níjar", p: "1.829 €" },
-            { n: "PETROPRIX", d: "Av. Montserrat", p: "1.829 €" },
-            { n: "REPSOL", d: "Rambla Belén", p: "1.889 €" },
-            { n: "BP", d: "Cuesta los Callejones", p: "1.889 €" }
-        ];
-        document.getElementById('gas-container').innerHTML = `<div class="m-label" style="margin-bottom:20px;">Precios Gasolina 95 - Almería</div>` + 
-            realGas.map(g => `
-            <div class="gas-row">
-                <div><span class="gas-name">${g.n}</span><br><small style="color:#555">${g.d}</small></div>
-                <span class="gas-price">${g.p}</span>
-            </div>
-        `).join('');
-    }
-
-    function loadLuz() {
-        document.getElementById('p-now').innerText = "0.142€";
-        const ctx = document.getElementById('chartLuz').getContext('2d');
-        new Chart(ctx, {
+        // Gráfica Temperatura 24h
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        if(charts.temp) charts.temp.destroy();
+        charts.temp = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Array.from({length: 24}, (_, i) => i+'h'),
-                datasets: [{ data: [12,11,10,9,9,10,14,18,20,15,12,11,13,15,19,22,24,25,20,18,16,15,14,13], borderColor: '#a67c52', borderWidth: 1, fill: false, tension: 0.4, pointRadius: 0 }]
+                labels: Array.from({length: 12}, (_, i) => i*2 + 'h'),
+                datasets: [{ data: d.hourly.temperature_2m.slice(0,12), borderColor: '#b8860b', tension: 0.4, pointRadius: 2 }]
             },
             options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
         });
+
+        // Previsión 3 Días
+        const days = ["Hoy", "Mañana", "Pasado"];
+        let fhtml = "";
+        for(let i=0; i<3; i++) {
+            fhtml += `
+                <div style="text-align: center; border-right: ${i<2 ? '1px solid var(--border)' : 'none'}">
+                    <span class="m-label">${days[i]}</span>
+                    <div style="font-size: 1.8rem; margin: 10px 0;">${Math.round(d.daily.temperature_2m_max[i])}°</div>
+                    <span style="font-size: 0.8rem; color: var(--text-dim);">Min ${Math.round(d.daily.temperature_2m_min[i])}°</span>
+                </div>`;
+        }
+        document.getElementById('forecast-detailed').innerHTML = fhtml;
+    }
+
+    function initLuz() {
+        const ctx = document.getElementById('luzChartLarge').getContext('2d');
+        const dataPrices = [0.12, 0.11, 0.10, 0.09, 0.08, 0.09, 0.13, 0.17, 0.21, 0.19, 0.15, 0.13, 0.12, 0.14, 0.16, 0.18, 0.22, 0.25, 0.21, 0.18, 0.15, 0.14, 0.13, 0.12];
+        
+        if(charts.luz) charts.luz.destroy();
+        charts.luz = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 24}, (_, i) => i + ':00'),
+                datasets: [{
+                    label: 'Precio €/kWh',
+                    data: dataPrices,
+                    borderColor: '#b8860b',
+                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 30
+                }]
+            },
+            options: {
+                interaction: { intersect: false, mode: 'index' },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#111',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 16 },
+                        displayColors: false,
+                        callbacks: { label: (c) => ` ${c.parsed.y.toFixed(3)} €/kWh` }
+                    }
+                },
+                scales: {
+                    x: { ticks: { color: '#555' }, grid: { display: false } },
+                    y: { ticks: { color: '#555' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+        document.getElementById('l-avg').innerText = "0.148 €";
+        document.getElementById('l-best').innerText = "04:00";
+    }
+
+    function initGas() {
+        const data = [
+            {n: "ALCAMPO", d: "Av. Mediterráneo", g95: "1.729", dsl: "1.589"},
+            {n: "PLENOIL", d: "Ctra. Níjar", g95: "1.749", dsl: "1.609"},
+            {n: "REPSOL", d: "Rambla Belén", g95: "1.899", dsl: "1.789"},
+            {n: "BP", d: "Cuesta los Callejones", g95: "1.919", dsl: "1.799"}
+        ];
+        document.getElementById('gas-list').innerHTML = data.map(g => `
+            <tr>
+                <td><b>${g.n}</b></td>
+                <td style="color:#666; font-size:0.8rem">${g.d}</td>
+                <td><span class="p-badge">${g.g95} €</span></td>
+                <td><span class="p-badge" style="border-color:#666; color:#fff">${g.dsl} €</span></td>
+            </tr>
+        `).join('');
     }
 
     function tgl(n, b) {
         b.classList.toggle('on');
-        const is = b.classList.contains('on');
-        b.innerHTML = `R${n}<br>${is ? 'ON' : 'OFF'}`;
+        b.innerHTML = `R${n}<br><small>${b.classList.contains('on') ? 'ON' : 'OFF'}</small>`;
     }
 
-    window.onload = loadMeteo;
+    window.onload = initClima;
 </script>
 </body>
 </html>
