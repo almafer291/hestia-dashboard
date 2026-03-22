@@ -1,204 +1,137 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Hestia v36 Estable</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <title>Hestia v41 | Almería Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Navegación */
+        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; text-shadow: 0 0 10px var(--bronce); }
 
-<style>
-body{margin:0;font-family:Arial;background:#000;color:#fff;display:flex;height:100vh}
-nav{width:70px;background:#080808;display:flex;flex-direction:column;align-items:center;padding:30px 0}
-button{background:none;border:none;color:#555;margin:20px 0;cursor:pointer}
-button.active{color:#a67c52}
-main{flex:1;padding:20px;overflow:auto}
-.panel{display:none}.panel.active{display:block}
-.card{background:#111;padding:20px;border-radius:15px;margin-bottom:20px}
-.big{font-size:3rem}
-table{width:100%} td{padding:8px;border-bottom:1px solid #222}
-.price{color:#a67c52}
-</style>
+        /* Contenido */
+        main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #000); }
+        .panel { display: none; } 
+        .panel.active { display: block; }
+
+        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; border-left: 4px solid var(--bronce); }
+        .big-val { font-size: 5rem; font-weight: 100; margin: 0; line-height: 1; }
+        
+        /* Tabla Fuel basada en tu nuevo JSON */
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .g-name { font-weight: bold; color: #fff; font-size: 1rem; display: block; }
+        .price-box { text-align: right; font-family: monospace; }
+        .p-95 { color: var(--bronce); font-weight: bold; font-size: 1.2rem; }
+        .p-dsl { color: #555; font-size: 0.9rem; }
+    </style>
 </head>
-
 <body>
 
 <nav>
-<button class="active" onclick="tab('m',this)">CLIMA</button>
-<button onclick="tab('l',this)">LUZ</button>
-<button onclick="tab('g',this)">GAS</button>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v41</div>
+    <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
+    <button class="n-btn" onclick="tab('l', this)">ENERGÍA</button>
+    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
 </nav>
 
 <main>
+    <div id="m" class="panel active">
+        <h1>Almería Live</h1>
+        <div class="card">
+            <div class="big-val" id="m-temp">--°</div>
+            <p style="color:var(--bronce); letter-spacing:3px;">ALMERÍA CAPITAL</p>
+        </div>
+    </div>
 
-<div id="m" class="panel active">
-<div class="card">
-<div class="big" id="temp">--</div>
-<canvas id="ct"></canvas>
-</div>
-</div>
+    <div id="l" class="panel">
+        <h1>Energía (PVPC)</h1>
+        <div class="card">
+            <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom:20px;">
+                <div><small>AHORA</small><br><b id="l-now" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
+                <div><small>MÍNIMO</small><br><b id="l-min" style="color:#00ff88">--</b></div>
+            </div>
+            <canvas id="c-luz" height="120"></canvas>
+        </div>
+    </div>
 
-<div id="l" class="panel">
-<div class="card">
-<div>MÍN <b id="min"></b> | AHORA <b id="now"></b> | MÁX <b id="max"></b></div>
-<canvas id="cl"></canvas>
-</div>
-</div>
-
-<div id="g" class="panel">
-<div class="card">
-<table id="gas"><tr><td>Cargando...</td></tr></table>
-</div>
-</div>
-
+    <div id="g" class="panel">
+        <h1>Gasolineras (Datos Directos)</h1>
+        <div class="card">
+            <table id="g-table">
+                <tr><td>Cargando datos de estaciones...</td></tr>
+            </table>
+        </div>
+    </div>
 </main>
 
 <script>
+    // Usamos el Proxy solo para lo estrictamente necesario
+    const P = "https://api.allorigins.win/get?url=";
 
-const proxy = "https://api.allorigins.win/raw?url=";
-let charts={};
-let cache={};
+    function tab(id, b) {
+        document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); b.classList.add('active');
+        if(id==='m') loadM(); if(id==='l') loadL(); if(id==='g') loadG();
+    }
 
-function tab(id,b){
-document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-document.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-b.classList.add('active');
+    async function loadM() {
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true');
+        const d = await r.json();
+        document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature)+'°';
+    }
 
-if(id==='m') loadM();
-if(id==='l') loadL();
-if(id==='g') loadG();
-}
+    async function loadL() {
+        try {
+            const url = encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const r = await fetch(P + url);
+            const res = await r.json();
+            const data = JSON.parse(res.contents);
+            const prices = Object.values(data).map(h => h.price/1000);
+            const now = new Date().getHours();
+            
+            document.getElementById('l-now').innerText = prices[now].toFixed(4) + "€";
+            document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4) + "€";
 
-/* ===== CLIMA ===== */
-async function loadM(){
-try{
-if(cache.m) return renderM(cache.m);
+            new Chart(document.getElementById('c-luz'), {
+                type:'line', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, borderColor:'#a67c52', tension:0.4, pointRadius:0}]},
+                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
+            });
+        } catch(e) { document.getElementById('l-now').innerText = "Error"; }
+    }
 
-const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&hourly=temperature_2m&current_weather=true");
-const d = await r.json();
+    async function loadG() {
+        try {
+            // Aquí usamos el formato que encontraste. 
+            // He preparado una lista de IDs de estaciones de Almería para consultar
+            const ids = [1, 2, 3]; // Puedes añadir los IDs que necesites
+            let html = '';
 
-cache.m=d;
-renderM(d);
+            for(let id of ids) {
+                // Ajusta esta URL a la web donde encontraste el JSON
+                const url = `https://api.precioil.es/estaciones/detalles/${id}`; 
+                const r = await fetch(P + encodeURIComponent(url));
+                const res = await r.json();
+                const e = JSON.parse(res.contents);
 
-}catch(e){
-temp.innerText="Error";
-}
-}
+                html += `
+                <tr>
+                    <td><span class="g-name">${e.nombreEstacion}</span></td>
+                    <td class="price-box">
+                        <span class="p-95">${e.Gasolina95}€</span><br>
+                        <span class="p-dsl">${e.Diesel} dsl</span>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('g-table').innerHTML = html;
+        } catch(e) { document.getElementById('g-table').innerHTML = "<tr><td>Error al conectar con la API de Fuel.</td></tr>"; }
+    }
 
-function renderM(d){
-temp.innerText=Math.round(d.current_weather.temperature)+"°";
-
-let t=d.hourly.temperature_2m.slice(0,12);
-
-if(charts.t) charts.t.destroy();
-charts.t=new Chart(ct,{
-type:'line',
-data:{labels:t.map((_,i)=>i),datasets:[{data:t}]},
-options:{plugins:{legend:{display:false}}}
-});
-}
-
-/* ===== LUZ ===== */
-async function loadL(){
-try{
-
-if(cache.l) return renderL(cache.l);
-
-const r = await fetch(proxy + encodeURIComponent("https://api.preciodelaluz.org/v1/prices/all?zone=PCB"));
-const d = await r.json();
-
-const prices=Object.values(d).map(x=>x.price/1000);
-
-cache.l=prices;
-renderL(prices);
-
-}catch(e){
-now.innerText="Error";
-}
-}
-
-function renderL(p){
-let h=new Date().getHours();
-
-now.innerText=p[h].toFixed(4)+"€";
-min.innerText=Math.min(...p).toFixed(4);
-max.innerText=Math.max(...p).toFixed(4);
-
-if(charts.l) charts.l.destroy();
-charts.l=new Chart(cl,{
-type:'bar',
-data:{labels:p.map((_,i)=>i),datasets:[{data:p}]},
-options:{plugins:{legend:{display:false}}}
-});
-}
-
-/* ===== GASOLINERAS ===== */
-async function loadG(){
-
-gas.innerHTML="<tr><td>Cargando datos...</td></tr>";
-
-try{
-
-const url="https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-
-const r = await fetch(proxy + encodeURIComponent(url));
-const d = await r.json();
-
-/* PROCESADO SEGURO */
-let list = d.ListaEESSPrecio
-.filter(e => (e.Municipio||"").toUpperCase().includes("ALMER"))
-.map(e => {
-
-const g95 = parseFloat((e["Precio Gasolina 95 E5"]||"0").replace(",","."));
-const dsl = parseFloat((e["Precio Gasoleo A"]||"0").replace(",","."));
-
-return {
-name: e["Rótulo"] || "N/A",
-dir: e["Dirección"] || "",
-g95,
-dsl
-};
-
-})
-.filter(e => e.g95 > 0)
-.sort((a,b)=>a.g95-b.g95)
-.slice(0,10);
-
-/* RENDER */
-gas.innerHTML = list.map(e=>`
-<tr>
-<td>
-<b>${e.name}</b><br>
-<small>${e.dir}</small>
-</td>
-<td class="price">
-95: ${e.g95.toFixed(3)}€<br>
-DSL: ${e.dsl.toFixed(3)}€
-</td>
-</tr>
-`).join("");
-
-}catch(err){
-
-gas.innerHTML=`
-<tr>
-<td>
-⚠ Error cargando datos<br>
-<small>Reintentando...</small>
-</td>
-</tr>`;
-
-setTimeout(loadG,3000);
-}
-}
-
-/* AUTO REFRESH */
-setInterval(loadL,60000);
-setInterval(loadM,300000);
-setInterval(loadG,300000);
-
-loadM();
-
+    window.onload = loadM;
 </script>
-
 </body>
 </html>
