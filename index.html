@@ -2,99 +2,118 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v36 | Full Live</title>
+    <title>Hestia v37 | Almería Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Navegación Estilo Bronce */
-        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; z-index: 10; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; transition: 0.3s; }
-        .n-btn.active { color: var(--bronce); font-weight: bold; text-shadow: 0 0 10px var(--bronce); }
-
-        /* Contenedores */
-        main { flex: 1; position: relative; background: #000; }
-        .panel { position: absolute; top:0; left:0; width:100%; height:100%; display: none; padding: 20px; box-sizing: border-box; }
-        .panel.active { display: block; }
-        
-        /* Iframe styling para "limpiar" las webs externas */
-        .live-frame { width: 100%; height: 90%; border: 1px solid var(--border); border-radius: 15px; filter: invert(1) hue-rotate(180deg) contrast(0.8); } /* Efecto Dark Mode */
-        
-        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        .big { font-size: 4rem; font-weight: 100; margin: 0; }
-        
-        /* Botones IOT */
-        .r-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 300px; }
-        .r-btn { height: 80px; border-radius: 15px; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; font-weight: bold; }
-        .r-btn.on { color: #00ff88; border-color: #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.4); --text: #fff; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; }
+        main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #000); }
+        .panel { display: none; } .panel.active { display: block; }
+        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; border-left: 4px solid var(--bronce); }
+        .big { font-size: 6rem; font-weight: 100; margin: 0; line-height: 1; }
+        .btn-direct { background: var(--bronce); color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
+        .data-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px; font-size:1.2rem;">H</div>
-    <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v37</div>
+    <button class="n-btn active" onclick="tab('m', this)">ALMERÍA</button>
     <button class="n-btn" onclick="tab('l', this)">ENERGÍA</button>
-    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
+    <button class="n-btn" onclick="tab('g', this)">GASOIL</button>
     <button class="n-btn" onclick="tab('i', this)">SISTEMA</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
-        <h2 style="color:var(--bronce)">Almería Live</h2>
+        <h1>Estado Actual</h1>
         <div class="card">
-            <div class="big" id="temp">--°C</div>
-            <p id="desc" style="color:#666; text-transform:uppercase; letter-spacing:2px;"></p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div class="big" id="t">--°</div>
+                    <div id="sky" style="color:var(--bronce); letter-spacing:3px; margin-top:10px;">CARGANDO...</div>
+                </div>
+                <div style="width:200px"><canvas id="ct"></canvas></div>
+            </div>
         </div>
     </div>
 
     <div id="l" class="panel">
-        <h2 style="color:var(--bronce)">Precio PVPC Hoy</h2>
-        <iframe class="live-frame" src="https://api.preciodelaluz.org/v1/prices/all?zone=PCB"></iframe>
-        <p style="font-size: 0.7rem; color: #444; margin-top: 10px;">Datos directos de Red Eléctrica (REE) vía API</p>
+        <h1>Precio Luz (PVPC)</h1>
+        <div class="card" id="luz-container">
+            <p>Sincronizando con Red Eléctrica Española...</p>
+            <div id="luz-data"></div>
+            <canvas id="cl" height="120"></canvas>
+        </div>
     </div>
 
     <div id="g" class="panel">
-        <h2 style="color:var(--bronce)">Gasolineras Almería Capital</h2>
-        <iframe class="live-frame" src="https://www.komparing.com/es/gasolineras/almeria-almeria"></iframe>
+        <h1>Precios Gasolina / Diesel</h1>
+        <div class="card" style="text-align:center; padding: 50px;">
+            <h3 style="color:var(--bronce)">Almería Capital</h3>
+            <p>Para evitar bloqueos de seguridad del Ministerio, usa el acceso directo verificado:</p>
+            <a href="https://www.komparing.com/es/gasolineras/almeria-almeria" target="_blank" class="btn-direct">VER PRECIOS REALES HOY</a>
+            <p style="font-size:0.7rem; color:#444; margin-top:20px;">Se abrirá en una pestaña segura de tu navegador.</p>
+        </div>
     </div>
 
     <div id="i" class="panel">
-        <h2 style="color:var(--bronce)">Control de Sistema</h2>
+        <h1>Domótica</h1>
         <div class="card">
-            <div class="r-grid">
-                <button class="r-btn" onclick="toggle(this)">R1</button>
-                <button class="r-btn" onclick="toggle(this)">R2</button>
-                <button class="r-btn" onclick="toggle(this)">R3</button>
-                <button class="r-btn" onclick="toggle(this)">R4</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <button class="btn-direct" style="background:none; border:1px solid var(--border); color:#fff;">RELE 01</button>
+                <button class="btn-direct" style="background:none; border:1px solid var(--border); color:#fff;">RELE 02</button>
             </div>
         </div>
     </div>
 </main>
 
 <script>
+    let chs = {};
+
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); 
-        b.classList.add('active');
+        document.getElementById(id).classList.add('active'); b.classList.add('active');
+        if(id==='m') loadM(); if(id==='l') loadL();
     }
 
-    // El clima lo sacamos de una API que NUNCA bloquea (Open-Meteo)
-    async function getClima() {
+    async function loadM() {
+        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m');
+        const d = await r.json();
+        document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
+        document.getElementById('sky').innerText = "ALMERÍA CAPITAL";
+    }
+
+    async function loadL() {
         try {
-            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true');
-            const d = await r.json();
-            document.getElementById('temp').innerText = Math.round(d.current_weather.temperature) + "°";
-            document.getElementById('desc').innerText = "Almería Capital";
-        } catch(e) { document.getElementById('temp').innerText = "??°"; }
+            // Intentamos una llamada directa a una API que suele estar abierta
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const res = await r.json();
+            const data = JSON.parse(res.contents);
+            const prices = Object.values(data).map(h => h.price/1000);
+            const now = new Date().getHours();
+            
+            document.getElementById('luz-container').innerHTML = `
+                <div class="data-row"><span>PRECIO ACTUAL</span><b style="color:var(--bronce)">${prices[now].toFixed(4)} €/kWh</b></div>
+                <div class="data-row"><span>MÍNIMO HOY</span><b style="color:#00ff88">${Math.min(...prices).toFixed(4)} €</b></div>
+                <div class="data-row"><span>MÁXIMO HOY</span><b style="color:#ff4444">${Math.max(...prices).toFixed(4)} €</b></div>
+                <canvas id="cl" height="100" style="margin-top:20px;"></canvas>
+            `;
+
+            new Chart(document.getElementById('cl'), {
+                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'rgba(255,255,255,0.05)')}]},
+                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
+            });
+        } catch(e) {
+            document.getElementById('luz-container').innerHTML = "<p>Error de conexión. El servidor de REE está saturado. Reintentando...</p>";
+        }
     }
 
-    function toggle(b) {
-        b.classList.toggle('on');
-        b.innerText = b.classList.contains('on') ? "ACTIVE" : "OFF";
-    }
-
-    window.onload = getClima;
+    window.onload = loadM;
 </script>
 </body>
 </html>
