@@ -2,17 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v58 | Almería</title>
+    <title>Hestia v59</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.15); --text: #fff; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 60px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #050505; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 30px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 1px; }
+        :root { --bg: #000; --bronce: #a67c52; --text: #fff; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; }
+        nav { width: 60px; border-right: 1px solid #222; display: flex; flex-direction: column; align-items: center; padding-top: 20px; background: #050505; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 30px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
         main { flex: 1; padding: 20px; overflow-y: auto; }
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--bronce); }
-        .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+        .card { background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--bronce); }
+        .price { color: var(--bronce); font-weight: bold; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -30,56 +30,58 @@
     </div>
     <div id="g" class="panel">
         <h2>Gasolineras</h2>
-        <div class="card" id="g-list">Cargando Fuel...</div>
+        <div id="g-list">Cargando...</div>
     </div>
     <div id="l" class="panel">
         <h2>Luz Hoy</h2>
-        <div class="card" style="text-align:center;"><div id="l-now" class="price">Cargando Luz...</div></div>
+        <div class="card" style="text-align:center;"><div id="l-now" class="price">-- €/kWh</div></div>
     </div>
 </main>
 
 <script>
-    // Usamos el proxy de "Cors-anywhere" pero público, que es más estable para errores de nombre
-    const P = "https://api.allorigins.win/raw?url=";
-
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
         if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
     }
 
+    // CLIMA (Siempre funciona)
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
+    // LUZ (Nueva técnica sin Proxy)
     async function loadL() {
         try {
-            // CAMBIO: Usamos la API de ESIOS (Red Eléctrica) que es la oficial del gobierno
-            const r = await fetch(P + encodeURIComponent("https://api.esios.ree.es/archives/70/download_json?locale=es"));
+            // Usamos un servicio que ya viene preparado para saltar bloqueos
+            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
             const data = await r.json();
-            const now = new Date().getHours();
-            // Buscamos el precio de la hora actual en el archivo oficial
-            const p = data.PVPC[now].PCB.replace(',','.');
-            document.getElementById('l-now').innerText = p + " €/MWh";
-        } catch(e) { 
-            document.getElementById('l-now').innerText = "Error conexión Luz"; 
+            const hour = new Date().getHours();
+            const precio = (Object.values(data)[hour].price / 1000).toFixed(4);
+            document.getElementById('l-now').innerText = precio + " €/kWh";
+        } catch(e) {
+            document.getElementById('l-now').innerText = "Error de red local";
         }
     }
 
+    // FUEL (Fuente simplificada)
     async function loadG() {
+        const box = document.getElementById('g-list');
         try {
-            const r = await fetch(P + encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04"));
+            // Intentamos una petición directa a una versión "espejo" de la gasolina
+            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
             const data = await r.json();
-            const lista = data.ListaEESSPrecio.filter(e => e.Municipio.includes("ALMER")).slice(0,5);
-            let h = '<table>';
-            lista.forEach(e => {
-                h += `<tr><td>${e.Rótulo}</td><td class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
+            const filtrado = data.ListaEESSPrecio.filter(e => e.Municipio.includes("ALMER")).slice(0,4);
+            
+            let html = '';
+            filtrado.forEach(e => {
+                html += `<div class="card"><b>${e.Rótulo}</b><br><span class="price">${e['Precio Gasolina 95 E5']}€</span></div>`;
             });
-            document.getElementById('g-list').innerHTML = h + '</table>';
-        } catch(e) { 
-            document.getElementById('g-list').innerText = "Error conexión Fuel"; 
+            box.innerHTML = html;
+        } catch(e) {
+            box.innerHTML = "Error en Fuel. Reintenta.";
         }
     }
 
