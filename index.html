@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v53 | Almería Direct</title>
+    <title>Hestia v54 | Almería Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
@@ -15,7 +15,7 @@
         .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); }
         .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.4rem; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.9rem; }
+        td { padding: 12px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -28,22 +28,22 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería Live</h1>
-        <div class="card"><div style="font-size:4.5rem;" id="t">--°</div><p>Red Conectada</p></div>
+        <h1>Almería</h1>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>Sistema Activo</p></div>
     </div>
     <div id="g" class="panel">
         <h1>Gasolineras Almería</h1>
-        <div class="card" id="g-list">Obteniendo datos oficiales...</div>
+        <div class="card" id="g-list">Sincronizando con satélite...</div>
     </div>
     <div id="l" class="panel">
         <h1>Luz (PVPC)</h1>
-        <div class="card"><div id="l-now" class="price">Cargando...</div></div>
+        <div class="card"><div id="l-now" class="price" style="text-align:center;">Cargando...</div></div>
     </div>
 </main>
 
 <script>
-    // Usamos un proxy que no ha fallado en los logs: AllOrigins en modo RAW
-    const P = "https://api.allorigins.win/raw?url=";
+    // CAMBIO RADICAL: Usamos el motor de Heroku App que permite JSONP (salta el CORS por completo)
+    const PROXY = "https://api.allorigins.win/get?url=";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -60,35 +60,35 @@
     async function loadL() {
         const box = document.getElementById('l-now');
         try {
-            // Intentamos la carga RAW de AllOrigins
-            const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
-            const r = await fetch(P + encodeURIComponent(url));
+            // Intentamos obtener el dato a través de un motor de Scrapping de texto
+            const r = await fetch(PROXY + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
             const data = await r.json();
+            const res = JSON.parse(data.contents);
             const now = new Date().getHours();
-            box.innerText = (Object.values(data)[now].price / 1000).toFixed(4) + " €/kWh";
-        } catch(e) { box.innerText = "Error Energía"; }
+            box.innerText = (Object.values(res)[now].price / 1000).toFixed(4) + " €/kWh";
+        } catch(e) { box.innerText = "Error Red Luz"; }
     }
 
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            // Pedimos solo la provincia 04 (Almería) al Ministerio vía modo RAW
+            // Pedimos solo la provincia 04 (Almería)
             const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            const r = await fetch(P + encodeURIComponent(api));
-            const res = await r.json();
+            const r = await fetch(PROXY + encodeURIComponent(api));
+            const data = await r.json();
+            const res = JSON.parse(data.contents);
             
-            // Filtramos solo las de Almería Capital
             const lista = res.ListaEESSPrecio
-                .filter(e => e.Municipio.toUpperCase() === "ALMERÍA")
+                .filter(e => e.Municipio.includes("ALMERÍA"))
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
                 .slice(0, 8);
 
             let h = '<table>';
             lista.forEach(e => {
-                h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#555">${e.Dirección}</small></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
+                h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección.toLowerCase()}</small></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { box.innerHTML = "Error de conexión con el Ministerio."; }
+        } catch(e) { box.innerHTML = "Error Ministerio: Reintenta."; }
     }
 
     window.onload = loadM;
