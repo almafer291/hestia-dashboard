@@ -2,22 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v70 | Almería</title>
+    <title>Hestia v71 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
-        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
+        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; }
+        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-        main { flex: 1; padding: 20px; overflow-y: auto; background: #000; display: flex; flex-direction: column; }
-        .panel { display: none; width: 100%; height: 100%; }
-        .panel.active { display: block; }
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); text-align: center;}
-        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
-        
-        /* Contenedores para que los widgets se adapten al modo oscuro */
-        .widget-box { width: 100%; border-radius: 15px; overflow: hidden; background: #fff; filter: invert(0.9) hue-rotate(180deg); }
+        main { flex: 1; padding: 25px; overflow-y: auto; }
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--bronce); }
+        .price { color: var(--bronce); font-weight: bold; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -30,38 +25,59 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería Live</h1>
-        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>SISTEMA ONLINE</p></div>
+        <h1 style="color:var(--bronce); font-size:0.8rem;">ALMERÍA</h1>
+        <div class="card"><div id="t" style="font-size:4rem;">--°</div></div>
     </div>
-
-    <div id="g" class="panel">
-        <h1>Gasolineras Almería</h1>
-        <div class="card">
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Precios Gasolina 95 Hoy</p>
-            <iframe src="https://www.dieselogasolina.com/widgets/precios-municipio.php?id=184" width="100%" height="300" frameborder="0" style="border-radius:10px;"></iframe>
-        </div>
+    <div id="g" class="panel" style="display:none;">
+        <h1 style="color:var(--bronce); font-size:0.8rem;">GASOLINA 95</h1>
+        <div id="g-list">Cargando datos...</div>
     </div>
-
-    <div id="l" class="panel">
-        <h1>Precio Luz Hoy</h1>
-        <div class="card">
-            <iframe src="https://preciodelaluz.org/widget/today.html" width="100%" height="250" frameborder="0" style="border-radius:10px;"></iframe>
-        </div>
+    <div id="l" class="panel" style="display:none;">
+        <h1 style="color:var(--bronce); font-size:0.8rem;">LUZ HOY</h1>
+        <div class="card" style="text-align:center;"><div id="l-now" class="price">-- €/kWh</div></div>
     </div>
 </main>
 
 <script>
     function tab(id, b) {
-        document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); 
-        b.classList.add('active');
-        if(id==='m') loadM();
+        document.querySelectorAll('.panel, .n-btn').forEach(x => { x.style.display = 'none'; x.classList.remove('active'); });
+        document.getElementById(id).style.display = 'block'; b.classList.add('active');
+        if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
     }
 
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
+    }
+
+    async function loadL() {
+        try {
+            // Fuente 100% abierta sin CORS
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const d = await r.json();
+            const data = JSON.parse(d.contents);
+            const h = new Date().getHours();
+            const p = (Object.values(data)[h].price / 1000).toFixed(4);
+            document.getElementById('l-now').innerText = p + " €/kWh";
+        } catch(e) { document.getElementById('l-now').innerText = "Error de red"; }
+    }
+
+    async function loadG() {
+        const box = document.getElementById('g-list');
+        try {
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
+            const d = await r.json();
+            const data = JSON.parse(d.contents);
+            // Filtro dinámico para Almería capital
+            const lista = data.ListaEESSPrecio.filter(e => e.Municipio.includes("ALMER")).slice(0,5);
+            
+            let html = '';
+            lista.forEach(e => {
+                html += `<div class="card"><b>${e.Rótulo}</b><br><span class="price">${e['Precio Gasolina 95 E5']}€</span></div>`;
+            });
+            box.innerHTML = html;
+        } catch(e) { box.innerHTML = "Servidor ocupado"; }
     }
 
     window.onload = loadM;
