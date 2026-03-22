@@ -2,20 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v69 | Almería Hub</title>
+    <title>Hestia v70 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.15); --text: #fff; }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-        main { flex: 1; padding: 25px; overflow-y: auto; background: #000; }
-        .panel { display: none; } .panel.active { display: block; }
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); }
-        .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.4rem; }
-        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
-        .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #111; font-size: 0.8rem; }
+        main { flex: 1; padding: 20px; overflow-y: auto; background: #000; display: flex; flex-direction: column; }
+        .panel { display: none; width: 100%; height: 100%; }
+        .panel.active { display: block; }
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); text-align: center;}
+        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; }
+        
+        /* Contenedores para que los widgets se adapten al modo oscuro */
+        .widget-box { width: 100%; border-radius: 15px; overflow: hidden; background: #fff; filter: invert(0.9) hue-rotate(180deg); }
     </style>
 </head>
 <body>
@@ -33,15 +35,17 @@
     </div>
 
     <div id="g" class="panel">
-        <h1>Gasolineras Baratas</h1>
-        <div id="g-list">Conectando con espejo...</div>
+        <h1>Gasolineras Almería</h1>
+        <div class="card">
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Precios Gasolina 95 Hoy</p>
+            <iframe src="https://www.dieselogasolina.com/widgets/precios-municipio.php?id=184" width="100%" height="300" frameborder="0" style="border-radius:10px;"></iframe>
+        </div>
     </div>
 
     <div id="l" class="panel">
         <h1>Precio Luz Hoy</h1>
-        <div class="card" style="text-align:center;">
-            <div id="l-now" class="price">-- €/kWh</div>
-            <p style="font-size:0.7rem; color:#444; margin-top:10px;">PVPC (Península)</p>
+        <div class="card">
+            <iframe src="https://preciodelaluz.org/widget/today.html" width="100%" height="250" frameborder="0" style="border-radius:10px;"></iframe>
         </div>
     </div>
 </main>
@@ -49,56 +53,15 @@
 <script>
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); b.classList.add('active');
-        if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
+        document.getElementById(id).classList.add('active'); 
+        b.classList.add('active');
+        if(id==='m') loadM();
     }
 
-    // CLIMA: Directo (Siempre funciona)
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
-    }
-
-    // LUZ: Espejo de Preciodelaluz.org (Suele saltar CORS)
-    async function loadL() {
-        try {
-            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
-            const data = await r.json();
-            const h = new Date().getHours();
-            const p = (Object.values(data)[h].price / 1000).toFixed(4);
-            document.getElementById('l-now').innerText = p + " €/kWh";
-        } catch(e) { 
-            document.getElementById('l-now').innerText = "Servidor ocupado"; 
-        }
-    }
-
-    // FUEL: Usamos un espejo "Clean JSON" que no bloquea Vercel
-    async function loadG() {
-        const box = document.getElementById('g-list');
-        try {
-            // Este endpoint es un espejo que ya devuelve el JSON limpio para apps
-            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
-            const res = await r.json();
-            
-            // Filtramos Almería capital y ordenamos por precio
-            const lista = res.ListaEESSPrecio
-                .filter(e => e.Municipio.toUpperCase().includes("ALMER"))
-                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
-                .slice(0, 5);
-
-            let h = '';
-            lista.forEach(e => {
-                h += `<div class="card">
-                        <div style="font-size:0.8rem; font-weight:bold">${e.Rótulo}</div>
-                        <div style="font-size:0.7rem; color:#666; margin-bottom:10px">${e.Dirección.toLowerCase()}</div>
-                        <div class="price">${e['Precio Gasolina 95 E5']}€</div>
-                      </div>`;
-            });
-            box.innerHTML = h || "No hay datos disponibles.";
-        } catch(e) { 
-            box.innerHTML = "<div class='card'>Error al leer espejo. Reintenta.</div>"; 
-        }
     }
 
     window.onload = loadM;
