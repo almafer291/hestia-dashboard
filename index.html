@@ -2,61 +2,53 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v44 | Almería Hub</title>
+    <title>Hestia v45 | Almería Total</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; transition: 0.3s; }
-        .n-btn.active { color: var(--bronce); font-weight: bold; text-shadow: 0 0 10px var(--bronce); }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; }
         main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #000); }
         .panel { display: none; } .panel.active { display: block; }
-        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; border-left: 4px solid var(--bronce); }
-        .big { font-size: 5rem; font-weight: 100; margin: 0; line-height: 1; }
+        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; border-left: 5px solid var(--bronce); }
+        .big { font-size: 5rem; font-weight: 100; margin: 0; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .g-name { font-weight: bold; color: #fff; font-size: 0.95rem; display: block; }
-        .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.25rem; text-align: right; }
+        td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .p-95 { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px; font-size:1.2rem;">H</div>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v45</div>
     <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
     <button class="n-btn" onclick="tab('l', this)">ENERGÍA</button>
-    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
+    <button class="n-btn" onclick="tab('g', this)">GASOIL</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería Live</h1>
-        <div class="card"><div class="big" id="m-temp">--°</div><p style="color:var(--bronce); letter-spacing:3px;">Sincronizado</p></div>
+        <h1>Almería</h1>
+        <div class="card"><div class="big" id="m-temp">--°</div><p>Sincronizado</p></div>
     </div>
-
     <div id="l" class="panel">
-        <h1>Luz PVPC Hoy</h1>
+        <h1>Luz Hoy</h1>
         <div class="card">
-            <div style="text-align:center; margin-bottom:20px;">
-                <small>PRECIO ACTUAL</small><br>
-                <b id="l-now" style="font-size:2.5rem; color:var(--bronce)">--</b>
-            </div>
+            <div id="l-now" style="font-size:2.5rem; color:var(--bronce); text-align:center;">Cargando...</div>
             <canvas id="c-luz" height="100"></canvas>
         </div>
     </div>
-
     <div id="g" class="panel">
-        <h1>Gasolineras (Almería 5km)</h1>
-        <div class="card">
-            <table id="g-table"><tr><td id="g-status" style="color:var(--bronce)">Sincronizando con PrecioIl...</td></tr></table>
-        </div>
+        <h1>Gasolineras Almería</h1>
+        <div class="card"><table id="g-table"><tr><td>Buscando precios...</td></tr></table></div>
     </div>
 </main>
 
 <script>
-    // CAMBIO CLAVE: Usamos corsproxy.io, mucho más fiable para GitHub Pages
-    const PROXY = "https://corsproxy.io/?";
+    // Usamos el proxy de Google que es mucho más estable para GitHub
+    const P = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=60&url=";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -70,53 +62,39 @@
         document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
-    async function loadG() {
-        const status = document.getElementById('g-status');
-        try {
-            const apiURL = "https://api.precioil.es/estaciones/radio?latitud=36.834&longitud=-2.463&radio=5";
-            const r = await fetch(PROXY + encodeURIComponent(apiURL));
-            if (!r.ok) throw new Error();
-            const estaciones = await r.json();
-
-            if (estaciones.length === 0) {
-                status.innerText = "No se han encontrado estaciones."; return;
-            }
-
-            estaciones.sort((a,b) => parseFloat(a.Gasolina95) - parseFloat(b.Gasolina95));
-
-            document.getElementById('g-table').innerHTML = estaciones.slice(0, 10).map(e => `
-                <tr>
-                    <td>
-                        <span class="g-name">${e.nombreEstacion}</span>
-                        <small style="color:#555">${e.distancia.toFixed(2)} km</small>
-                    </td>
-                    <td class="price">
-                        ${e.Gasolina95}€<br>
-                        <small style="font-size:0.7rem; color:#444">${e.Diesel} dsl</small>
-                    </td>
-                </tr>
-            `).join('');
-        } catch(e) {
-            status.innerText = "Reintentando conexión...";
-            setTimeout(loadG, 3000); // Reintento automático
-        }
-    }
-
     async function loadL() {
         try {
-            const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
-            const r = await fetch(PROXY + encodeURIComponent(url));
+            // Intentamos una petición directa, si falla el navegador nos avisará
+            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
             const data = await r.json();
             const now = new Date().getHours();
             const prices = Object.values(data).map(h => h.price/1000);
+            document.getElementById('l-now').innerText = prices[now].toFixed(4) + "€";
+        } catch(e) {
+            document.getElementById('l-now').innerText = "Reintentando...";
+            // Si falla, usamos el proxy de Google
+            const r2 = await fetch(P + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const data2 = await r2.json();
+            document.getElementById('l-now').innerText = (Object.values(data2)[new Date().getHours()].price/1000).toFixed(4) + "€";
+        }
+    }
+
+    async function loadG() {
+        try {
+            // URL de la API que tú encontraste
+            const api = "https://api.precioil.es/estaciones/radio?latitud=36.834&longitud=-2.463&radio=10";
+            const r = await fetch(P + encodeURIComponent(api));
+            const estaciones = await r.json();
             
-            document.getElementById('l-now').innerText = prices[now].toFixed(4) + " €";
-            
-            new Chart(document.getElementById('c-luz'), {
-                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'#1a1a1a')}]},
-                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
-            });
-        } catch(e) { document.getElementById('l-now').innerText = "Cargando..."; }
+            document.getElementById('g-table').innerHTML = estaciones.slice(0,8).map(e => `
+                <tr>
+                    <td><b>${e.nombreEstacion}</b><br><small style="color:#444">${e.distancia.toFixed(1)}km</small></td>
+                    <td style="text-align:right" class="p-95">${e.Gasolina95}€</td>
+                </tr>
+            `).join('');
+        } catch(e) { 
+            document.getElementById('g-table').innerHTML = "<tr><td>Error de conexión con PrecioIl.</td></tr>"; 
+        }
     }
 
     window.onload = loadM;
