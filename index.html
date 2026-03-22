@@ -2,34 +2,39 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v75 | Almería</title>
+    <title>Hestia v76 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
         body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Navegación Lateral */
+        /* Navegación */
         nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
         
-        /* Contenedor Principal */
+        /* Main */
         main { flex: 1; padding: 20px; overflow-y: auto; background: #000; }
         .panel { display: none; }
         .panel.active { display: block; }
         
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); text-align: center; }
-        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
         
-        /* Ajuste del Widget */
-        .widget-frame {
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); text-align: center; }
+
+        /* MAGIA DE COLOR PARA WIDGETS */
+        .widget-wrapper {
             width: 100%;
             max-width: 480px;
-            height: 350px; /* Un poco más alto para que se vea la lista completa */
-            border: none;
-            border-radius: 12px;
-            filter: invert(0.9) hue-rotate(180deg) brightness(1.2); /* Truco para poner el widget en modo oscuro */
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            /* Este filtro invierte colores y vira el blanco hacia el bronce */
+            filter: invert(1) hue-rotate(180deg) sepia(0.6) saturate(1.5) brightness(0.9);
         }
+
+        iframe { border: none; width: 100%; display: block; }
     </style>
 </head>
 <body>
@@ -43,32 +48,38 @@
 <main>
     <div id="m" class="panel active">
         <h1>Almería Live</h1>
-        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p style="color:#444">SISTEMA ONLINE</p></div>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p style="color:#444">ESTADO: ONLINE</p></div>
     </div>
 
     <div id="g" class="panel">
         <h1>Gasolineras Almería</h1>
-        <div style="display: flex; justify-content: center;">
+        <div class="widget-wrapper">
             <iframe
               src="https://misgasolineras.es/widget/almeria/"
-              class="widget-frame"
-              loading="lazy"
-              title="Precios gasolina Almería">
+              style="height:320px;"
+              loading="lazy">
             </iframe>
         </div>
     </div>
 
     <div id="l" class="panel">
         <h1>Precio Luz Hoy</h1>
-        <div class="card">
-            <iframe src="https://preciodelaluz.org/widget/today.html" style="width:100%; height:250px; border:none; filter: invert(0.9) hue-rotate(180deg);"></iframe>
+        <div class="widget-wrapper">
+            <iframe 
+              src="https://preciodelaluz.org/widget/today.html" 
+              style="height:250px;"
+              loading="lazy">
+            </iframe>
         </div>
     </div>
 </main>
 
 <script>
     function tab(id, b) {
-        document.querySelectorAll('.panel, .n-btn').forEach(x => { x.classList.remove('active'); x.style.display = 'none'; });
+        document.querySelectorAll('.panel, .n-btn').forEach(x => { 
+            x.classList.remove('active'); 
+            if(x.tagName === 'DIV') x.style.display = 'none'; 
+        });
         const target = document.getElementById(id);
         target.classList.add('active'); 
         target.style.display = 'block';
@@ -81,7 +92,7 @@
             const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
             const d = await r.json();
             document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
-        } catch(e) { document.getElementById('t').innerText = "??°"; }
+        } catch(e) { document.getElementById('t').innerText = "--°"; }
     }
 
     window.onload = loadM;
