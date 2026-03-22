@@ -2,17 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v71 | Almería</title>
+    <title>Hestia v72 | Almería Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
-        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; }
-        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.15); }
+        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 30px; background: #050505; flex-shrink: 0; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
         main { flex: 1; padding: 25px; overflow-y: auto; }
         .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--bronce); }
-        .price { color: var(--bronce); font-weight: bold; font-size: 1.2rem; }
+        .price { color: var(--bronce); font-weight: bold; font-size: 1.3rem; font-family: monospace; }
+        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 2px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -25,20 +26,23 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1 style="color:var(--bronce); font-size:0.8rem;">ALMERÍA</h1>
+        <h1>ALMERÍA</h1>
         <div class="card"><div id="t" style="font-size:4rem;">--°</div></div>
     </div>
     <div id="g" class="panel" style="display:none;">
-        <h1 style="color:var(--bronce); font-size:0.8rem;">GASOLINA 95</h1>
-        <div id="g-list">Cargando datos...</div>
+        <h1>GASOLINA 95</h1>
+        <div id="g-list">Conectando...</div>
     </div>
     <div id="l" class="panel" style="display:none;">
-        <h1 style="color:var(--bronce); font-size:0.8rem;">LUZ HOY</h1>
+        <h1>LUZ HOY</h1>
         <div class="card" style="text-align:center;"><div id="l-now" class="price">-- €/kWh</div></div>
     </div>
 </main>
 
 <script>
+    // Proxy alternativo más potente que AllOrigins
+    const PROXY = "https://api.codetabs.com/v1/proxy?quest=";
+
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => { x.style.display = 'none'; x.classList.remove('active'); });
         document.getElementById(id).style.display = 'block'; b.classList.add('active');
@@ -53,31 +57,36 @@
 
     async function loadL() {
         try {
-            // Fuente 100% abierta sin CORS
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
-            const d = await r.json();
-            const data = JSON.parse(d.contents);
+            const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
+            const r = await fetch(PROXY + encodeURIComponent(url));
+            const data = await r.json();
             const h = new Date().getHours();
             const p = (Object.values(data)[h].price / 1000).toFixed(4);
             document.getElementById('l-now').innerText = p + " €/kWh";
-        } catch(e) { document.getElementById('l-now').innerText = "Error de red"; }
+        } catch(e) { document.getElementById('l-now').innerText = "Error L01"; }
     }
 
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
-            const d = await r.json();
-            const data = JSON.parse(d.contents);
-            // Filtro dinámico para Almería capital
-            const lista = data.ListaEESSPrecio.filter(e => e.Municipio.includes("ALMER")).slice(0,5);
+            const url = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
+            const r = await fetch(PROXY + encodeURIComponent(url));
+            const data = await r.json();
+            
+            // Filtramos las primeras 5 de Almería Capital
+            const lista = data.ListaEESSPrecio
+                .filter(e => e.Municipio.toUpperCase().includes("ALMER"))
+                .slice(0, 5);
             
             let html = '';
             lista.forEach(e => {
-                html += `<div class="card"><b>${e.Rótulo}</b><br><span class="price">${e['Precio Gasolina 95 E5']}€</span></div>`;
+                html += `<div class="card">
+                    <div style="font-size:0.75rem; opacity:0.7">${e.Rótulo}</div>
+                    <div class="price">${e['Precio Gasolina 95 E5']} €</div>
+                </div>`;
             });
-            box.innerHTML = html;
-        } catch(e) { box.innerHTML = "Servidor ocupado"; }
+            box.innerHTML = html || "No hay datos";
+        } catch(e) { box.innerHTML = "Error G01"; }
     }
 
     window.onload = loadM;
