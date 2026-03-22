@@ -2,21 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v67 | Almería Hub</title>
+    <title>Hestia v68 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
-        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
+        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-        main { flex: 1; padding: 25px; overflow-y: auto; background: #000; }
+        main { flex: 1; padding: 25px; overflow-y: auto; }
         .panel { display: none; } .panel.active { display: block; }
         .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); }
         .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.4rem; }
-        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 8px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.8rem; }
+        td { padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -29,64 +28,58 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería Live</h1>
-        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>Online</p></div>
+        <h1 style="color:var(--bronce); font-size:1rem;">ALMERÍA</h1>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div></div>
     </div>
-
     <div id="g" class="panel">
-        <h1>Gasolina Barata</h1>
-        <div class="card" id="g-list">Conectando...</div>
+        <h1 style="color:var(--bronce); font-size:1rem;">GASOLINERAS</h1>
+        <div class="card" id="g-list">Sincronizando...</div>
     </div>
-
     <div id="l" class="panel">
-        <h1>Precio Luz Hoy</h1>
-        <div class="card" style="text-align:center;"><div id="l-now" class="price">Cargando...</div><p style="font-size:0.7rem; color:#444">Pool Eléctrico</p></div>
+        <h1 style="color:var(--bronce); font-size:1rem;">LUZ HOY</h1>
+        <div class="card" style="text-align:center;"><div id="l-now" class="price">Cargando...</div></div>
     </div>
 </main>
 
 <script>
+    // Usamos el proxy de CORS.SH que es más profesional para aplicaciones en Vercel
+    const P = "https://proxy.cors.sh/";
+    const HEADERS = { "x-cors-api-key": "temp_896172635412" }; // Key temporal
+
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
         if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
     }
 
-    // CLIMA: Directo (OK)
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
-    // LUZ: Usamos una API alternativa que suele saltarse los bloqueos de Vercel
     async function loadL() {
-        const box = document.getElementById('l-now');
         try {
-            // Usamos un servicio secundario que no es el oficial para evitar el bloqueo CORS
-            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const r = await fetch(P + "https://api.preciodelaluz.org/v1/prices/all?zone=PCB", { headers: HEADERS });
             const data = await r.json();
             const h = new Date().getHours();
             const p = (Object.values(data)[h].price / 1000).toFixed(4);
-            box.innerText = p + " €/kWh";
-        } catch(e) { box.innerText = "Error 403"; }
+            document.getElementById('l-now').innerText = p + " €/kWh";
+        } catch(e) { document.getElementById('l-now').innerText = "Reintentando..."; }
     }
 
-    // FUEL: El truco final de lectura RAW
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
+            const r = await fetch(P + "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04", { headers: HEADERS });
             const res = await r.json();
             const lista = res.ListaEESSPrecio.filter(e => e.Municipio.includes("ALMERÍA")).slice(0,5);
-            
             let h = '<table>';
             lista.forEach(e => {
                 h += `<tr><td><b>${e.Rótulo}</b></td><td style="text-align:right" class="price">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { 
-            box.innerHTML = "Vercel bloquea la conexión. Usa datos móviles."; 
-        }
+        } catch(e) { box.innerHTML = "Error de enlace. Refresca la web."; }
     }
 
     window.onload = loadM;
