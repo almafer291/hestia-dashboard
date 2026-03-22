@@ -2,131 +2,99 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v35 | Direct Almería</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Hestia v36 | Full Live</title>
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #080808; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
-        .n-btn.active { color: var(--bronce); font-weight: bold; }
-        main { flex: 1; padding: 40px; overflow-y: auto; background: #000; }
-        .panel { display: none; } .panel.active { display: block; }
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
-        .big { font-size: 5rem; font-weight: 100; margin: 0; color: #fff; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px 5px; border-bottom: 1px solid #1a1a1a; }
-        .g-name { font-weight: bold; color: #eee; font-size: 0.9rem; }
-        .g-dir { font-size: 0.7rem; color: #555; display: block; }
-        .price-tag { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.1rem; text-align: right; }
-        .r-btn { width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; }
-        .r-btn.on { color: #00ff88; border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        
+        /* Navegación Estilo Bronce */
+        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; z-index: 10; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; transition: 0.3s; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; text-shadow: 0 0 10px var(--bronce); }
+
+        /* Contenedores */
+        main { flex: 1; position: relative; background: #000; }
+        .panel { position: absolute; top:0; left:0; width:100%; height:100%; display: none; padding: 20px; box-sizing: border-box; }
+        .panel.active { display: block; }
+        
+        /* Iframe styling para "limpiar" las webs externas */
+        .live-frame { width: 100%; height: 90%; border: 1px solid var(--border); border-radius: 15px; filter: invert(1) hue-rotate(180deg) contrast(0.8); } /* Efecto Dark Mode */
+        
+        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .big { font-size: 4rem; font-weight: 100; margin: 0; }
+        
+        /* Botones IOT */
+        .r-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 300px; }
+        .r-btn { height: 80px; border-radius: 15px; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; font-weight: bold; }
+        .r-btn.on { color: #00ff88; border-color: #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.2); }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v35</div>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px; font-size:1.2rem;">H</div>
     <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
     <button class="n-btn" onclick="tab('l', this)">ENERGÍA</button>
-    <button class="n-btn" onclick="tab('g', this)">GASOIL</button>
+    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
     <button class="n-btn" onclick="tab('i', this)">SISTEMA</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería</h1>
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="big" id="m-temp">--°</div>
-            <div style="width:200px"><canvas id="c-temp"></canvas></div>
+        <h2 style="color:var(--bronce)">Almería Live</h2>
+        <div class="card">
+            <div class="big" id="temp">--°C</div>
+            <p id="desc" style="color:#666; text-transform:uppercase; letter-spacing:2px;"></p>
         </div>
     </div>
 
     <div id="l" class="panel">
-        <h1>Luz Hoy (PVPC)</h1>
-        <div class="card">
-            <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom:20px;">
-                <div><small>MÍN</small><br><b id="l-min" style="color:#00ff88">--</b></div>
-                <div><small>AHORA</small><br><b id="l-now" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
-                <div><small>MÁX</small><br><b id="l-max" style="color:#ff4444">--</b></div>
-            </div>
-            <canvas id="c-luz" height="100"></canvas>
-        </div>
+        <h2 style="color:var(--bronce)">Precio PVPC Hoy</h2>
+        <iframe class="live-frame" src="https://api.preciodelaluz.org/v1/prices/all?zone=PCB"></iframe>
+        <p style="font-size: 0.7rem; color: #444; margin-top: 10px;">Datos directos de Red Eléctrica (REE) vía API</p>
     </div>
 
     <div id="g" class="panel">
-        <h1>Estaciones Almería</h1>
-        <div class="card"><table id="g-table"><tr><td>Conectando con base de datos...</td></tr></table></div>
+        <h2 style="color:var(--bronce)">Gasolineras Almería Capital</h2>
+        <iframe class="live-frame" src="https://www.komparing.com/es/gasolineras/almeria-almeria"></iframe>
     </div>
 
     <div id="i" class="panel">
-        <h1>Relés</h1>
+        <h2 style="color:var(--bronce)">Control de Sistema</h2>
         <div class="card">
-            <div style="display:flex; gap:15px;">
-                <button class="r-btn" onclick="t(this,1)">R1</button>
-                <button class="r-btn" onclick="t(this,2)">R2</button>
-                <button class="r-btn" onclick="t(this,3)">R3</button>
-                <button class="r-btn" onclick="t(this,4)">R4</button>
+            <div class="r-grid">
+                <button class="r-btn" onclick="toggle(this)">R1</button>
+                <button class="r-btn" onclick="toggle(this)">R2</button>
+                <button class="r-btn" onclick="toggle(this)">R3</button>
+                <button class="r-btn" onclick="toggle(this)">R4</button>
             </div>
         </div>
     </div>
 </main>
 
 <script>
-    let chs = {};
-
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); b.classList.add('active');
-        if(id==='m') loadM(); if(id==='l') loadL(); if(id==='g') loadG();
+        document.getElementById(id).classList.add('active'); 
+        b.classList.add('active');
     }
 
-    async function loadM() {
-        const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m&timezone=auto');
-        const d = await r.json();
-        document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature)+'°';
-    }
-
-    async function loadL() {
+    // El clima lo sacamos de una API que NUNCA bloquea (Open-Meteo)
+    async function getClima() {
         try {
-            // Usamos AllOrigins pero con un sistema de caché para evitar el error "ocupado"
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB') + '&cache=' + new Date().getHours());
-            const res = await r.json();
-            const data = JSON.parse(res.contents);
-            const prices = Object.values(data).map(h => h.price/1000);
-            const now = new Date().getHours();
-            
-            document.getElementById('l-now').innerText = prices[now].toFixed(4) + " €";
-            document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
-            document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
-
-            if(chs.l) chs.l.destroy();
-            chs.l = new Chart(document.getElementById('c-luz'), {
-                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'#1a1a1a')}]},
-                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
-            });
-        } catch(e) { document.getElementById('l-now').innerText = "Cargando..."; }
+            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true');
+            const d = await r.json();
+            document.getElementById('temp').innerText = Math.round(d.current_weather.temperature) + "°";
+            document.getElementById('desc').innerText = "Almería Capital";
+        } catch(e) { document.getElementById('temp').innerText = "??°"; }
     }
 
-    async function loadG() {
-        try {
-            // Cambiamos a AllOrigins pero con filtrado optimizado para que no pese tanto
-            const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(target));
-            const res = await r.json();
-            const data = JSON.parse(res.contents);
-            const list = data.ListaEESSPrecio.filter(e => e.Municipio.toUpperCase()==="ALMERÍA").sort((a,b)=>parseFloat(a['Precio Gasolina 95 E5'].replace(',','.'))-parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0,8);
-            
-            document.getElementById('g-table').innerHTML = list.map(e => `
-                <tr>
-                    <td><span class="g-name">${e['Rótulo']}</span><span class="g-dir">${e['Dirección'].toLowerCase()}</span></td>
-                    <td class="price-tag">${e['Precio Gasolina 95 E5']}€<br><small style="color:#444">${e['Precio Gasoleo A']} dsl</small></td>
-                </tr>`).join('');
-        } catch(e) { document.getElementById('g-table').innerHTML = "<tr><td>Sincronizando Almería...</td></tr>"; }
+    function toggle(b) {
+        b.classList.toggle('on');
+        b.innerText = b.classList.contains('on') ? "ACTIVE" : "OFF";
     }
 
-    function t(b,n) { b.classList.toggle('on'); b.innerText = b.classList.contains('on')?`R${n} ON`:`R${n} OFF`; }
-    window.onload = loadM;
+    window.onload = getClima;
 </script>
 </body>
 </html>
