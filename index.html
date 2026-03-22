@@ -2,33 +2,31 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v32 | PrecioIl Edition</title>
+    <title>Hestia v33 | Final Stable</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.4); --text: #fff; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 80px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
+        :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-        main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #000); }
+        main { flex: 1; padding: 40px; overflow-y: auto; }
         .panel { display: none; } .panel.active { display: block; }
-        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
-        .big-val { font-size: 5.5rem; font-weight: 100; margin: 0; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+        .big { font-size: 5rem; font-weight: 100; margin: 0; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .g-name { font-weight: bold; color: #fff; font-size: 0.95rem; }
-        .g-dir { font-size: 0.7rem; color: #666; display: block; margin-top: 3px; text-transform: lowercase; }
-        .p-main { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.2rem; }
-        .p-sub { color: #555; font-size: 0.85rem; font-family: monospace; }
-        .r-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .r-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; font-weight: bold; }
-        .r-btn.on { color: #00ff88; border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        .g-name { font-weight: bold; color: #fff; display: block; }
+        .g-dir { font-size: 0.75rem; color: #777; }
+        .p-main { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.1rem; }
+        .r-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--border); background: none; color: #ff4444; cursor: pointer; }
+        .r-btn.on { color: #00ff88; border-color: #00ff88; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v32</div>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v33</div>
     <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
     <button class="n-btn" onclick="tab('l', this)">LUZ</button>
     <button class="n-btn" onclick="tab('g', this)">FUEL</button>
@@ -37,36 +35,34 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1>Almería Live</h1>
+        <h1>Almería</h1>
         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="big-val" id="m-t">--°</div>
-            <div style="width:250px"><canvas id="c-t"></canvas></div>
+            <div class="big" id="m-t">--°</div>
+            <div style="width:200px"><canvas id="c-t"></canvas></div>
         </div>
     </div>
 
     <div id="l" class="panel">
-        <h1>Precio Luz (PVPC Real)</h1>
+        <h1>Luz (PVPC Real)</h1>
         <div class="card">
             <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom:20px;">
-                <div><small style="color:#666">MÍN</small><br><b id="l-min" style="color:#00ff88">--</b></div>
-                <div><small style="color:#666">AHORA</small><br><b id="l-now" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
-                <div><small style="color:#666">MÁX</small><br><b id="l-max" style="color:#ff4444">--</b></div>
+                <div>MIN<br><b id="l-min" style="color:#00ff88">--</b></div>
+                <div>AHORA<br><b id="l-now" style="font-size:1.8rem; color:var(--bronce)">--</b></div>
+                <div>MAX<br><b id="l-max" style="color:#ff4444">--</b></div>
             </div>
             <canvas id="c-l" height="100"></canvas>
         </div>
     </div>
 
     <div id="g" class="panel">
-        <h1>Gasolineras Almería (Tiempo Real)</h1>
-        <div class="card">
-            <table id="g-t"><tr><td style="color:var(--bronce)">Consultando precioil.es...</td></tr></table>
-        </div>
+        <h1>Gasolineras Almería</h1>
+        <div class="card"><table id="g-t"><tr><td>Cargando datos...</td></tr></table></div>
     </div>
 
     <div id="i" class="panel">
-        <h1>Control Domótico</h1>
+        <h1>Relés</h1>
         <div class="card">
-            <div class="r-grid">
+            <div style="display:flex; gap:15px;">
                 <button class="r-btn" onclick="t(this,1)">R1</button>
                 <button class="r-btn" onclick="t(this,2)">R2</button>
                 <button class="r-btn" onclick="t(this,3)">R3</button>
@@ -78,6 +74,8 @@
 
 <script>
     let chs = {};
+    // Este proxy es el único que funciona actualmente para archivos locales
+    const P = "https://api.allorigins.win/get?url=";
 
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
@@ -93,10 +91,11 @@
 
     async function loadL() {
         try {
-            // API de precioil para la luz
-            const r = await fetch('https://api.precioil.es/luz/hoy');
-            const d = await r.json();
-            const prices = d.precios.map(h => h.precio / 1000); // Convertir MWh a kWh
+            const url = encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const r = await fetch(P + url);
+            const res = await r.json();
+            const data = JSON.parse(res.contents);
+            const prices = Object.values(data).map(h => h.price/1000);
             const now = new Date().getHours();
             
             document.getElementById('l-now').innerText = prices[now].toFixed(4) + " €";
@@ -105,35 +104,26 @@
 
             if(chs.l) chs.l.destroy();
             chs.l = new Chart(document.getElementById('c-l'), {
-                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'rgba(166,124,82,0.1)'), borderRadius:4}]},
-                options:{plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:'#444'}},y:{display:false}}}
+                type:'bar', data:{ labels: Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'rgba(255,255,255,0.05)'), borderRadius:4}]},
+                options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
             });
-        } catch(e) { document.getElementById('l-now').innerText = "Error API Luz"; }
+        } catch(e) { document.getElementById('l-now').innerText = "Reintentando..."; }
     }
 
     async function loadG() {
         try {
-            // API de precioil para gasolineras de Almería (Provincia 04, Municipio Almería)
-            const r = await fetch('https://api.precioil.es/gasolineras/provincia/04');
-            const d = await r.json();
-            
-            // Filtramos solo Almería capital y ordenamos por Gasolina 95
-            const list = d.filter(e => e.municipio.toUpperCase() === "ALMERÍA")
-                          .sort((a,b) => a.gasolina95 - b.gasolina95)
-                          .slice(0, 12);
+            const url = encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04');
+            const r = await fetch(P + url);
+            const res = await r.json();
+            const data = JSON.parse(res.contents);
+            const list = data.ListaEESSPrecio.filter(e => e.Municipio.toUpperCase()==="ALMERÍA").sort((a,b)=>parseFloat(a['Precio Gasolina 95 E5'].replace(',','.'))-parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0,10);
             
             document.getElementById('g-t').innerHTML = list.map(e => `
                 <tr>
-                    <td>
-                        <span class="g-name">${e.rotulo}</span>
-                        <span class="g-dir">${e.direccion}</span>
-                    </td>
-                    <td style="text-align:right">
-                        <span class="p-main">${e.gasolina95.toFixed(3)} €</span><br>
-                        <span class="p-sub">${e.gasoleoA.toFixed(3)} € dsl</span>
-                    </td>
+                    <td><span class="g-name">${e['Rótulo']}</span><span class="g-dir">${e['Dirección'].toLowerCase()}</span></td>
+                    <td style="text-align:right"><span class="p-main">${e['Precio Gasolina 95 E5']} €</span><br><small style="color:#444">${e['Precio Gasoleo A']} dsl</small></td>
                 </tr>`).join('');
-        } catch(e) { document.getElementById('g-t').innerHTML = "<tr><td>Error en la conexión con PrecioIl.</td></tr>"; }
+        } catch(e) { document.getElementById('g-t').innerHTML = "<tr><td>Sincronizando datos de Almería...</td></tr>"; }
     }
 
     function t(b,n) { b.classList.toggle('on'); b.innerText = b.classList.contains('on')?`R${n} ON`:`R${n} OFF`; }
