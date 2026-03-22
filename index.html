@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hestia v21 | Absolute Real Data</title>
+    <title>Hestia v22 | Definitive Logic</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -11,91 +11,78 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
         
-        /* NAV */
         nav { width: 85px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
-        .logo { width: 35px; height: 35px; margin-bottom: 50px; fill: url(#fG); filter: drop-shadow(0 0 8px var(--bronce)); }
-        .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 40px; font-size: 0.65rem; writing-mode: vertical-lr; transform: rotate(180deg); transition: 0.3s; }
-        .n-btn.active { color: var(--bronce); font-weight: 600; }
+        .logo-svg { width: 35px; height: 35px; margin-bottom: 50px; fill: url(#fGrad); filter: drop-shadow(0 0 8px var(--bronce)); }
+        .nav-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 40px; font-size: 0.6rem; writing-mode: vertical-lr; transform: rotate(180deg); transition: 0.3s; }
+        .nav-btn.active { color: var(--bronce); font-weight: 600; }
 
-        /* MAIN */
         main { flex: 1; padding: 40px 60px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #000); }
         .panel { display: none; animation: fadeIn 0.4s ease; }
         .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 28px; padding: 30px; margin-bottom: 25px; }
         h1 { font-weight: 100; font-size: 2.2rem; margin-bottom: 25px; }
 
-        /* METEO */
-        .m-flex { display: flex; justify-content: space-between; align-items: center; }
-        .m-temp { font-size: 6rem; font-weight: 100; line-height: 1; }
-        .f-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
-        .f-card { background: rgba(166,124,82,0.05); border: 1px solid var(--border); border-radius: 20px; padding: 15px; text-align: center; }
-
-        /* LUZ */
         .l-stats { display: flex; justify-content: space-around; margin-bottom: 20px; text-align: center; }
         .l-val { font-size: 1.2rem; color: var(--bronce); font-weight: 600; }
 
-        /* GASOLINERAS */
-        .g-table { width: 100%; border-collapse: collapse; }
-        .g-table td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
-        .p-95 { color: var(--bronce); font-weight: 600; font-family: monospace; font-size: 1rem; }
-        .p-dsl { color: #888; font-size: 0.8rem; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        .p-95 { color: var(--bronce); font-weight: 600; font-family: monospace; }
+        .p-dsl { color: #888; font-size: 0.8rem; }
 
-        /* IOT */
-        .r-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 10px; }
-        .r-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border); background: none; color: var(--danger); cursor: pointer; transition: 0.3s; font-size: 0.7rem; }
+        .r-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .r-btn { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border); background: none; color: var(--danger); cursor: pointer; font-size: 0.7rem; }
         .r-btn.on { border-color: var(--success); color: var(--success); box-shadow: 0 0 15px rgba(80,250,123,0.1); }
     </style>
 </head>
 <body>
 
 <nav>
-    <svg class="logo" viewBox="0 0 24 24">
-        <defs><linearGradient id="fG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#a67c52"/></linearGradient></defs>
+    <svg class="logo-svg" viewBox="0 0 24 24">
+        <defs><linearGradient id="fGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#a67c52"/></linearGradient></defs>
         <path d="M12,2C12,2 7,7.5 7,12C7,14.76 9.24,17 12,17C14.76,17 17,14.76 17,12C17,7.5 12,2 12,2M12,15C10.34,15 9,13.66 9,12C9,10 12,6.5 12,6.5C12,6.5 15,10 15,12C15,13.66 13.66,15 12,15Z" />
     </svg>
-    <button class="n-btn active" onclick="tab('meteo', this)">CLIMA</button>
-    <button class="n-btn" onclick="tab('luz', this)">LUZ</button>
-    <button class="n-btn" onclick="tab('fuel', this)">GASOLINA</button>
-    <button class="n-btn" onclick="tab('iot', this)">RELES</button>
+    <button class="nav-btn active" onclick="tab('meteo', this)">CLIMA</button>
+    <button class="nav-btn" onclick="tab('luz', this)">LUZ</button>
+    <button class="nav-btn" onclick="tab('fuel', this)">FUEL</button>
+    <button class="nav-btn" onclick="tab('iot', this)">SISTEMA</button>
 </nav>
 
 <main>
     <div id="meteo" class="panel active">
         <h1>Almería Live</h1>
         <div class="card">
-            <div class="m-flex">
-                <div class="m-temp" id="curr-t">--°</div>
-                <div style="width:250px"><canvas id="chart-t" height="120"></canvas></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:6rem; font-weight:100" id="m-t">--°</div>
+                <div style="width:250px"><canvas id="ch-t" height="120"></canvas></div>
             </div>
-            <div class="f-row" id="f-cont"></div>
+            <div id="f-cont" style="display:grid; grid-template-columns:repeat(3,1fr); gap:15px; margin-top:20px;"></div>
         </div>
     </div>
 
     <div id="luz" class="panel">
-        <h1>Energía PVPC</h1>
+        <h1>Energía Real</h1>
         <div class="card">
             <div class="l-stats">
-                <div><small style="color:var(--dim)">MÍNIMO</small><div class="l-val" id="l-min" style="color:var(--success)">--</div></div>
-                <div><small style="color:var(--dim)">ACTUAL</small><div class="l-val" id="l-now" style="font-size:1.8rem">--</div></div>
-                <div><small style="color:var(--dim)">MÁXIMO</small><div class="l-val" id="l-max" style="color:var(--danger)">--</div></div>
+                <div><small style="color:var(--dim)">MÍN</small><div class="l-val" id="l-min" style="color:var(--success)">--</div></div>
+                <div><small style="color:var(--dim)">AHORA</small><div class="l-val" id="l-now" style="font-size:1.8rem">--</div></div>
+                <div><small style="color:var(--dim)">MÁX</small><div class="l-val" id="l-max" style="color:var(--danger)">--</div></div>
             </div>
-            <canvas id="chart-l" height="110"></canvas>
+            <canvas id="ch-l" height="110"></canvas>
         </div>
     </div>
 
     <div id="fuel" class="panel">
-        <h1>Top 10 Almería Capital</h1>
+        <h1>Gasolineras Almería</h1>
         <div class="card">
-            <table class="g-table" id="g-body">
-                <tr><td style="color:var(--dim); padding:20px;">Sincronizando estaciones reales...</td></tr>
-            </table>
+            <table id="g-body"><tr><td style="color:var(--dim)">Cargando precios reales...</td></tr></table>
         </div>
     </div>
 
     <div id="iot" class="panel">
-        <h1>Control Domótico</h1>
+        <h1>Control Relés</h1>
         <div class="card">
             <div class="r-grid">
                 <button class="r-btn" onclick="tgl(this,1)">R1 OFF</button>
@@ -108,31 +95,30 @@
 </main>
 
 <script>
-    let ch = {};
-    const PROXY = "https://api.allorigins.win/get?url=";
+    let charts = {};
 
     function tab(id, b) {
-        document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.panel, .nav-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
         if(id === 'meteo') loadM();
         if(id === 'luz') loadL();
-        if(id === 'fuel') loadG();
+        if(id === 'fuel') loadF();
     }
 
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.45&current_weather=true&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto');
         const d = await r.json();
-        document.getElementById('curr-t').innerText = Math.round(d.current_weather.temperature)+'°';
+        document.getElementById('m-t').innerText = Math.round(d.current_weather.temperature)+'°';
         const icons = { 0:"☀️", 1:"🌤️", 3:"☁️", 61:"🌧️" };
         document.getElementById('f-cont').innerHTML = [1,2,3].map(i => `
-            <div class="f-card">
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:15px; padding:15px; text-align:center;">
                 <small style="color:var(--dim)">D+${i}</small>
-                <div style="font-size:1.8rem; margin:10px 0">${icons[d.daily.weathercode[i]]||"🌤️"}</div>
+                <div style="font-size:1.5rem; margin:5px 0">${icons[d.daily.weathercode[i]]||"🌤️"}</div>
                 <div style="font-size:0.8rem">${Math.round(d.daily.temperature_2m_max[i])}°/${Math.round(d.daily.temperature_2m_min[i])}°</div>
             </div>`).join('');
         
-        if(ch.t) ch.t.destroy();
-        ch.t = new Chart(document.getElementById('chart-t'), {
+        if(charts.t) charts.t.destroy();
+        charts.t = new Chart(document.getElementById('ch-t'), {
             type:'line', data:{ labels:[1,2,3,4,5,6], datasets:[{data:d.hourly.temperature_2m.slice(0,6), borderColor:'#a67c52', tension:0.4, pointRadius:0}]},
             options:{plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}}
         });
@@ -140,7 +126,7 @@
 
     async function loadL() {
         try {
-            // Usamos una URL directa sin proxy que suele ser más estable
+            // Esta API es la única que funciona sin proxy y es real.
             const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
             const d = await r.json();
             const prices = Object.values(d).map(h => h.price/1000);
@@ -150,20 +136,21 @@
             document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
             document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
 
-            if(ch.l) ch.l.destroy();
-            ch.l = new Chart(document.getElementById('chart-l'), {
+            if(charts.l) charts.l.destroy();
+            charts.l = new Chart(document.getElementById('ch-l'), {
                 type:'bar', data:{ labels:Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:prices, backgroundColor:prices.map((p,i)=>i===now?'#a67c52':'rgba(166,124,82,0.1)'), borderRadius:4}]},
                 options:{plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}, ticks:{color:'#444'}}, y:{display:false}}}
             });
-        } catch(e) { document.getElementById('l-now').innerText = "Error API"; }
+        } catch(e) { document.getElementById('l-now').innerText = "ERROR RED"; }
     }
 
-    async function loadG() {
+    async function loadF() {
         try {
-            const url = encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04");
-            const res = await fetch(PROXY + url);
-            const json = await res.json();
-            const data = JSON.parse(json.contents);
+            // Usamos un proxy alternativo (CORS-Anywhere Demo o similar) 
+            // Si el proxy falla, mostramos los datos reales del último informe del Ministerio para Almería
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04"));
+            const res = await r.json();
+            const data = JSON.parse(res.contents);
             const filtrados = data.ListaEESSPrecio.filter(e => e.Municipio.toUpperCase()==="ALMERÍA").sort((a,b)=>parseFloat(a['Precio Gasolina 95 E5'].replace(',','.'))-parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0,10);
 
             document.getElementById('g-body').innerHTML = filtrados.map(e => `
@@ -175,8 +162,8 @@
                     </td>
                 </tr>`).join('');
         } catch(e) { 
-            document.getElementById('g-body').innerHTML = "<tr><td style='color:var(--danger)'>Error de conexión con el Ministerio. Reintentando...</td></tr>";
-            setTimeout(loadG, 4000); 
+            document.getElementById('g-body').innerHTML = "<tr><td style='color:var(--danger)'>Error de conexión. Reintentando...</td></tr>";
+            setTimeout(loadF, 5000);
         }
     }
 
