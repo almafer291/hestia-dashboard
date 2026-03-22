@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v72 | Almería Hub</title>
+    <title>Hestia v73 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.15); }
@@ -13,7 +13,7 @@
         main { flex: 1; padding: 25px; overflow-y: auto; }
         .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--bronce); }
         .price { color: var(--bronce); font-weight: bold; font-size: 1.3rem; font-family: monospace; }
-        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 2px; margin-bottom: 20px; }
+        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -26,67 +26,69 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1>ALMERÍA</h1>
+        <h1>ALMERÍA LIVE</h1>
         <div class="card"><div id="t" style="font-size:4rem;">--°</div></div>
     </div>
     <div id="g" class="panel" style="display:none;">
-        <h1>GASOLINA 95</h1>
+        <h1>GASOLINERAS BARATAS</h1>
         <div id="g-list">Conectando...</div>
     </div>
     <div id="l" class="panel" style="display:none;">
-        <h1>LUZ HOY</h1>
-        <div class="card" style="text-align:center;"><div id="l-now" class="price">-- €/kWh</div></div>
+        <h1>PRECIO LUZ HOY</h1>
+        <div class="card" style="text-align:center;"><div id="l-now" class="price">-- €/kWh</div><p style="font-size:0.6rem; color:#444">Mercado Mayorista</p></div>
     </div>
 </main>
 
 <script>
-    // Proxy alternativo más potente que AllOrigins
-    const PROXY = "https://api.codetabs.com/v1/proxy?quest=";
-
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => { x.style.display = 'none'; x.classList.remove('active'); });
         document.getElementById(id).style.display = 'block'; b.classList.add('active');
         if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
     }
 
+    // CLIMA: Directo (Siempre OK)
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
+    // LUZ: Vía AllOrigins (Modo RAW corregido)
     async function loadL() {
+        const box = document.getElementById('l-now');
         try {
-            const url = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
-            const r = await fetch(PROXY + encodeURIComponent(url));
+            // Usamos un proxy que entrega el archivo tal cual, sin preguntar
+            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
             const data = await r.json();
             const h = new Date().getHours();
             const p = (Object.values(data)[h].price / 1000).toFixed(4);
-            document.getElementById('l-now').innerText = p + " €/kWh";
-        } catch(e) { document.getElementById('l-now').innerText = "Error L01"; }
+            box.innerText = p + " €/kWh";
+        } catch(e) { box.innerText = "Sincronizando..."; setTimeout(loadL, 5000); }
     }
 
+    // GASOLINA: Vía AllOrigins (Filtro Robusto)
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            const url = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            const r = await fetch(PROXY + encodeURIComponent(url));
+            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
             const data = await r.json();
             
-            // Filtramos las primeras 5 de Almería Capital
+            // Filtro total para Almería Capital
             const lista = data.ListaEESSPrecio
                 .filter(e => e.Municipio.toUpperCase().includes("ALMER"))
+                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
                 .slice(0, 5);
             
             let html = '';
             lista.forEach(e => {
                 html += `<div class="card">
-                    <div style="font-size:0.75rem; opacity:0.7">${e.Rótulo}</div>
+                    <div style="font-size:0.75rem; opacity:0.7; margin-bottom:5px">${e.Rótulo}</div>
                     <div class="price">${e['Precio Gasolina 95 E5']} €</div>
+                    <div style="font-size:0.6rem; color:#444">${e.Dirección.toLowerCase()}</div>
                 </div>`;
             });
-            box.innerHTML = html || "No hay datos";
-        } catch(e) { box.innerHTML = "Error G01"; }
+            box.innerHTML = html || "Buscando estaciones...";
+        } catch(e) { box.innerHTML = "Actualizando datos..."; setTimeout(loadG, 5000); }
     }
 
     window.onload = loadM;
