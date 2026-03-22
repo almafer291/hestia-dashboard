@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v50 | Almería Live</title>
+    <title>Hestia v51 | Almería Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); --text: #fff; }
@@ -16,7 +16,6 @@
         h1 { font-size: 1.1rem; color: var(--bronce); margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 12px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.9rem; }
-        .price-big { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.8rem; text-align: center; display: block; }
         .p-fuel { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.1rem; text-align: right; }
     </style>
 </head>
@@ -31,33 +30,23 @@
 <main>
     <div id="m" class="panel active">
         <h1>Almería Live</h1>
-        <div class="card"><div style="font-size:4.5rem; font-weight:100;" id="t">--°</div><p>Almería Capital</p></div>
+        <div class="card"><div style="font-size:4rem;" id="t">--°</div><p>Sincronizado</p></div>
     </div>
-
     <div id="g" class="panel">
         <h1>Gasolineras Almería</h1>
-        <div class="card" id="g-list">Cargando datos...</div>
+        <div class="card" id="g-list">Conectando con base de datos...</div>
     </div>
-
     <div id="l" class="panel">
-        <h1>Luz Hoy (PVPC)</h1>
-        <div class="card">
-            <span id="l-now" class="price-big">-- €</span>
-            <div id="l-range" style="font-size:0.8rem; text-align:center; margin-top:10px; color:#777;">Sincronizando mercado...</div>
-        </div>
+        <h1>Luz Hoy</h1>
+        <div class="card"><div id="l-now" style="font-size:1.8rem; color:var(--bronce); text-align:center;">Cargando...</div></div>
     </div>
 </main>
 
 <script>
-    // Usamos un proxy secundario más ligero y menos saturado
-    const P = "https://corsproxy.io/?";
-
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
-        if(id==='m') loadM(); 
-        if(id==='g') loadG(); 
-        if(id==='l') loadL();
+        if(id==='m') loadM(); if(id==='g') loadG(); if(id==='l') loadL();
     }
 
     async function loadM() {
@@ -66,12 +55,27 @@
         document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
+    async function loadL() {
+        // Fuente de luz sin CORS (Directa)
+        try {
+            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const data = await r.json();
+            const now = new Date().getHours();
+            document.getElementById('l-now').innerText = (Object.values(data)[now].price/1000).toFixed(4) + " €/kWh";
+        } catch(e) {
+            // Si falla la directa, usamos el puente de "Thingspeak", que es una herramienta IOT que nunca bloquea
+            const fallback = await fetch('https://api.thingspeak.com/apps/thingproxy/api/v1/get?url=https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const data2 = await fallback.json();
+            document.getElementById('l-now').innerText = (Object.values(data2)[new Date().getHours()].price/1000).toFixed(4) + " €/kWh";
+        }
+    }
+
     async function loadG() {
         const box = document.getElementById('g-list');
         try {
-            // Cambio a corsproxy.io que es más estable para el Ministerio
-            const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            const r = await fetch(P + encodeURIComponent(api));
+            // Usamos el Proxy de "Thingproxy", diseñado para dispositivos IOT (mucho más difícil de bloquear que AllOrigins)
+            const api = "https://api.thingspeak.com/apps/thingproxy/api/v1/get?url=https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
+            const r = await fetch(api);
             const res = await r.json();
             
             const lista = res.ListaEESSPrecio.filter(e => e.Municipio === "ALMERÍA")
@@ -83,22 +87,7 @@
                 h += `<tr><td><b>${e.Rótulo}</b><br><small style="color:#444">${e.Dirección}</small></td><td class="p-fuel">${e['Precio Gasolina 95 E5']}€</td></tr>`;
             });
             box.innerHTML = h + '</table>';
-        } catch(e) { box.innerHTML = "Error Fuel: " + e.message; }
-    }
-
-    async function loadL() {
-        const box = document.getElementById('l-now');
-        try {
-            // Fuente alternativa de Luz que no suele bloquear
-            const api = "https://api.preciodelaluz.org/v1/prices/all?zone=PCB";
-            const r = await fetch(P + encodeURIComponent(api));
-            const res = await r.json();
-            const now = new Date().getHours();
-            const prices = Object.values(res);
-            
-            box.innerText = (prices[now].price / 1000).toFixed(4) + " €/kWh";
-            document.getElementById('l-range').innerText = "Actualizado";
-        } catch(e) { box.innerText = "Error Luz"; }
+        } catch(e) { box.innerHTML = "Error de conexión. Pulsa de nuevo en FUEL."; }
     }
 
     window.onload = loadM;
