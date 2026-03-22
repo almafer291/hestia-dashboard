@@ -2,109 +2,117 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v78 | Almería</title>
+    <title>Hestia v79 | Almería</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.2); }
-        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Barra Lateral Fija */
-        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; z-index: 100; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
+        /* Barra Lateral Inamovible */
+        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #050505; flex-shrink: 0; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
         
-        /* Contenido */
-        main { flex: 1; padding: 20px; overflow-y: auto; }
+        /* Contenido Principal */
+        main { flex: 1; padding: 25px; overflow-y: auto; background: #000; }
         .panel { display: none; }
         .panel.active { display: block; }
         
-        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--bronce); display: flex; justify-content: space-between; align-items: center; }
-        .price { color: var(--bronce); font-weight: bold; font-size: 1.2rem; font-family: monospace; }
-        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; text-align: center; }
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; border-left: 3px solid var(--bronce); display: flex; justify-content: space-between; align-items: center; }
+        .price { color: var(--bronce); font-weight: bold; font-size: 1.3rem; font-family: monospace; }
+        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; max-width: 60%; }
+        
+        /* Animación de carga */
+        .loading { text-align: center; color: #444; font-size: 0.8rem; margin-top: 50px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-<nav id="sidebar">
-    <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
-    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
-    <button class="n-btn" onclick="tab('l', this)">LUZ</button>
+<nav>
+    <button id="btn-m" class="n-btn active" onclick="tab('m')">CLIMA</button>
+    <button id="btn-g" class="n-btn" onclick="tab('g')">FUEL</button>
+    <button id="btn-l" class="n-btn" onclick="tab('l')">LUZ</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
         <h1>ALMERÍA</h1>
-        <div class="card" style="justify-content:center; padding:40px;"><div id="t" style="font-size:4rem;">--°</div></div>
+        <div class="card" style="justify-content:center; padding:50px;"><div id="t" style="font-size:5rem;">--°</div></div>
     </div>
 
     <div id="g" class="panel">
         <h1>GASOLINA 95</h1>
-        <div id="g-list" style="text-align:center; color:#444; padding:20px;">Buscando datos...</div>
+        <div id="g-list"><div class="loading">SINCRONIZANDO...</div></div>
     </div>
 
     <div id="l" class="panel">
         <h1>LUZ HOY</h1>
-        <div id="l-now" style="text-align:center; padding:20px;">Cargando...</div>
+        <div id="l-now"><div class="loading">BUSCANDO...</div></div>
     </div>
 </main>
 
 <script>
-    // Función de pestañas segura (no rompe la barra lateral)
-    function tab(id, btn) {
+    // Usamos el proxy más estable para Netlify
+    const PROXY = "https://api.allorigins.win/raw?url=";
+
+    function tab(id) {
+        // 1. Limpiar paneles y botones
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
         
-        const target = document.getElementById(id);
-        if(target) target.classList.add('active');
-        btn.classList.add('active');
+        // 2. Activar actual
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
 
+        // 3. Cargar datos
         if(id === 'm') loadClima();
         if(id === 'g') loadGasolina();
         if(id === 'l') loadLuz();
     }
 
-    // CLIMA
     async function loadClima() {
         try {
             const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
             const d = await r.json();
             document.getElementById('t').innerText = Math.round(d.current_weather.temperature)+'°';
-        } catch(e) { console.log("Error clima"); }
+        } catch(e) { document.getElementById('t').innerText = "??°"; }
     }
 
-    // GASOLINA (Técnica Directa RAW)
     async function loadGasolina() {
         const box = document.getElementById('g-list');
         try {
-            // Usamos un proxy que no añade cabeceras complejas
-            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
+            const r = await fetch(PROXY + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04'));
             const data = await r.json();
-            const lista = data.ListaEESSPrecio.filter(e => e.Municipio.includes("ALMER")).slice(0,5);
             
+            // Filtramos las más baratas de Almería capital
+            const lista = data.ListaEESSPrecio
+                .filter(e => e.Municipio.toUpperCase().includes("ALMER"))
+                .sort((a,b) => a['Precio Gasolina 95 E5'].replace(',','.') - b['Precio Gasolina 95 E5'].replace(',','.'))
+                .slice(0, 5);
+
             box.innerHTML = lista.map(e => `
                 <div class="card">
-                    <span style="font-size:0.7rem; color:#888;">${e.Rótulo}</span>
-                    <span class="price">${e['Precio Gasolina 95 E5']}€</span>
+                    <div class="label">${e.Rótulo}</div>
+                    <div class="price">${e['Precio Gasolina 95 E5']}€</div>
                 </div>
             `).join('');
-        } catch(e) { 
-            box.innerHTML = "<div class='card'>Servidor ocupado. Reintenta en 10s.</div>";
-        }
+        } catch(e) { box.innerHTML = "<div class='card'>ERROR DE CONEXIÓN</div>"; }
     }
 
-    // LUZ
     async function loadLuz() {
         const box = document.getElementById('l-now');
         try {
-            const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
+            const r = await fetch(PROXY + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
             const data = await r.json();
             const h = new Date().getHours();
             const p = (Object.values(data)[h].price / 1000).toFixed(4);
-            box.innerHTML = `<div class="card" style="justify-content:center; flex-direction:column; padding:30px;">
-                <span class="price" style="font-size:2rem;">${p}</span>
-                <span style="font-size:0.7rem; color:#444; margin-top:10px;">€/kWh ACTUAL</span>
+            
+            box.innerHTML = `<div class="card" style="flex-direction:column; padding:30px;">
+                <div class="price" style="font-size:2.5rem;">${p}</div>
+                <div style="font-size:0.7rem; color:#444; margin-top:10px;">€/kWh ACTUAL</div>
             </div>`;
-        } catch(e) { box.innerHTML = "Error de conexión."; }
+        } catch(e) { box.innerHTML = "<div class='card'>ERROR LUZ</div>"; }
     }
 
     window.onload = loadClima;
