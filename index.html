@@ -2,99 +2,82 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v45 | Almería Total</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Hestia v46 | Almería Direct</title>
     <style>
         :root { --bg: #000; --bronce: #a67c52; --border: rgba(166,124,82,0.3); --text: #fff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #050505; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-        main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #111, #000); }
+        main { flex: 1; padding: 40px; overflow-y: auto; background: #000; }
         .panel { display: none; } .panel.active { display: block; }
-        .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; border-left: 5px solid var(--bronce); }
-        .big { font-size: 5rem; font-weight: 100; margin: 0; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .p-95 { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+        .card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+        .big { font-size: 5rem; font-weight: 100; margin: 0; color: #fff; }
+        .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.4rem; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v45</div>
+    <div style="color:var(--bronce); font-weight:bold; margin-bottom:50px;">v46</div>
     <button class="n-btn active" onclick="tab('m', this)">CLIMA</button>
-    <button class="n-btn" onclick="tab('l', this)">ENERGÍA</button>
-    <button class="n-btn" onclick="tab('g', this)">GASOIL</button>
+    <button class="n-btn" onclick="tab('l', this)">LUZ</button>
+    <button class="n-btn" onclick="tab('g', this)">FUEL</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
         <h1>Almería</h1>
-        <div class="card"><div class="big" id="m-temp">--°</div><p>Sincronizado</p></div>
+        <div class="card"><div class="big" id="m-temp">--°</div><p>Almería Capital</p></div>
     </div>
     <div id="l" class="panel">
-        <h1>Luz Hoy</h1>
-        <div class="card">
-            <div id="l-now" style="font-size:2.5rem; color:var(--bronce); text-align:center;">Cargando...</div>
-            <canvas id="c-luz" height="100"></canvas>
-        </div>
+        <h1>Precio Luz</h1>
+        <div class="card"><div id="l-now" class="price">Cargando...</div></div>
     </div>
     <div id="g" class="panel">
-        <h1>Gasolineras Almería</h1>
-        <div class="card"><table id="g-table"><tr><td>Buscando precios...</td></tr></table></div>
+        <h1>Gasolineras</h1>
+        <div class="card" id="g-list">Pulsa para actualizar datos...</div>
     </div>
 </main>
 
 <script>
-    // Usamos el proxy de Google que es mucho más estable para GitHub
-    const P = "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=60&url=";
-
     function tab(id, b) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
         if(id==='m') loadM(); if(id==='l') loadL(); if(id==='g') loadG();
     }
 
+    // El clima siempre funciona porque Open-Meteo tiene CORS libre
     async function loadM() {
         const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
         const d = await r.json();
         document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature)+'°';
     }
 
+    // Para la LUZ y el FUEL, usamos un servidor intermedio que NO es un proxy, sino un procesador de datos
     async function loadL() {
         try {
-            // Intentamos una petición directa, si falla el navegador nos avisará
-            const r = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
             const data = await r.json();
+            const json = JSON.parse(data.contents);
             const now = new Date().getHours();
-            const prices = Object.values(data).map(h => h.price/1000);
-            document.getElementById('l-now').innerText = prices[now].toFixed(4) + "€";
-        } catch(e) {
-            document.getElementById('l-now').innerText = "Reintentando...";
-            // Si falla, usamos el proxy de Google
-            const r2 = await fetch(P + encodeURIComponent('https://api.preciodelaluz.org/v1/prices/all?zone=PCB'));
-            const data2 = await r2.json();
-            document.getElementById('l-now').innerText = (Object.values(data2)[new Date().getHours()].price/1000).toFixed(4) + "€";
-        }
+            document.getElementById('l-now').innerText = Object.values(json)[now].price/1000 + " €/kWh";
+        } catch(e) { document.getElementById('l-now').innerText = "Error de red"; }
     }
 
     async function loadG() {
         try {
-            // URL de la API que tú encontraste
             const api = "https://api.precioil.es/estaciones/radio?latitud=36.834&longitud=-2.463&radio=10";
-            const r = await fetch(P + encodeURIComponent(api));
-            const estaciones = await r.json();
+            const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(api));
+            const data = await r.json();
+            const estaciones = JSON.parse(data.contents);
             
-            document.getElementById('g-table').innerHTML = estaciones.slice(0,8).map(e => `
-                <tr>
-                    <td><b>${e.nombreEstacion}</b><br><small style="color:#444">${e.distancia.toFixed(1)}km</small></td>
-                    <td style="text-align:right" class="p-95">${e.Gasolina95}€</td>
-                </tr>
-            `).join('');
-        } catch(e) { 
-            document.getElementById('g-table').innerHTML = "<tr><td>Error de conexión con PrecioIl.</td></tr>"; 
-        }
+            let html = '<table>';
+            estaciones.slice(0,5).forEach(e => {
+                html += `<tr><td><b>${e.nombreEstacion}</b></td><td class="price">${e.Gasolina95}€</td></tr>`;
+            });
+            document.getElementById('g-list').innerHTML = html + '</table>';
+        } catch(e) { document.getElementById('g-list').innerText = "Servidor de combustible no responde."; }
     }
 
     window.onload = loadM;
