@@ -2,116 +2,93 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hestia v90</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hestia v91</title>
     <style>
-        :root { --bronce: #a67c52; --bg: #000; }
+        :root { --bronce: #a67c52; }
         body { font-family: sans-serif; background: #000; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Navegación Lateral */
-        nav { width: 60px; border-right: 1px solid rgba(166,124,82,0.2); display: flex; flex-direction: column; align-items: center; padding-top: 40px; background: #050505; flex-shrink: 0; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 50px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; outline: none; transition: 0.3s; }
+        nav { width: 60px; border-right: 1px solid rgba(166,124,82,0.3); display: flex; flex-direction: column; align-items: center; padding-top: 40px; background: #050505; flex-shrink: 0; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 50px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 2px; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-
-        /* Contenido */
         main { flex: 1; padding: 20px; overflow-y: auto; }
         .panel { display: none; }
         .panel.active { display: block; }
-        
-        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 3px; text-align: center; margin-bottom: 30px; text-transform: uppercase; }
-        .card { background: #0a0a0a; border: 1px solid rgba(166,124,82,0.1); border-left: 3px solid var(--bronce); border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 3px; text-align: center; text-transform: uppercase; }
+        .card { background: #0a0a0a; border: 1px solid rgba(166,124,82,0.2); border-left: 3px solid var(--bronce); border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .price { color: var(--bronce); font-weight: bold; font-family: monospace; font-size: 1.2rem; }
-        .name { color: #888; font-size: 0.7rem; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
 <nav>
-    <button onclick="showTab('m', this)" class="n-btn active">CLIMA</button>
-    <button onclick="showTab('g', this)" class="n-btn">FUEL</button>
-    <button onclick="showTab('l', this)" class="n-btn">LUZ</button>
+    <button onclick="tab('m', this)" class="n-btn active">CLIMA</button>
+    <button onclick="tab('g', this)" class="n-btn">FUEL</button>
+    <button onclick="tab('l', this)" class="n-btn">LUZ</button>
 </nav>
 
 <main>
     <div id="m" class="panel active">
         <h1>ALMERÍA</h1>
-        <div class="card" style="justify-content:center; padding:40px;"><div id="t" style="font-size:4rem;">--°</div></div>
+        <div class="card" style="justify-content:center; padding:50px;"><div id="t" style="font-size:4rem;">--°</div></div>
     </div>
-
     <div id="g" class="panel">
         <h1>GASOLINA 95</h1>
-        <div id="g-list" style="text-align:center; color:#444;">CARGANDO PRECIOS...</div>
+        <div id="g-list" style="text-align:center; padding-top:20px;">CONECTANDO CON WORKER...</div>
     </div>
-
     <div id="l" class="panel">
-        <h1>PRECIO LUZ</h1>
-        <div id="l-now" style="text-align:center; color:#444;">BUSCANDO...</div>
+        <h1>LUZ</h1>
+        <div id="l-now" style="text-align:center; padding-top:20px;">BUSCANDO...</div>
     </div>
 </main>
 
 <script>
-    // PON AQUÍ TU URL DE CLOUDFLARE SIN FALLAR NI UN CARÁCTER:
-    const MI_WORKER = "https://tu-worker.tu-usuario.workers.dev";
+    // CAMBIA ESTO CON CUIDADO (SIN BORRAR LAS COMILLAS)
+    const URL_WORKER = "https://tu-worker.tu-usuario.workers.dev";
 
-    // FUNCIÓN DE NAVEGACIÓN (Prioridad 1)
-    function showTab(id, boton) {
-        // Ocultar todos los paneles
-        const paneles = document.getElementsByClassName('panel');
-        for (let p of paneles) { p.classList.remove('active'); }
-        
-        // Desactivar todos los botones
-        const botones = document.getElementsByClassName('n-btn');
-        for (let b of botones) { b.classList.remove('active'); }
-
-        // Activar el seleccionado
+    function tab(id, btn) {
+        // Navegación simple
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        boton.classList.add('active');
+        btn.classList.add('active');
     }
 
-    // CARGA DE CLIMA
-    async function getClima() {
+    async function loadAll() {
+        // Carga clima
         try {
-            const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
-            const d = await r.json();
-            document.getElementById('t').innerText = Math.round(d.current_weather.temperature) + '°';
-        } catch(e) {}
-    }
+            const resM = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
+            const dataM = await resM.json();
+            document.getElementById('t').innerText = Math.round(dataM.current_weather.temperature) + '°';
+        } catch(e) { console.log("Error clima"); }
 
-    // CARGA DE DATOS (FUEL Y LUZ)
-    async function getData() {
+        // Carga datos Worker
         try {
-            const r = await fetch(MI_WORKER);
-            const data = await r.json();
+            const resW = await fetch(URL_WORKER);
+            const dataW = await resW.json();
 
-            // Gasolina
-            if(data.gasolina) {
-                const htmlG = data.gasolina.map(e => `
+            if(dataW.gasolina) {
+                document.getElementById('g-list').innerHTML = dataW.gasolina.map(e => `
                     <div class="card">
-                        <span class="name">${e.Rótulo}</span>
+                        <span style="font-size:0.7rem; color:#888;">${e.Rótulo}</span>
                         <span class="price">${e['Precio Gasolina 95 E5']}€</span>
                     </div>
                 `).join('');
-                document.getElementById('g-list').innerHTML = htmlG;
             }
 
-            // Luz
-            if(data.luz) {
+            if(dataW.luz) {
                 document.getElementById('l-now').innerHTML = `
-                    <div class="card" style="flex-direction:column; padding:30px; text-align:center;">
-                        <div class="price" style="font-size:2.5rem;">${data.luz}</div>
-                        <div style="font-size:0.6rem; color:#444; margin-top:10px;">€/kWh HOY</div>
+                    <div class="card" style="flex-direction:column; padding:30px;">
+                        <div class="price" style="font-size:2.5rem;">${dataW.luz}</div>
+                        <div style="font-size:0.6rem; color:#444;">€/kWh</div>
                     </div>`;
             }
         } catch(e) {
-            console.log("Error de conexión con Worker");
+            document.getElementById('g-list').innerHTML = "ERROR: No se pudo conectar con el Worker";
+            console.error(e);
         }
     }
 
-    // Ejecutar al entrar
-    window.onload = () => {
-        getClima();
-        getData();
-    };
+    window.onload = loadAll;
 </script>
 </body>
 </html>
