@@ -3,44 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hestia v97 | Almería</title>
+    <title>Hestia v102 | Almería</title>
     <style>
-        :root { --bronce: #a67c52; --bg: #000; --card: #0a0a0a; --border: rgba(166,124,82,0.25); }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --bronce: #a67c52; --bg: #000; --card: #0a0a0a; --border: rgba(166,124,82,0.3); }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Navegación Vertical Izquierda */
-        nav { width: 65px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 50px; background: #050505; flex-shrink: 0; }
-        .n-btn { background: none; border: none; color: #333; cursor: pointer; margin-bottom: 60px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.75rem; letter-spacing: 3px; transition: 0.4s; outline: none; }
-        .n-btn.active { color: var(--bronce); font-weight: bold; text-shadow: 0 0 10px rgba(166,124,82,0.5); }
+        /* Nav Lateral */
+        nav { width: 60px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 50px; background: #050505; flex-shrink: 0; }
+        .n-btn { background: none; border: none; color: #333; cursor: pointer; margin-bottom: 60px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 3px; transition: 0.3s; }
+        .n-btn.active { color: var(--bronce); font-weight: bold; }
 
-        /* Área de Contenido */
-        main { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
-        .panel { display: none; max-width: 600px; margin: 0 auto; }
-        .panel.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Contenido */
+        main { flex: 1; padding: 25px; overflow-y: auto; }
+        .panel { display: none; max-width: 500px; margin: 0 auto; }
+        .panel.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 4px; text-align: center; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         
-        h1 { font-size: 0.9rem; color: var(--bronce); letter-spacing: 5px; text-align: center; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        /* Tarjetas */
+        .card { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--bronce); border-radius: 10px; padding: 18px; margin-bottom: 15px; }
+        .price { color: var(--bronce); font-family: monospace; font-weight: bold; font-size: 1.5rem; }
         
-        /* Tarjetas Gasolina / Gasoil */
-        .fuel-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--bronce); transition: 0.3s; }
-        .fuel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .fuel-name { font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; }
-        .fuel-prices { display: flex; gap: 20px; }
-        .p-tag { text-align: right; }
-        .p-label { font-size: 0.55rem; color: #555; display: block; margin-bottom: 2px; }
-        .p-val { font-family: 'Courier New', monospace; font-size: 1.3rem; color: var(--bronce); font-weight: bold; }
-        .addr { font-size: 0.65rem; color: #444; text-transform: uppercase; line-height: 1.4; }
-
-        /* Sección Luz y Gráfica */
-        .light-hero { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; text-align: center; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; margin: 30px 0; gap: 3px; padding: 0 10px; }
-        .bar { flex: 1; background: #1a1a1a; border-radius: 3px 3px 0 0; position: relative; transition: height 1s ease; }
-        .bar.active { background: var(--bronce); box-shadow: 0 0 15px var(--bronce); }
-        .m-stats { display: flex; justify-content: space-around; border-top: 1px solid var(--border); pt: 20px; padding-top: 20px; font-size: 0.8rem; color: #555; }
-        .m-stats b { color: var(--bronce); font-size: 1rem; margin-left: 5px; }
-
-        /* Clima Hero */
-        #t { font-size: 6rem; font-weight: 200; color: #fff; line-height: 1; margin: 20px 0; }
+        /* Gráfica Energía */
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; margin: 25px 0; gap: 2px; }
+        .bar { flex: 1; background: #1a1a1a; border-radius: 2px 2px 0 0; position: relative; transition: 0.5s; }
+        .bar.active { background: var(--bronce); box-shadow: 0 0 12px var(--bronce); }
+        
+        .stats { display: flex; justify-content: space-around; font-size: 0.7rem; color: #555; margin-top: 15px; }
+        .stats b { color: var(--bronce); }
     </style>
 </head>
 <body>
@@ -54,15 +45,12 @@
 <main>
     <div id="m" class="panel active">
         <h1>ALMERÍA</h1>
-        <div style="text-align: center; margin-top: 50px;">
-            <div id="t">--°</div>
-            <div style="letter-spacing: 4px; color: #444; font-size: 0.7rem;">SITUACIÓN ACTUAL</div>
-        </div>
+        <div style="text-align:center; margin-top:60px;"><div id="t" style="font-size:5rem; font-weight:200;">--°</div></div>
     </div>
 
     <div id="g" class="panel">
-        <h1>FUEL PRECIOS</h1>
-        <div id="g-list"><div style="text-align:center; color:#333; margin-top:50px;">SINCRONIZANDO...</div></div>
+        <h1>GASOLINERAS</h1>
+        <div id="g-list"></div>
     </div>
 
     <div id="l" class="panel">
@@ -72,126 +60,65 @@
 </main>
 
 <script>
-    // 1. CAMBIA ESTO POR TU URL DE CLOUDFLARE
-    const WORKER_URL = "https://hestia-proxy.almafer291.workers.dev/";
-
-    function tab(id, btn) {
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    async function loadData() {
-        try {
-            // Cargar Clima (Open-Meteo)
-            const rClima = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
-            const dClima = await rClima.json();
-            document.getElementById('t').innerText = Math.round(dClima.current_weather.temperature) + '°';
-
-            // Cargar Worker (Fuel + Luz)
-            const rWorker = await fetch(WORKER_URL);
-            const data = await rWorker.json();
-
-            // Renderizar Gasolineras
-            if(data.fuel) {
-                document.getElementById('g-list').innerHTML = data.fuel.map(e => `
-                    <div class="fuel-card">
-                        <div class="fuel-header">
-                            <span class="fuel-name">${e.name}</span>
-                            <div class="fuel-prices">
-                                <div class="p-tag"><span class="p-label">G95</span><span class="p-val">${e.g95}</span></div>
-                                <div class="p-tag"><span class="p-label">GA</span><span class="p-val">${e.ga}</span></div>
-                            </div>
-                        </div>
-                        <div class="addr">${e.address}</div>
-                    </div>
-                `).join('');
-            }
-
-            // Renderizar Luz con Gráfica
-            if(data.light) {
-                const hActual = new Date().getHours();
-                const bars = data.light.prices.map((p, i) => {
-                    const hPerc = (parseFloat(p) / parseFloat(data.light.maxL)) * 100;
-                    return `<div class="bar ${i === hActual ? 'active' : ''}" style="height:${hPerc}%"></div>`;
-                }).join('');
-
-                document.getElementById('l-now').innerHTML = `
-                    <div class="light-hero">
-                        <div style="font-size:0.6rem; color:#444; letter-spacing:2px; margin-bottom:10px;">PRECIO ACTUAL €/kWh</div>
-                        <div style="font-size:3.5rem; color:var(--bronce); font-weight:bold; font-family:monospace;">${data.light.nowL}</div>
-                        <div class="chart">${bars}</div>
-                        <div class="m-stats">
-                            <span>MÍN <b>${data.light.minL}</b></span>
-                            <span>MÁX <b>${data.light.maxL}</b></span>
-                        </div>
-                    </div>
-                `;
-            }
-        } catch(e) {
-            console.error("Error cargando datos:", e);
-        }
-    }
-
-    // Iniciar carga al abrir
-    window.onload = loadData;
-</script>
-</body>
-</html>    </div>
-    <div id="l" class="panel">
-        <h1>LUZ</h1>
-        <div id="l-now" style="text-align:center; padding-top:20px;">BUSCANDO...</div>
-    </div>
-</main>
-
-<script>
-    // CAMBIA ESTO CON CUIDADO (SIN BORRAR LAS COMILLAS)
+    // 1. REEMPLAZA CON TU URL
     const URL_WORKER = "https://hestia-proxy.almafer291.workers.dev/";
+
     function tab(id, btn) {
-        // Navegación simple
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.n-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
     }
 
-    async function loadAll() {
-        // Carga clima
+    async function load() {
         try {
-            const resM = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
-            const dataM = await resM.json();
-            document.getElementById('t').innerText = Math.round(dataM.current_weather.temperature) + '°';
-        } catch(e) { console.log("Error clima"); }
+            // Clima
+            const resC = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
+            const dataC = await resC.json();
+            document.getElementById('t').innerText = Math.round(dataC.current_weather.temperature) + '°';
 
-        // Carga datos Worker
-        try {
+            // Worker Data
             const resW = await fetch(URL_WORKER);
-            const dataW = await resW.json();
+            const data = await resW.json();
 
-            if(dataW.gasolina) {
-                document.getElementById('g-list').innerHTML = dataW.gasolina.map(e => `
-                    <div class="card">
-                        <span style="font-size:0.7rem; color:#888;">${e.Rótulo}</span>
-                        <span class="price">${e['Precio Gasolina 95 E5']}€</span>
+            // Dibujar Gasolineras (Usando n, a, p, d del JSON)
+            document.getElementById('g-list').innerHTML = data.fuel.map(e => `
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div style="font-size:0.85rem; font-weight:bold; letter-spacing:1px;">${e.n}</div>
+                            <div style="font-size:0.6rem; color:#444; margin-top:4px; text-transform:uppercase;">${e.a}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="price">${e.p}€</div>
+                            <div style="font-size:0.5rem; color:#555;">DIESEL: ${e.d}€</div>
+                        </div>
                     </div>
-                `).join('');
-            }
+                </div>
+            `).join('');
 
-            if(dataW.luz) {
-                document.getElementById('l-now').innerHTML = `
-                    <div class="card" style="flex-direction:column; padding:30px;">
-                        <div class="price" style="font-size:2.5rem;">${dataW.luz}</div>
-                        <div style="font-size:0.6rem; color:#444;">€/kWh</div>
-                    </div>`;
-            }
-        } catch(e) {
-            document.getElementById('g-list').innerHTML = "ERROR: No se pudo conectar con el Worker";
-            console.error(e);
-        }
+            // Dibujar Luz
+            const hNow = new Date().getHours();
+            const bars = data.light.prices.map((p, i) => {
+                const height = (parseFloat(p) / parseFloat(data.light.maxL)) * 100;
+                return `<div class="bar ${i === hNow ? 'active' : ''}" style="height:${height}%"></div>`;
+            }).join('');
+
+            document.getElementById('l-now').innerHTML = `
+                <div class="card" style="text-align:center;">
+                    <div style="font-size:0.6rem; color:#444; letter-spacing:2px;">PRECIO ACTUAL €/kWh</div>
+                    <div class="price" style="font-size:3rem; margin:15px 0;">${data.light.nowL}</div>
+                    <div class="chart">${bars}</div>
+                    <div class="stats">
+                        <span>MÍN: <b>${data.light.minL}</b></span>
+                        <span>MÁX: <b>${data.light.maxL}</b></span>
+                    </div>
+                </div>
+            `;
+
+        } catch (e) { console.log("Error cargando:", e); }
     }
 
-    window.onload = loadAll;
+    window.onload = load;
 </script>
 </body>
 </html>
