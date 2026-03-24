@@ -3,52 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v130 | Meteo Control</title>
+    <title>HESTIA v131</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.15); --txt: #ececec; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar reducida */
         nav { width: 60px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
         .llama-svg { width: 24px; height: 28px; fill: none; stroke: var(--gold); stroke-width: 1.5; margin-bottom: 40px; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; transition: 0.3s; outline: none; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; outline: none; }
         .n-btn.active { color: var(--gold); font-weight: 900; }
-
         main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #080808, #030303); }
         .panel { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.5s ease; }
         .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         h1 { font-size: 0.6rem; color: #555; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
-        h1 b { color: var(--gold); }
-
-        /* HERO CLIMA */
-        .w-hero { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 50px; }
-        .temp-big { font-size: 10rem; font-weight: 100; color: var(--gold); line-height: 0.8; letter-spacing: -5px; }
-        .w-icon-main { width: 100px; height: 100px; stroke: var(--gold); fill: none; stroke-width: 1.2; }
-
-        /* GRID MÉTRICAS */
+        .temp-big { font-size: 10rem; font-weight: 100; color: var(--gold); line-height: 0.8; text-align: center; margin-bottom: 40px; }
         .w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .w-item { background: var(--card); border: 1px solid var(--brd); padding: 20px; text-align: center; transition: 0.3s; }
-        .w-item:hover { border-color: var(--gold); background: #080808; }
-        .w-label { font-size: 0.45rem; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .w-val { font-size: 1.2rem; color: var(--gold); font-weight: 300; }
-        .mini-icon { width: 18px; height: 18px; stroke: #444; fill: none; stroke-width: 1.5; margin-bottom: 8px; }
-
-        /* LUZ */
-        .l-hero { text-align: center; margin-top: 20px; }
-        .l-num { font-size: 7rem; font-weight: 100; color: var(--gold); }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; gap: 4px; margin-top: 40px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
-        .bar { flex: 1; background: #111; border-radius: 1px; transition: 0.3s; }
+        .w-item { background: var(--card); border: 1px solid var(--brd); padding: 20px; text-align: center; }
+        .w-val { font-size: 1.2rem; color: var(--gold); font-weight: 300; display: block; margin-top: 5px; }
+        .mini-icon { width: 18px; height: 18px; stroke: #444; fill: none; stroke-width: 1.5; }
+        .l-num { font-size: 7rem; font-weight: 100; color: var(--gold); text-align: center; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; gap: 4px; margin-top: 40px; border-bottom: 1px solid var(--brd); }
+        .bar { flex: 1; background: #111; transition: 0.5s; }
         .bar.active { background: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
-
-        @media (max-width: 700px) {
-            .w-grid { grid-template-columns: repeat(2, 1fr); }
-            .temp-big { font-size: 6rem; }
-            .w-hero { flex-direction: column; gap: 10px; }
-        }
+        @media (max-width: 700px) { .w-grid { grid-template-columns: repeat(2, 1fr); } .temp-big { font-size: 6rem; } }
     </style>
 </head>
 <body>
@@ -62,23 +41,14 @@
 <main>
     <div id="m" class="panel active">
         <h1>ALMERÍA <b>OBSERVATORY</b></h1>
-        <div class="w-hero">
-            <div id="m-temp-big" class="temp-big">--°</div>
-            <svg class="w-icon-main" id="main-icon" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-            </svg>
-        </div>
-        <div id="w-grid" class="w-grid">
-            </div>
+        <div id="m-temp-big" class="temp-big">--°</div>
+        <div id="w-grid" class="w-grid"></div>
     </div>
 
     <div id="l" class="panel">
-        <h1>ENERGY <b>PVPC REAL-TIME</b></h1>
-        <div class="l-hero">
-            <div style="font-size:0.5rem; letter-spacing:3px; color:#555;">PRECIO ACTUAL €/kWh</div>
-            <div id="l-now" class="l-num">--</div>
-            <div id="l-chart" class="chart"></div>
-        </div>
+        <h1>ENERGY <b>PVPC €/kWh</b></h1>
+        <div id="l-now" class="l-num">--</div>
+        <div id="l-chart" class="chart"></div>
     </div>
 </main>
 
@@ -91,13 +61,13 @@
 
     const icons = {
         temp: `<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>`,
-        wind: `<path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 15.5 12H2"/>`,
+        wind: `<path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2"/>`,
         drop: `<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>`,
-        sun: `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/>`,
+        sun: `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2"/>`,
         cloud: `<path d="M17.5 19a5.5 5.5 0 0 0 2.5-10.5 8.5 8.5 0 1 0-15 4.5 5.5 5.5 0 0 0 2.5 10.5"/>`,
         eye: `<circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>`,
         bolt: `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`,
-        leaf: `<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3-.9 5.7-4.4 8.7-9.1 8.7Z"/><path d="M17 13c-3 0-6-3-6-3"/>`
+        leaf: `<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3-.9 5.7-4.4 8.7-9.1 8.7Z"/>`
     };
 
     async function getWeather() {
@@ -105,10 +75,8 @@
             const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,dewpoint_2m,windgusts_10m,air_quality_index,showers&timezone=auto");
             const d = await res.json();
             const h = new Date().getHours();
-            
             document.getElementById('m-temp-big').innerText = Math.round(d.current_weather.temperature) + "°";
-
-            const metrics = [
+            const m = [
                 { l: "Humedad", v: d.hourly.relativehumidity_2m[h] + "%", i: icons.drop },
                 { l: "Viento", v: d.current_weather.windspeed + " km/h", i: icons.wind },
                 { l: "UV Index", v: Math.round(d.hourly.uv_index[h]), i: icons.sun },
@@ -119,33 +87,33 @@
                 { l: "Visibilidad", v: (d.hourly.visibility[h]/1000).toFixed(1) + " km", i: icons.eye },
                 { l: "Pto. Rocío", v: Math.round(d.hourly.dewpoint_2m[h]) + "°", i: icons.temp },
                 { l: "Ráfagas", v: Math.round(d.hourly.windgusts_10m[h]) + " km/h", i: icons.wind },
-                { l: "Aire (AQI)", v: d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "25", i: icons.leaf },
+                { l: "AQI", v: d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "22", i: icons.leaf },
                 { l: "Tormenta", v: d.hourly.showers[h] + "%", i: icons.bolt }
             ];
-
-            document.getElementById('w-grid').innerHTML = metrics.map(m => `
-                <div class="w-item">
-                    <svg class="mini-icon" viewBox="0 0 24 24">${m.i}</svg>
-                    <span class="w-label">${m.l}</span>
-                    <span class="w-val">${m.v}</span>
-                </div>
-            `).join('');
-        } catch (e) { console.error("Error Clima"); }
+            document.getElementById('w-grid').innerHTML = m.map(x => `<div class="w-item"><svg class="mini-icon" viewBox="0 0 24 24">${x.i}</svg><span style="font-size:0.45rem; color:#555; display:block; margin-top:5px; text-transform:uppercase;">${x.l}</span><span class="w-val">${x.v}</span></div>`).join('');
+        } catch (e) {}
     }
 
     async function getEnergy() {
         try {
             const hoy = new Date().toISOString().split('T')[0];
+            // Usamos el endpoint de PRECIO para obtener el valor directo en €/MWh
             const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`);
             const d = await res.json();
-            const vals = d.included[0].attributes.values.map(v => (v.value / 1000).toFixed(4));
+            
+            // PVPC suele ser la serie 0 en el mercado de tiempo real. 
+            // El valor viene en €/MWh. Para €/kWh dividimos por 1000.
+            const values = d.included[0].attributes.values;
             const now = new Date().getHours();
-            document.getElementById('l-now').innerText = vals[now];
-            const max = Math.max(...vals);
-            document.getElementById('l-chart').innerHTML = vals.map((v, i) => `
-                <div class="bar ${i === now ? 'active' : ''}" style="height:${(v/max)*100}%"></div>
+            
+            const pNow = (values[now].value / 1000).toFixed(5);
+            document.getElementById('l-now').innerText = pNow;
+
+            const max = Math.max(...values.map(v => v.value));
+            document.getElementById('l-chart').innerHTML = values.map((v, i) => `
+                <div class="bar ${i === now ? 'active' : ''}" style="height:${(v.value/max)*100}%"></div>
             `).join('');
-        } catch(e) {}
+        } catch(e) { document.getElementById('l-now').innerText = "ERR"; }
     }
 
     window.onload = () => { getWeather(); getEnergy(); };
