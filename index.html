@@ -12,11 +12,12 @@
 
         /* NAVEGACIÓN */
         nav { width: 70px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
-        .logo-box { margin-bottom: 50px; text-align: center; }
+        .logo-box { margin-bottom: 50px; text-align: center; padding: 0 5px; }
         
-        /* LOGO HESTIA/ARDUSENS REAL */
-        .llama-svg { width: 32px; height: 32px; fill: var(--gold); }
-        .logo-t { font-size: 0.5rem; letter-spacing: 3px; color: var(--gold); font-weight: 900; margin-top: 8px; }
+        /* LOGO ARDUSENS ACTUALIZADO */
+        .logo-img { width: 45px; height: auto; filter: grayscale(1) brightness(1.5); transition: 0.3s; }
+        .logo-box:hover .logo-img { filter: grayscale(0) brightness(1); }
+        .logo-t { font-size: 0.5rem; letter-spacing: 2px; color: var(--gold); font-weight: 900; margin-top: 8px; text-transform: uppercase; }
 
         .n-btn { background: none; border: none; color: #333; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; outline: none; }
         .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
@@ -32,23 +33,29 @@
 
         /* BENTO GRID */
         .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
         .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); opacity: 0.7; }
         .t-val { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
         .t-unit { font-size: 0.9rem; color: var(--dim); margin-left: 5px; }
 
-        /* CLIMA ESPECÍFICO */
+        /* CLIMA */
         .tile-temp { grid-column: span 2; grid-row: span 2; }
         .temp-big { font-size: 8rem; font-weight: 900; letter-spacing: -6px; line-height: 0.8; }
         .hum-bar-bg { width: 100%; height: 6px; background: #111; border-radius: 3px; margin-top: 15px; }
         .hum-bar-fill { height: 100%; background: var(--gold); width: 0%; transition: 1s; }
 
-        /* ENERGÍA ESPECÍFICO */
+        /* ENERGÍA Y GRÁFICO CON ETIQUETAS */
         .tile-price { grid-column: span 2; grid-row: span 2; text-align: center; }
         .price-big { font-size: 6rem; font-weight: 900; color: var(--gold); letter-spacing: -3px; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; gap: 4px; margin-top: 20px; border-bottom: 1px solid var(--brd); }
-        .bar { flex: 1; background: #111; transition: 0.3s; }
+        .chart-container { position: relative; margin-top: 20px; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; gap: 4px; border-bottom: 1px solid var(--brd); padding-bottom: 5px; }
+        .bar { flex: 1; background: #111; transition: 0.3s; position: relative; cursor: crosshair; }
         .bar.active { background: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
+        
+        /* Tooltip simple en barra */
+        .bar:hover::after { content: attr(data-label); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--gold); white-space: nowrap; font-weight: bold; }
+
+        .time-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.5rem; color: var(--dim); letter-spacing: 1px; }
         .badge { font-size: 0.6rem; padding: 4px 8px; border-radius: 4px; background: #111; border: 1px solid var(--brd); display: inline-block; margin-top: 10px; }
 
         @media (max-width: 1000px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .tile-temp, .tile-price { grid-column: span 2; } }
@@ -58,11 +65,8 @@
 
 <nav>
     <div class="logo-box">
-        <svg class="llama-svg" viewBox="0 0 512 512">
-            <path d="M256 0C256 0 128 128 128 256C128 326.7 185.3 384 256 384C326.7 384 384 326.7 384 256C384 128 256 0 256 0ZM256 320C220.7 320 192 291.3 192 256C192 220.7 220.7 192 256 192C291.3 192 320 220.7 320 256C320 291.3 291.3 320 256 320Z"/>
-            <path opacity="0.4" d="M256 416C167.6 416 96 344.4 96 256C96 200.4 124.3 151.4 167.3 122.5C143.4 153.3 128 192.8 128 235.5C128 321.4 197.6 391 283.5 391C313.3 391 341 382.6 364.5 368.1C338.4 398.2 299.4 416 256 416Z"/>
-        </svg>
-        <div class="logo-t">HESTIA</div>
+        <img src="https://ardusens.vercel.app/favicon.ico" alt="ArduSens" class="logo-img">
+        <div class="logo-t">ARDUSENS</div>
     </div>
     <button onclick="tab('m', this)" class="n-btn active">CLIMA</button>
     <button onclick="tab('l', this)" class="n-btn">ENERGÍA</button>
@@ -95,11 +99,22 @@
     <div id="l" class="panel">
         <h1>SISTEMA ELÉCTRICO <b>PVPC</b></h1>
         <div class="bento-grid">
+            <div class="tile" style="grid-column: span 4; flex-direction: row; align-items: center; height: 50px; padding: 0 20px;">
+                <span class="t-label" style="margin-right: 20px;">INFO CLIMA:</span>
+                <span id="mini-weather" style="font-size: 0.8rem; color: var(--gold); font-weight: bold;">Cargando datos...</span>
+            </div>
+
             <div class="tile tile-price">
-                <span class="t-label">PRECIO AHORA</span>
+                <span class="t-label">PRECIO AHORA (€/kWh)</span>
                 <div class="price-big" id="l-now">--</div>
                 <div id="l-status" class="badge">CALCULANDO...</div>
-                <div id="l-chart" class="chart"></div>
+                
+                <div class="chart-container">
+                    <div id="l-chart" class="chart"></div>
+                    <div class="time-labels">
+                        <span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span>
+                    </div>
+                </div>
             </div>
             <div class="tile">
                 <span class="t-label">MÍNIMO DEL DÍA</span>
@@ -136,12 +151,18 @@
             const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,precipitation_probability,surface_pressure&timezone=auto");
             const d = await res.json();
             const h = new Date().getHours();
-            document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature);
-            document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h];
-            document.getElementById('hum-fill').style.width = d.hourly.relativehumidity_2m[h] + "%";
+            const temp = Math.round(d.current_weather.temperature);
+            const hum = d.hourly.relativehumidity_2m[h];
+            
+            document.getElementById('m-temp').innerText = temp;
+            document.getElementById('m-hum').innerText = hum;
+            document.getElementById('hum-fill').style.width = hum + "%";
             document.getElementById('m-win').innerText = d.current_weather.windspeed;
             document.getElementById('m-uv').innerText = Math.round(d.hourly.uv_index[h]);
             document.getElementById('m-rain').innerText = d.hourly.precipitation_probability[h];
+            
+            // Actualizar mini info en panel energía
+            document.getElementById('mini-weather').innerText = `${temp}°C | ${hum}% HUM | Almería`;
         } catch (e) {}
     }
 
@@ -154,11 +175,9 @@
             const prices = values.map(v => v.value / 1000);
             const nowH = new Date().getHours();
             
-            // Precio Actual
             const current = prices[nowH];
             document.getElementById('l-now').innerText = current.toFixed(4);
             
-            // Min/Max
             const minP = Math.min(...prices);
             const maxP = Math.max(...prices);
             document.getElementById('l-min').innerText = minP.toFixed(4);
@@ -166,7 +185,6 @@
             document.getElementById('l-min-h').innerText = prices.indexOf(minP) + ":00 H";
             document.getElementById('l-max-h').innerText = prices.indexOf(maxP) + ":00 H";
 
-            // Status y Tip
             const avg = prices.reduce((a,b) => a+b) / 24;
             const status = document.getElementById('l-status');
             const tip = document.getElementById('l-tip');
@@ -181,9 +199,14 @@
                 tip.innerText = "Evita grandes consumos. El precio bajará a las " + prices.indexOf(minP) + ":00.";
             }
 
-            // Gráfico
             const maxVal = Math.max(...values.map(v => v.value));
-            document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v.value/maxVal)*100}%"></div>`).join('');
+            // Generar barras con etiquetas de datos en el atributo data-label
+            document.getElementById('l-chart').innerHTML = values.map((v, i) => {
+                const p = (v.value / 1000).toFixed(3);
+                return `<div class="bar ${i === nowH ? 'active' : ''}" 
+                             style="height:${(v.value/maxVal)*100}%" 
+                             data-label="${i}h: ${p}€"></div>`;
+            }).join('');
             
         } catch(e) {}
     }
