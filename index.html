@@ -3,85 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v132 | Bento Control</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>HESTIA v133 | Bento Observatorio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --cyan: #00f2fe; /* Color acento Ardusens */
-            --bg: #050505; 
-            --card: #101010; 
-            --brd: rgba(255,255,255,0.03); 
-            --txt: #f0f0f0; 
-            --dim: #777; 
+            --gold: #c5a059; /* Dorado Hestia */
+            --bg: #030303; 
+            --card: #080808; 
+            --brd: rgba(197, 160, 89, 0.15); 
+            --txt: #ececec; 
+            --dim: #555; 
         }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--txt); padding: 20px; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--txt); padding: 15px; height: 100vh; overflow: hidden; }
 
-        /* Contenedor Principal Bento */
+        /* Contenedor Bento */
         .bento-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
             grid-template-rows: repeat(4, 1fr); 
-            gap: 15px; 
-            height: calc(100vh - 40px); 
-            max-width: 1600px; 
+            gap: 12px; 
+            height: calc(100vh - 30px); 
+            max-width: 1400px; 
             margin: 0 auto; 
         }
 
-        /* Estilo de Tarjeta Bento */
+        /* Estilo Tarjeta Bento */
         .tile { 
             background: var(--card); 
             border: 1px solid var(--brd); 
-            border-radius: 16px; 
-            padding: 25px; 
+            border-radius: 12px; 
+            padding: 22px; 
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            transition: 0.3s ease; 
+            transition: 0.3s ease-out; 
         }
-        .tile:hover { border-color: rgba(0, 242, 254, 0.1); background: #131313; }
+        .tile:hover { border-color: rgba(197, 160, 89, 0.3); background: #0c0c0c; }
 
         /* Elementos Comunes */
-        .t-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .t-icon { width: 22px; height: 22px; stroke: var(--cyan); fill: none; stroke-width: 1.5; }
-        .t-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--dim); font-weight: 400; }
+        .t-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .t-icon { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.2; opacity: 0.7; }
+        .t-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); font-weight: 300; opacity: 0.8; }
         .t-val { font-size: 2.8rem; font-weight: 700; color: #fff; line-height: 1; }
-        .t-unit { font-size: 1rem; color: var(--cyan); font-weight: 400; margin-left: 5px; }
+        .t-unit { font-size: 1rem; color: var(--dim); font-weight: 300; margin-left: 5px; }
 
         /* --- CONFIGURACIÓN DEL MOSAICO --- */
 
-        /* 1. HERO TEMP (Grande) */
-        .tile-temp { grid-column: 1 / 3; grid-row: 1 / 3; }
-        .temp-big { font-size: 8rem; font-weight: 700; color: #fff; letter-spacing: -5px; line-height: 0.9; }
+        /* 1. HERO TEMP (Grande con Logo Hestia) */
+        .tile-temp { grid-column: 1 / 3; grid-row: 1 / 3; position: relative; }
+        .temp-big { font-size: 8rem; font-weight: 900; color: #fff; letter-spacing: -6px; line-height: 0.9; }
+        .llama-box { position: absolute; top: 15px; right: 15px; text-align: right; }
+        .llama-svg { width: 32px; height: 38px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
+        .logo-t { font-size: 0.55rem; letter-spacing: 3px; color: var(--gold); font-weight: 900; }
 
         /* 2. LUZ (Ancho) */
         .tile-light { grid-column: 3 / 5; grid-row: 1 / 2; }
-        .light-val { font-size: 3rem; color: #fff; font-weight: 700; font-family: monospace; }
+        .light-val { font-size: 3rem; color: #fff; font-weight: 700; font-family: monospace; letter-spacing: -1px; }
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 60px; gap: 3px; margin-top: 15px; }
-        .bar { flex: 1; background: #1a1a1a; height: 5px; border-radius: 2px; }
-        .bar.active { background: var(--cyan); box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+        .bar { flex: 1; background: #111; height: 4px; border-radius: 2px; transition: height 0.3s; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 12px rgba(197, 160, 89, 0.3); }
 
-        /* 3. HUMEDAD (Ancho con barra visual) */
+        /* 3. HUMEDAD (Ancho con barra visual Hestia) */
         .tile-hum { grid-column: 3 / 5; grid-row: 2 / 3; }
-        .hum-bar-bg { width: 100%; height: 8px; background: #1a1a1a; border-radius: 4px; overflow: hidden; margin-top: 15px; }
-        .hum-bar-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #00f2fe); width: 0%; transition: width 1s ease; }
+        .hum-bar-bg { width: 100%; height: 6px; background: #111; border-radius: 3px; overflow: hidden; margin-top: 15px; border: 1px solid rgba(255,255,255,0.01); }
+        .hum-bar-fill { height: 100%; background: linear-gradient(90deg, #b09151, #c5a059); width: 0%; transition: width 1s ease; }
 
-        /* Resto de tiles (Cuadrados) */
-        .tile-wind { grid-column: 1 / 2; grid-row: 3 / 4; }
-        .tile-uv { grid-column: 2 / 3; grid-row: 3 / 4; }
-        .tile-rain { grid-column: 3 / 4; grid-row: 3 / 4; }
-        .tile-pres { grid-column: 4 / 5; grid-row: 3 / 4; }
-        .tile-cloud { grid-column: 1 / 2; grid-row: 4 / 5; }
-        .tile-vis { grid-column: 2 / 3; grid-row: 4 / 5; }
-        .tile-air { grid-column: 3 / 5; grid-row: 4 / 5; } /* Aire ancho */
+        /* Cuadrados del Clima */
+        .w-cube .t-val { font-size: 2.2rem; }
+        .w-cube { justify-content: start; }
+        .w-data-box { margin-top: 15px; }
+
+        /* Aire (Largo) */
+        .tile-air { grid-column: 3 / 5; grid-row: 4 / 5; flex-direction: row; align-items: center; }
 
         /* Responsividad */
         @media (max-width: 1000px) {
             .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; height: auto; overflow-y: auto; }
-            .tile { grid-column: span 1 !important; grid-row: auto !important; height: 200px; }
-            .tile-temp { grid-column: span 2 !important; height: 300px; }
+            .tile { grid-column: span 1 !important; grid-row: auto !important; height: 180px; }
+            .tile-temp { grid-column: span 2 !important; height: 280px; }
             .temp-big { font-size: 6rem; }
             .tile-light, .tile-hum, .tile-air { grid-column: span 2 !important; }
+            .tile-air { flex-direction: column; align-items: start; gap: 10px;}
         }
     </style>
 </head>
@@ -90,17 +93,24 @@
 <div class="bento-grid">
     <div class="tile tile-temp">
         <div class="t-head">
-            <span class="t-label">TEMPERATURA</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
+            <span class="t-label">METEO OBS</span>
         </div>
         <div class="temp-big"><span id="m-temp">--</span>°</div>
-        <div style="font-size:1.2rem; color:var(--cyan); font-weight:300;">Almería, ES</div>
+        <div style="font-size:1.1rem; color:var(--dim); font-weight:300;">Almería, ES</div>
+        
+        <div class="llama-box">
+            <svg class="llama-svg" viewBox="0 0 24 24">
+                <path d="M12 2C12 2 7 7 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 7 12 2 12 2Z" />
+                <path d="M12 14C13.1 14 14 13.1 14 12C14 10 12 8 12 8C12 8 10 10 10 12C10 13.1 10.9 14 12 14Z" stroke-width="0.8" />
+            </svg>
+            <div class="logo-t">HESTIA</div>
+        </div>
     </div>
 
     <div class="tile tile-light">
         <div class="t-head">
             <span class="t-label">PRECIO LUZ (PVPC)</span>
-            <span style="font-size:0.6rem; color:var(--cyan);">€/kWh</span>
+            <span style="font-size:0.55rem; color:var(--gold); opacity:0.8; letter-spacing:1px;">€/kWh</span>
         </div>
         <div class="light-val" id="l-now">--</div>
         <div id="l-chart" class="chart"></div>
@@ -118,77 +128,80 @@
         <div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div>
     </div>
 
-    <div class="tile tile-wind">
+    <div class="tile w-cube tile-wind">
         <div class="t-head">
             <span class="t-label">VIENTO</span>
             <svg class="t-icon" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2"/></svg>
         </div>
-        <div>
-            <div class="t-val" style="font-size:2.2rem;" id="m-win">--</div>
+        <div class="w-data-box">
+            <div class="t-val" id="m-win">--</div>
             <span class="t-unit">km/h</span>
         </div>
     </div>
 
-    <div class="tile tile-uv">
+    <div class="tile w-cube tile-uv">
         <div class="t-head">
             <span class="t-label">ÍNDICE UV</span>
             <svg class="t-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2"/></svg>
         </div>
-        <div class="t-val" id="m-uv">--</div>
+        <div class="w-data-box">
+            <div class="t-val" id="m-uv">--</div>
+            <span class="t-unit">Moderado</span>
+        </div>
     </div>
 
-    <div class="tile tile-rain">
+    <div class="tile w-cube tile-rain">
         <div class="t-head">
             <span class="t-label">PRECIPITACIÓN</span>
             <svg class="t-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
-        <div>
+        <div class="w-data-box">
             <div class="t-val" id="m-rain">--</div>
             <span class="t-unit">% Prob.</span>
         </div>
     </div>
 
-    <div class="tile tile-pres">
+    <div class="tile w-cube tile-pres">
         <div class="t-head">
             <span class="t-label">PRESIÓN</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3"/><path d="M17 13c-3 0-6-3-6-3"/></svg>
+            <svg class="t-icon" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3"/></svg>
         </div>
-        <div>
-            <div class="t-val" style="font-size:2rem;" id="m-pres">--</div>
+        <div class="w-data-box">
+            <div class="t-val" id="m-pres">--</div>
             <span class="t-unit">hPa</span>
         </div>
     </div>
 
-    <div class="tile tile-cloud">
+    <div class="tile w-cube tile-cloud">
         <div class="t-head">
             <span class="t-label">NUBOSIDAD</span>
             <svg class="t-icon" viewBox="0 0 24 24"><path d="M17.5 19a5.5 5.5 0 0 0 2.5-10.5 8.5 8.5 0 1 0-15 4.5 5.5 5.5 0 0 0 2.5 10.5"/></svg>
         </div>
-        <div>
+        <div class="w-data-box">
             <div class="t-val" id="m-cloud">--</div>
             <span class="t-unit">%</span>
         </div>
     </div>
 
-    <div class="tile tile-vis">
+    <div class="tile w-cube tile-vis">
         <div class="t-head">
             <span class="t-label">VISIBILIDAD</span>
             <svg class="t-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
         </div>
-        <div>
+        <div class="w-data-box">
             <div class="t-val" id="m-vis">--</div>
             <span class="t-unit">km</span>
         </div>
     </div>
 
     <div class="tile tile-air">
-        <div class="t-head">
-            <span class="t-label">CALIDAD DEL AIRE (AQI)</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3-.9 5.7-4.4 8.7-9.1 8.7Z"/></svg>
+        <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+            <svg class="t-icon" style="width:28px; height:28px;" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3"/><path d="M17 13c-3 0-6-3-6-3"/></svg>
+            <span class="t-label" style="font-size:0.7rem; font-weight:600;">CALIDAD DEL AIRE</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="t-val" id="m-aqi">--</div>
-            <div style="font-size:0.8rem; color:var(--dim); max-width:60%;">Índice de partículas en suspensión PM10 y PM2.5.</div>
+        <div style="display:flex; align-items:baseline; gap:10px; border-left:1px solid var(--brd); padding-left:20px; margin-left:20px;">
+            <div class="t-val" style="color:var(--gold);" id="m-aqi">--</div>
+            <span class="t-unit" style="font-size:0.7rem; color:var(--dim); font-weight:100;">Índice AQI (PM2.5 / PM10)</span>
         </div>
     </div>
 </div>
@@ -200,7 +213,7 @@
             const d = await res.json();
             const h = new Date().getHours();
             
-            // Llenar datos Bento
+            // Llenar datos Bento con estilo Hestia
             document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature);
             document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h];
             document.getElementById('hum-fill').style.width = d.hourly.relativehumidity_2m[h] + "%";
@@ -211,9 +224,9 @@
             document.getElementById('m-pres').innerText = Math.round(d.hourly.surface_pressure[h]);
             document.getElementById('m-cloud').innerText = d.hourly.cloudcover[h];
             document.getElementById('m-vis').innerText = (d.hourly.visibility[h]/1000).toFixed(1);
-            document.getElementById('m-aqi').innerText = d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "28";
+            document.getElementById('m-aqi').innerText = d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "22";
 
-        } catch (e) { console.error("Error Clima Bento"); }
+        } catch (e) { console.error("Error Hestia Bento"); }
     }
 
     async function getEnergy() {
@@ -225,7 +238,7 @@
             const values = d.included[0].attributes.values;
             const now = new Date().getHours();
             
-            // PRECIO REAL €/kWh
+            // PRECIO REAL €/kWh (Dividimos MWh entre 1000)
             const pNow = (values[now].value / 1000).toFixed(5);
             document.getElementById('l-now').innerText = pNow;
 
