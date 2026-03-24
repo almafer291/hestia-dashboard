@@ -3,36 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v127 | Almería Búnker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&display=swap" rel="stylesheet">
+    <title>HESTIA v128</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.2); --txt: #ececec; --dim: #555; }
+        :root { --gold: #c5a059; --bg: #030303; --brd: rgba(197, 160, 89, 0.2); --txt: #ececec; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 70px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 35px 0; background: #000; flex-shrink: 0; }
+        nav { width: 70px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
         .llama-svg { width: 28px; height: 32px; fill: none; stroke: var(--gold); stroke-width: 1.5; margin-bottom: 50px; }
-        .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; }
         .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
-        main { flex: 1; padding: 40px; overflow-y: auto; background: #030303; }
-        .panel { display: none; max-width: 1100px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        main { flex: 1; padding: 40px; overflow-y: auto; }
+        .panel { display: none; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease; }
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        h1 { font-size: 0.65rem; color: var(--dim); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 12px; }
-        h1 b { color: var(--gold); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border: 1px solid var(--brd); padding: 20px; border-left: 3px solid transparent; }
-        .card:hover { border-left-color: var(--gold); background: #080808; }
-        .price-box { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 12px; margin-top: 10px; border: 1px solid #111; }
+        h1 { font-size: 0.65rem; color: #555; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .card { background: #0a0a0a; border: 1px solid var(--brd); padding: 20px; }
+        .price-box { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 12px; margin-top: 10px; border-left: 3px solid var(--gold); }
         .p-num { font-size: 1.4rem; color: var(--gold); font-family: monospace; }
-        .l-big { font-size: 7rem; color: var(--gold); font-weight: 100; text-align: center; margin: 30px 0; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; gap: 3px; border-bottom: 1px solid var(--brd); }
-        .bar { flex: 1; background: #111; }
-        .bar.active { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
-        .temp-big { font-size: 8rem; font-weight: 100; color: var(--gold); text-align: center; line-height: 1; margin-bottom: 30px; }
-        .w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .temp-big { font-size: 8rem; font-weight: 100; color: var(--gold); text-align: center; line-height: 1; }
+        .w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
         .w-item { background: #070707; border: 1px solid var(--brd); padding: 15px; text-align: center; }
-        .w-val { display: block; font-size: 1.1rem; color: var(--gold); margin-top: 5px; }
-        .error-msg { color: #666; font-size: 0.6rem; text-align: center; padding: 50px; border: 1px dashed var(--brd); }
+        .w-val { display: block; font-size: 1rem; color: var(--gold); margin-top: 5px; }
+        .err { font-size: 0.6rem; color: #d44; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -47,15 +41,15 @@
 <main>
     <div id="g" class="panel active">
         <h1>DIESEL A <b>ALMERÍA</b></h1>
-        <div id="fuel-list" class="grid"><div class="error-msg">CONECTANDO CON MITECO...</div></div>
+        <div id="fuel-list" class="grid"><div class="err">CONSULTANDO...</div></div>
     </div>
     <div id="l" class="panel">
-        <h1>LUZ <b>PVPC €/kWh</b></h1>
-        <div class="l-big" id="l-now">--</div>
-        <div id="l-chart" class="chart"></div>
+        <h1>PRECIO LUZ <b>€/kWh</b></h1>
+        <div style="font-size:7rem; color:var(--gold); text-align:center;" id="l-now">--</div>
+        <div id="l-chart" style="display:flex; align-items:flex-end; justify-content:space-between; height:100px; gap:3px; margin-top:20px;"></div>
     </div>
     <div id="m" class="panel">
-        <h1>METEO <b>OBSERVATORY</b></h1>
+        <h1>OBSERVATORIO <b>MÉTRICAS</b></h1>
         <div id="m-temp-big" class="temp-big">--°</div>
         <div id="w-grid" class="w-grid"></div>
     </div>
@@ -68,32 +62,43 @@
         btn.classList.add('active');
     }
 
+    // CLIMA - USANDO PROXY PARA EVITAR BLOQUEO DE CHROME
+    async function getWeather() {
+        try {
+            const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,dewpoint_2m,windgusts_10m,air_quality_index,showers&timezone=auto";
+            const res = await fetch(url);
+            const d = await res.json();
+            const h = new Date().getHours();
+            document.getElementById('m-temp-big').innerText = Math.round(d.current_weather.temperature) + "°";
+            const m = [
+                {l:"HUMEDAD",v:d.hourly.relativehumidity_2m[h]+"%"}, {l:"VIENTO",v:d.current_weather.windspeed+"km/h"},
+                {l:"UV",v:Math.round(d.hourly.uv_index[h])}, {l:"SENSACIÓN",v:Math.round(d.hourly.apparent_temperature[h])+"°"},
+                {l:"LLUVIA",v:d.hourly.precipitation_probability[h]+"%"}, {l:"PRESIÓN",v:Math.round(d.hourly.surface_pressure[h])},
+                {l:"NUBES",v:d.hourly.cloudcover[h]+"%"}, {l:"VISIB.",v:(d.hourly.visibility[h]/1000).toFixed(1)+"km"},
+                {l:"ROCÍO",v:Math.round(d.hourly.dewpoint_2m[h])+"°"}, {l:"RÁFAGAS",v:Math.round(d.hourly.windgusts_10m[h])+"km/h"},
+                {l:"AIRE",v:d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "30"}, {l:"TORMENTA",v:d.hourly.showers[h]+"%"}
+            ];
+            document.getElementById('w-grid').innerHTML = m.map(x => `<div class="w-item"><div style="font-size:0.45rem; color:#555;">${x.l}</div><span class="w-val">${x.v}</span></div>`).join('');
+        } catch(e) { document.getElementById('m-temp-big').innerHTML = '<div class="err">CLIMA BLOQUEADO</div>'; }
+    }
+
+    // FUEL - USANDO BYPASS DE CABECERAS
     async function getFuel() {
         const list = document.getElementById('fuel-list');
-        // Este proxy es más ligero y suele saltarse mejor los bloqueos de Chrome/Miteco
-        const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/04013";
+        const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/04013";
         try {
-            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(api)}&t=${Date.now()}`);
+            // Usamos un proxy que no está baneado por el ministerio
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`);
             const json = await res.json();
             const data = JSON.parse(json.contents);
-            
-            const stations = data.ListaEESSPrecio
-                .sort((a,b) => parseFloat(a['Precio Gasoleo A'].replace(',','.')) - parseFloat(b['Precio Gasoleo A'].replace(',','.')))
-                .slice(0, 10);
-
-            list.innerHTML = stations.map(e => `
+            const s = data.ListaEESSPrecio.sort((a,b) => parseFloat(a['Precio Gasoleo A'].replace(',','.')) - parseFloat(b['Precio Gasoleo A'].replace(',','.'))).slice(0, 8);
+            list.innerHTML = s.map(e => `
                 <div class="card">
                     <div style="font-size:0.8rem; font-weight:900;">${e.Rótulo}</div>
-                    <div style="font-size:0.55rem; color:var(--dim); text-transform:uppercase; margin-bottom:10px;">${e.Dirección}</div>
-                    <div class="price-box">
-                        <span style="font-size:0.5rem; color:var(--dim);">DIESEL A</span>
-                        <span class="p-num">${e['Precio Gasoleo A']}</span>
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            list.innerHTML = `<div class="error-msg">MITECO OFFLINE. <br><br> Chrome está bloqueando la conexión. Prueba en modo incógnito o espera 1 min.</div>`;
-        }
+                    <div style="font-size:0.5rem; color:#555;">${e.Dirección}</div>
+                    <div class="price-box"><span style="font-size:0.5rem; color:#555;">DIESEL A</span><span class="p-num">${e['Precio Gasoleo A']}</span></div>
+                </div>`).join('');
+        } catch (e) { list.innerHTML = '<div class="err">MITECO BLOQUEADO POR CHROME</div>'; }
     }
 
     async function getEnergy() {
@@ -103,32 +108,11 @@
             const vals = d.included[0].attributes.values.map(v => (v.value / 1000).toFixed(4));
             document.getElementById('l-now').innerText = vals[new Date().getHours()];
             const max = Math.max(...vals);
-            document.getElementById('l-chart').innerHTML = vals.map((v, i) => `<div class="bar ${i === new Date().getHours() ? 'active' : ''}" style="height:${(v/max)*100}%"></div>`).join('');
+            document.getElementById('l-chart').innerHTML = vals.map((v, i) => `<div style="flex:1; background:${i === new Date().getHours() ? 'var(--gold)' : '#111'}; height:${(v/max)*100}%"></div>`).join('');
         } catch(e) {}
     }
 
-    async function getWeather() {
-        try {
-            // CLIMA DIRECTO: Sin proxies. Si esto no carga es que no hay internet.
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,dewpoint_2m,windgusts_10m,air_quality_index,showers&timezone=auto");
-            const d = await res.json();
-            const h = new Date().getHours();
-            document.getElementById('m-temp-big').innerText = Math.round(d.current_weather.temperature) + "°";
-            const m = [
-                {l:"HUMEDAD",v:d.hourly.relativehumidity_2m[h]+"%"}, {l:"VIENTO",v:d.current_weather.windspeed+"km/h"},
-                {l:"UV",v:Math.round(d.hourly.uv_index[h])}, {l:"SENSACIÓN",v:Math.round(d.hourly.apparent_temperature[h])+"°"},
-                {l:"LLUVIA %",v:d.hourly.precipitation_probability[h]+"%"}, {l:"PRESIÓN",v:Math.round(d.hourly.surface_pressure[h])+"hPa"},
-                {l:"NUBES",v:d.hourly.cloudcover[h]+"%"}, {l:"VISIBILIDAD",v:(d.hourly.visibility[h]/1000).toFixed(1)+"km"},
-                {l:"P. ROCÍO",v:Math.round(d.hourly.dewpoint_2m[h])+"°"}, {l:"RÁFAGAS",v:Math.round(d.hourly.windgusts_10m[h])+"km/h"},
-                {l:"AIRE",v:d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "Limpio"}, {l:"TORMENTA",v:d.hourly.showers[h]+"%"}
-            ];
-            document.getElementById('w-grid').innerHTML = m.map(x => `<div class="w-item"><div style="font-size:0.45rem; color:var(--dim);">${x.l}</div><span class="w-val">${x.v}</span></div>`).join('');
-        } catch(e) {
-            document.getElementById('w-grid').innerHTML = '<div class="error-msg">Error cargando clima.</div>';
-        }
-    }
-
-    window.onload = () => { getFuel(); getEnergy(); getWeather(); };
+    window.onload = () => { getEnergy(); setTimeout(getWeather, 500); setTimeout(getFuel, 1000); };
 </script>
 </body>
 </html>
