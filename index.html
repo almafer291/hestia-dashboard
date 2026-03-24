@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v133 | Bento Observatorio</title>
+    <title>HESTIA v141 | Bento-Tab Fusion</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -15,205 +15,129 @@
             --dim: #555; 
         }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--txt); padding: 15px; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Contenedor Bento */
-        .bento-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            grid-template-rows: repeat(4, 1fr); 
-            gap: 12px; 
-            height: calc(100vh - 30px); 
-            max-width: 1400px; 
-            margin: 0 auto; 
-        }
+        /* NAVEGACIÓN LATERAL PREMIUM */
+        nav { width: 70px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
+        .logo-box { margin-bottom: 50px; text-align: center; }
+        
+        /* LOGO ARDUSENS EXACTO (Extraído de su web) */
+        .llama-svg { width: 30px; height: 35px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
+        .logo-t { font-size: 0.5rem; letter-spacing: 3px; color: var(--gold); font-weight: 900; margin-top: 5px; }
 
-        /* Estilo Tarjeta Bento */
-        .tile { 
-            background: var(--card); 
-            border: 1px solid var(--brd); 
-            border-radius: 12px; 
-            padding: 22px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            transition: 0.3s ease-out; 
-        }
+        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; outline: none; }
+        .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
+
+        /* CONTENIDO PRINCIPAL */
+        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #080808, #030303); }
+        .panel { display: none; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 0.6rem; color: #555; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
+        h1 b { color: var(--gold); }
+
+        /* --- MOSAICO BENTO CLIMA --- */
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 12px; height: calc(100vh - 120px); }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; }
         .tile:hover { border-color: rgba(197, 160, 89, 0.3); background: #0c0c0c; }
-
-        /* Elementos Comunes */
+        
         .t-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
         .t-icon { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.2; opacity: 0.7; }
-        .t-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); font-weight: 300; opacity: 0.8; }
-        .t-val { font-size: 2.8rem; font-weight: 700; color: #fff; line-height: 1; }
-        .t-unit { font-size: 1rem; color: var(--dim); font-weight: 300; margin-left: 5px; }
+        .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); font-weight: 300; opacity: 0.8; }
+        .t-val { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
+        .t-unit { font-size: 0.9rem; color: var(--dim); font-weight: 300; margin-left: 5px; }
 
-        /* --- CONFIGURACIÓN DEL MOSAICO --- */
-
-        /* 1. HERO TEMP (Grande con Logo Hestia) */
         .tile-temp { grid-column: 1 / 3; grid-row: 1 / 3; position: relative; }
         .temp-big { font-size: 8rem; font-weight: 900; color: #fff; letter-spacing: -6px; line-height: 0.9; }
-        .llama-box { position: absolute; top: 15px; right: 15px; text-align: right; }
-        .llama-svg { width: 32px; height: 38px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
-        .logo-t { font-size: 0.55rem; letter-spacing: 3px; color: var(--gold); font-weight: 900; }
-
-        /* 2. LUZ (Ancho) */
-        .tile-light { grid-column: 3 / 5; grid-row: 1 / 2; }
-        .light-val { font-size: 3rem; color: #fff; font-weight: 700; font-family: monospace; letter-spacing: -1px; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 60px; gap: 3px; margin-top: 15px; }
-        .bar { flex: 1; background: #111; height: 4px; border-radius: 2px; transition: height 0.3s; }
-        .bar.active { background: var(--gold); box-shadow: 0 0 12px rgba(197, 160, 89, 0.3); }
-
-        /* 3. HUMEDAD (Ancho con barra visual Hestia) */
-        .tile-hum { grid-column: 3 / 5; grid-row: 2 / 3; }
+        
+        /* BARRA HUMEDAD ARDUSENS STYLE */
+        .tile-hum { grid-column: 3 / 5; grid-row: 1 / 2; }
         .hum-bar-bg { width: 100%; height: 6px; background: #111; border-radius: 3px; overflow: hidden; margin-top: 15px; border: 1px solid rgba(255,255,255,0.01); }
         .hum-bar-fill { height: 100%; background: linear-gradient(90deg, #b09151, #c5a059); width: 0%; transition: width 1s ease; }
 
-        /* Cuadrados del Clima */
-        .w-cube .t-val { font-size: 2.2rem; }
-        .w-cube { justify-content: start; }
-        .w-data-box { margin-top: 15px; }
+        .tile-air { grid-column: 3 / 5; grid-row: 4 / 5; flex-direction: row; align-items: center; gap: 20px; }
 
-        /* Aire (Largo) */
-        .tile-air { grid-column: 3 / 5; grid-row: 4 / 5; flex-direction: row; align-items: center; }
+        /* --- PANELES ENERGÍA & RELÉS --- */
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 150px; gap: 4px; margin-top: 40px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
+        .bar { flex: 1; background: #111; border-radius: 1px; transition: 0.3s; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
 
-        /* Responsividad */
-        @media (max-width: 1000px) {
-            .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; height: auto; overflow-y: auto; }
-            .tile { grid-column: span 1 !important; grid-row: auto !important; height: 180px; }
-            .tile-temp { grid-column: span 2 !important; height: 280px; }
-            .temp-big { font-size: 6rem; }
-            .tile-light, .tile-hum, .tile-air { grid-column: span 2 !important; }
-            .tile-air { flex-direction: column; align-items: start; gap: 10px;}
-        }
+        /* Responsividad Bento */
+        @media (max-width: 1000px) { .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; height: auto; overflow-y: auto; } .tile { grid-column: span 1 !important; grid-row: auto !important; height: 180px; } .tile-temp { grid-column: span 2 !important; height: 280px; } .temp-big { font-size: 6rem; } .tile-hum, .tile-air { grid-column: span 2 !important; } }
     </style>
 </head>
 <body>
 
-<div class="bento-grid">
-    <div class="tile tile-temp">
-        <div class="t-head">
-            <span class="t-label">METEO OBS</span>
-        </div>
-        <div class="temp-big"><span id="m-temp">--</span>°</div>
-        <div style="font-size:1.1rem; color:var(--dim); font-weight:300;">Almería, ES</div>
-        
-        <div class="llama-box">
-            <svg class="llama-svg" viewBox="0 0 24 24">
-                <path d="M12 2C12 2 7 7 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 7 12 2 12 2Z" />
-                <path d="M12 14C13.1 14 14 13.1 14 12C14 10 12 8 12 8C12 8 10 10 10 12C10 13.1 10.9 14 12 14Z" stroke-width="0.8" />
-            </svg>
-            <div class="logo-t">HESTIA</div>
+<nav>
+    <div class="logo-box">
+        <svg class="llama-svg" viewBox="0 0 24 24">
+            <path d="M12 2C12 2 7 7 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 7 12 2 12 2Z" />
+            <path d="M12 14C13.1 14 14 13.1 14 12C14 10 12 8 12 8C12 8 10 10 10 12C10 13.1 10.9 14 12 14Z" stroke-width="0.8" />
+        </svg>
+        <div class="logo-t">HESTIA</div>
+    </div>
+    <button onclick="tab('m', this)" class="n-btn active">CLIMA</button>
+    <button onclick="tab('l', this)" class="n-btn">LUZ</button>
+    <button onclick="tab('r', this)" class="n-btn">RELÉS</button>
+</nav>
+
+<main>
+    <div id="m" class="panel active">
+        <h1>ALMERÍA <b>BENTO OBSERVATORY</b></h1>
+        <div class="bento-grid">
+            <div class="tile tile-temp w-cube">
+                <div class="t-head"><span class="t-label">TEMPERATURA</span></div>
+                <div class="temp-big"><span id="m-temp">--</span>°</div>
+                <div style="font-size:1rem; color:var(--dim); font-weight:300;">Almería, ES</div>
+            </div>
+            <div class="tile tile-hum">
+                <div class="t-head"><span class="t-label">HUMEDAD</span><svg class="t-icon" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div>
+                <div style="display:flex; align-items:baseline;"><div class="t-val" id="m-hum">--</div><span class="t-unit">%</span></div>
+                <div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div>
+            </div>
+            <div class="tile w-cube"><div class="t-head"><span class="t-label">VIENTO</span><svg class="t-icon" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2"/></svg></div><div><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div></div>
+            <div class="tile w-cube"><div class="t-head"><span class="t-label">UV INDEX</span><svg class="t-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div><div class="t-val" id="m-uv">--</div></div>
+            <div class="tile w-cube"><div class="t-head"><span class="t-label">PRECIP.</span><svg class="t-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8"/></svg></div><div><div class="t-val" id="m-rain">--</div><span class="t-unit">%</span></div></div>
+            <div class="tile w-cube"><div class="t-head"><span class="t-label">PRESIÓN</span><svg class="t-icon" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5"/></svg></div><div><div class="t-val" id="m-pres">--</div><span class="t-unit">hPa</span></div></div>
+            <div class="tile w-cube"><div class="t-head"><span class="t-label">NUBES</span><svg class="t-icon" viewBox="0 0 24 24"><path d="M17.5 19"/></svg></div><div><div class="t-val" id="m-cloud">--</div><span class="t-unit">%</span></div></div>
+            <div class="tile w-cube"><div class="t-head"><span class="t-label">VISIBILIDAD</span><svg class="t-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></div><div><div class="t-val" id="m-vis">--</div><span class="t-unit">km</span></div></div>
+            <div class="tile tile-air">
+                <div style="display:flex; align-items:center; gap:10px;"><svg class="t-icon" style="width:28px; height:28px;" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8"/></svg><span class="t-label" style="font-size:0.7rem; font-weight:600;">AIRE (AQI)</span></div>
+                <div style="display:flex; align-items:baseline; gap:10px; border-left:1px solid var(--brd); padding-left:20px; margin-left:20px;"><div class="t-val" style="color:var(--gold);" id="m-aqi">--</div><span class="t-unit" style="font-size:0.6rem;">PM2.5 / PM10</span></div>
+            </div>
         </div>
     </div>
 
-    <div class="tile tile-light">
-        <div class="t-head">
-            <span class="t-label">PRECIO LUZ (PVPC)</span>
-            <span style="font-size:0.55rem; color:var(--gold); opacity:0.8; letter-spacing:1px;">€/kWh</span>
-        </div>
-        <div class="light-val" id="l-now">--</div>
+    <div id="l" class="panel">
+        <h1>ENERGY <b>PVPC REAL-TIME</b></h1>
+        <div style="font-size:8rem; font-weight:100; color:var(--gold); text-align:center;" id="l-now">--</div>
         <div id="l-chart" class="chart"></div>
     </div>
 
-    <div class="tile tile-hum">
-        <div class="t-head">
-            <span class="t-label">HUMEDAD RELATIVA</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-        </div>
-        <div style="display:flex; align-items:baseline;">
-            <div class="t-val" id="m-hum">--</div>
-            <span class="t-unit">%</span>
-        </div>
-        <div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div>
+    <div id="r" class="panel">
+        <h1>RELAYS <b>CONTROL PANEL</b></h1>
+        <div style="color:var(--dim); padding:100px; text-align:center;">Módulo de Relés no configurado. Esperando conexión MQTT...</div>
     </div>
-
-    <div class="tile w-cube tile-wind">
-        <div class="t-head">
-            <span class="t-label">VIENTO</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2"/></svg>
-        </div>
-        <div class="w-data-box">
-            <div class="t-val" id="m-win">--</div>
-            <span class="t-unit">km/h</span>
-        </div>
-    </div>
-
-    <div class="tile w-cube tile-uv">
-        <div class="t-head">
-            <span class="t-label">ÍNDICE UV</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2"/></svg>
-        </div>
-        <div class="w-data-box">
-            <div class="t-val" id="m-uv">--</div>
-            <span class="t-unit">Moderado</span>
-        </div>
-    </div>
-
-    <div class="tile w-cube tile-rain">
-        <div class="t-head">
-            <span class="t-label">PRECIPITACIÓN</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="w-data-box">
-            <div class="t-val" id="m-rain">--</div>
-            <span class="t-unit">% Prob.</span>
-        </div>
-    </div>
-
-    <div class="tile w-cube tile-pres">
-        <div class="t-head">
-            <span class="t-label">PRESIÓN</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3"/></svg>
-        </div>
-        <div class="w-data-box">
-            <div class="t-val" id="m-pres">--</div>
-            <span class="t-unit">hPa</span>
-        </div>
-    </div>
-
-    <div class="tile w-cube tile-cloud">
-        <div class="t-head">
-            <span class="t-label">NUBOSIDAD</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><path d="M17.5 19a5.5 5.5 0 0 0 2.5-10.5 8.5 8.5 0 1 0-15 4.5 5.5 5.5 0 0 0 2.5 10.5"/></svg>
-        </div>
-        <div class="w-data-box">
-            <div class="t-val" id="m-cloud">--</div>
-            <span class="t-unit">%</span>
-        </div>
-    </div>
-
-    <div class="tile w-cube tile-vis">
-        <div class="t-head">
-            <span class="t-label">VISIBILIDAD</span>
-            <svg class="t-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
-        </div>
-        <div class="w-data-box">
-            <div class="t-val" id="m-vis">--</div>
-            <span class="t-unit">km</span>
-        </div>
-    </div>
-
-    <div class="tile tile-air">
-        <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
-            <svg class="t-icon" style="width:28px; height:28px;" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1.1 9.3"/><path d="M17 13c-3 0-6-3-6-3"/></svg>
-            <span class="t-label" style="font-size:0.7rem; font-weight:600;">CALIDAD DEL AIRE</span>
-        </div>
-        <div style="display:flex; align-items:baseline; gap:10px; border-left:1px solid var(--brd); padding-left:20px; margin-left:20px;">
-            <div class="t-val" style="color:var(--gold);" id="m-aqi">--</div>
-            <span class="t-unit" style="font-size:0.7rem; color:var(--dim); font-weight:100;">Índice AQI (PM2.5 / PM10)</span>
-        </div>
-    </div>
-</div>
+</main>
 
 <script>
+    function tab(id, btn) {
+        document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        // Recargar datos si es necesario
+        if(id === 'm') getWeather();
+        if(id === 'l') getEnergy();
+    }
+
     async function getWeather() {
         try {
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,windgusts_10m,air_quality_index&timezone=auto");
+            // FUENTE BLINDADA: Nodo de respaldo SSL de Open-Meteo
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,air_quality_index&timezone=auto");
             const d = await res.json();
             const h = new Date().getHours();
             
-            // Llenar datos Bento con estilo Hestia
             document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature);
             document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h];
             document.getElementById('hum-fill').style.width = d.hourly.relativehumidity_2m[h] + "%";
@@ -226,7 +150,7 @@
             document.getElementById('m-vis').innerText = (d.hourly.visibility[h]/1000).toFixed(1);
             document.getElementById('m-aqi').innerText = d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "22";
 
-        } catch (e) { console.error("Error Hestia Bento"); }
+        } catch (e) { console.error("Error Clima Bento Hestia"); }
     }
 
     async function getEnergy() {
@@ -234,18 +158,12 @@
             const hoy = new Date().toISOString().split('T')[0];
             const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`);
             const d = await res.json();
-            
             const values = d.included[0].attributes.values;
             const now = new Date().getHours();
-            
-            // PRECIO REAL €/kWh (Dividimos MWh entre 1000)
             const pNow = (values[now].value / 1000).toFixed(5);
             document.getElementById('l-now').innerText = pNow;
-
             const max = Math.max(...values.map(v => v.value));
-            document.getElementById('l-chart').innerHTML = values.map((v, i) => `
-                <div class="bar ${i === now ? 'active' : ''}" style="height:${(v.value/max)*100}%"></div>
-            `).join('');
+            document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === now ? 'active' : ''}" style="height:${(v.value/max)*100}%"></div>`).join('');
         } catch(e) { document.getElementById('l-now').innerText = "ERR"; }
     }
 
