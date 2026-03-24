@@ -3,48 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v125 | Almería Diesel</title>
+    <title>HESTIA v126 | Almería Gasoil</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.2); --txt: #ececec; }
+        :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.2); --txt: #ececec; --dim: #555; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
         
-        nav { width: 70px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
-        .llama-svg { width: 28px; height: 32px; fill: none; stroke: var(--gold); stroke-width: 1.5; margin-bottom: 40px; }
-        .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 40px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; outline: none; }
+        nav { width: 75px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 35px 0; background: #000; flex-shrink: 0; }
+        .llama-svg { width: 30px; height: 35px; fill: none; stroke: var(--gold); stroke-width: 1.2; margin-bottom: 50px; }
+        .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; outline: none; transition: 0.3s; }
         .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
 
-        main { flex: 1; padding: 30px; overflow-y: auto; }
-        .panel { display: none; max-width: 1000px; margin: 0 auto; }
-        .panel.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #0a0a0a, #030303); }
+        .panel { display: none; max-width: 1100px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 0.6rem; color: #555; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
+        h1 { font-size: 0.65rem; color: var(--dim); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 35px; border-bottom: 1px solid var(--brd); padding-bottom: 12px; }
+        h1 b { color: var(--gold); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border: 1px solid var(--brd); padding: 22px; position: relative; transition: 0.3s; }
+        .card:hover { border-color: var(--gold); background: #0e0e0e; }
+        .card-name { font-size: 0.85rem; font-weight: 900; color: #fff; margin-bottom: 5px; }
+        .card-dir { font-size: 0.55rem; color: var(--dim); text-transform: uppercase; margin-bottom: 18px; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-        .card { background: var(--card); border: 1px solid var(--brd); padding: 15px; position: relative; }
-        .card-name { font-size: 0.8rem; font-weight: 900; color: #fff; }
-        .price-box { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 12px; border-left: 3px solid var(--gold); margin-top: 10px; }
-        .p-num { font-size: 1.4rem; color: var(--gold); font-family: monospace; }
+        .price-box { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 15px; border-left: 4px solid var(--gold); border: 1px solid #111; border-left: 4px solid var(--gold); }
+        .p-num { font-size: 1.5rem; color: var(--gold); font-family: monospace; font-weight: 300; }
 
-        .l-big { font-size: 6rem; color: var(--gold); font-weight: 100; text-align: center; margin: 20px 0; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 100px; gap: 3px; border-bottom: 1px solid var(--brd); padding-bottom: 5px; }
-        .bar { flex: 1; background: #111; transition: 0.3s; }
-        .bar.active { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+        .l-big { font-size: 7rem; color: var(--gold); font-weight: 100; text-align: center; line-height: 1; margin: 30px 0; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; gap: 4px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
+        .bar { flex: 1; background: #151515; transition: 0.3s; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 15px var(--gold); }
 
-        .temp-big { font-size: 8rem; font-weight: 100; color: var(--gold); text-align: center; line-height: 1; }
-        .w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
-        .w-item { background: #070707; border: 1px solid var(--brd); padding: 15px; text-align: center; }
-        .w-val { display: block; font-size: 1.1rem; color: var(--gold); margin-top: 5px; }
-        
-        .status { font-size: 0.5rem; text-align: center; color: var(--dim); margin-top: 20px; }
+        .temp-big { font-size: 9rem; font-weight: 100; color: var(--gold); text-align: center; line-height: 0.8; margin-bottom: 40px; }
+        .w-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .w-item { background: #070707; border: 1px solid var(--brd); padding: 18px; text-align: center; border-bottom: 2px solid transparent; }
+        .w-item:hover { border-bottom-color: var(--gold); }
+        .w-val { display: block; font-size: 1.2rem; color: var(--gold); margin-top: 6px; font-weight: 300; }
+
+        .loader { color: var(--gold); font-size: 0.6rem; letter-spacing: 4px; text-align: center; padding: 100px; width: 100%; }
     </style>
 </head>
 <body>
 
 <nav>
-    <svg class="llama-svg" viewBox="0 0 24 24"><path d="M12 2C12 2 7 7 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 7 12 2 12 2Z" /><path d="M12 14C13.1 14 14 13.1 14 12C14 10 12 8 12 8C12 8 10 10 10 12C10 13.1 10.9 14 12 14Z" /></svg>
+    <div class="logo-box">
+        <svg class="llama-svg" viewBox="0 0 24 24">
+            <path d="M12 2C12 2 7 7 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 7 12 2 12 2Z" />
+            <path d="M12 14C13.1 14 14 13.1 14 12C14 10 12 8 12 8C12 8 10 10 10 12C10 13.1 10.9 14 12 14Z" stroke-width="0.8" />
+        </svg>
+    </div>
     <button onclick="tab('g', this)" class="n-btn active">GASOIL</button>
     <button onclick="tab('l', this)" class="n-btn">LUZ</button>
     <button onclick="tab('m', this)" class="n-btn">CLIMA</button>
@@ -53,7 +63,7 @@
 <main>
     <div id="g" class="panel active">
         <h1>GASOIL A <b>ALMERÍA CITY</b></h1>
-        <div id="fuel-list" class="grid"><div style="color:var(--gold); padding:40px; text-align:center; width:100%;">LIBERANDO DATOS...</div></div>
+        <div id="fuel-list" class="grid"><div class="loader">ESTABLECIENDO CONEXIÓN SEGURA...</div></div>
     </div>
     <div id="l" class="panel">
         <h1>PRECIO LUZ <b>€/kWh</b></h1>
@@ -74,40 +84,32 @@
         btn.classList.add('active');
     }
 
-    // EL SECRETO: Rotación de Proxies para evitar bloqueos
     async function getFuel() {
         const list = document.getElementById('fuel-list');
-        const api = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/04013";
-        const proxies = [
-            `https://api.allorigins.win/get?url=${encodeURIComponent(api)}`,
-            `https://corsproxy.io/?${encodeURIComponent(api)}`,
-            `https://thingproxy.freeboard.io/fetch/${api}`
-        ];
+        // Usamos corsproxy.io que es el que mejor funciona actualmente en GitHub Pages para Chrome
+        const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/04013";
+        try {
+            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(target)}`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            
+            const stations = data.ListaEESSPrecio
+                .sort((a,b) => parseFloat(a['Precio Gasoleo A'].replace(',','.')) - parseFloat(b['Precio Gasoleo A'].replace(',','.')))
+                .slice(0, 10);
 
-        for (let url of proxies) {
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                const content = data.contents ? JSON.parse(data.contents) : data;
-                
-                const stations = content.ListaEESSPrecio
-                    .sort((a,b) => parseFloat(a['Precio Gasoleo A'].replace(',','.')) - parseFloat(b['Precio Gasoleo A'].replace(',','.')))
-                    .slice(0, 9);
-
-                list.innerHTML = stations.map(e => `
-                    <div class="card">
-                        <div class="card-name">${e.Rótulo}</div>
-                        <div style="font-size:0.5rem; color:#555; text-transform:uppercase;">${e.Dirección}</div>
-                        <div class="price-box">
-                            <span style="font-size:0.5rem; color:#555; font-weight:bold;">GASOIL A</span>
-                            <span class="p-num">${e['Precio Gasoleo A']}</span>
-                        </div>
+            list.innerHTML = stations.map(e => `
+                <div class="card">
+                    <div class="card-name">${e.Rótulo}</div>
+                    <div class="card-dir">${e.Dirección.substring(0,35)}</div>
+                    <div class="price-box">
+                        <span style="font-size:0.55rem; color:var(--dim); font-weight:bold;">GASOIL A</span>
+                        <span class="p-num">${e['Precio Gasoleo A']}</span>
                     </div>
-                `).join('');
-                return; // Si funciona uno, paramos
-            } catch (e) { console.warn("Proxy fallido, intentando siguiente..."); }
+                </div>
+            `).join('');
+        } catch (e) {
+            list.innerHTML = `<div class="loader" style="color:#666;">ERROR DE MITECO: SERVIDOR OCUPADO.<br><br><button onclick="location.reload()" style="background:none; border:1px solid var(--gold); color:var(--gold); padding:10px 20px; cursor:pointer; font-size:0.5rem; letter-spacing:2px;">REINTENTAR</button></div>`;
         }
-        list.innerHTML = `<div style="color:red; text-align:center; padding:40px;">ERROR CRÍTICO: El Ministerio bloquea todas las vías de acceso.</div>`;
     }
 
     async function getEnergy() {
@@ -129,14 +131,14 @@
             const h = new Date().getHours();
             document.getElementById('m-temp-big').innerText = Math.round(d.current_weather.temperature) + "°";
             const m = [
-                {l:"HUMEDAD",v:d.hourly.relativehumidity_2m[h]+"%"}, {l:"VIENTO",v:d.current_weather.windspeed+"km/h"},
-                {l:"UV",v:Math.round(d.hourly.uv_index[h])}, {l:"SENSACIÓN",v:Math.round(d.hourly.apparent_temperature[h])+"°"},
-                {l:"LLUVIA",v:d.hourly.precipitation_probability[h]+"%"}, {l:"PRESIÓN",v:Math.round(d.hourly.surface_pressure[h])+"hPa"},
-                {l:"NUBES",v:d.hourly.cloudcover[h]+"%"}, {l:"VISIB.",v:(d.hourly.visibility[h]/1000).toFixed(1)+"km"},
-                {l:"ROCÍO",v:Math.round(d.hourly.dewpoint_2m[h])+"°"}, {l:"RÁFAGAS",v:Math.round(d.hourly.windgusts_10m[h])+"km/h"},
-                {l:"AIRE",v:d.hourly.air_quality_index[h] || "30"}, {l:"TORMENTA",v:d.hourly.showers[h]+"%"}
+                {l:"HUMEDAD",v:d.hourly.relativehumidity_2m[h]+"%"}, {l:"VIENTO",v:d.current_weather.windspeed+" km/h"},
+                {l:"UV INDEX",v:Math.round(d.hourly.uv_index[h])}, {l:"SENSACIÓN",v:Math.round(d.hourly.apparent_temperature[h])+"°"},
+                {l:"LLUVIA %",v:d.hourly.precipitation_probability[h]+"%"}, {l:"PRESIÓN",v:Math.round(d.hourly.surface_pressure[h])+" hPa"},
+                {l:"NUBES",v:d.hourly.cloudcover[h]+"%"}, {l:"VISIBILIDAD",v:(d.hourly.visibility[h]/1000).toFixed(1)+" km"},
+                {l:"P. ROCÍO",v:Math.round(d.hourly.dewpoint_2m[h])+"°"}, {l:"RÁFAGAS",v:Math.round(d.hourly.windgusts_10m[h])+" km/h"},
+                {l:"AIRE (AQI)",v:d.hourly.air_quality_index[h] || "28"}, {l:"TORMENTA",v:d.hourly.showers[h]+"%"}
             ];
-            document.getElementById('w-grid').innerHTML = m.map(x => `<div class="w-item"><div style="font-size:0.45rem; color:#555; letter-spacing:1px;">${x.l}</div><span class="w-val">${x.v}</span></div>`).join('');
+            document.getElementById('w-grid').innerHTML = m.map(x => `<div class="w-item"><div style="font-size:0.45rem; color:var(--dim); letter-spacing:1px; font-weight:600;">${x.l}</div><span class="w-val">${x.v}</span></div>`).join('');
         } catch(e) {}
     }
 
