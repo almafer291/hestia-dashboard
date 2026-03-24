@@ -3,34 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hestia v110 | Almería Real-Time</title>
+    <title>Hestia v111 | Almería Live</title>
     <style>
         :root { --bronce: #a67c52; --bg: #000; --card: #0d0d0d; --border: rgba(166,124,82,0.3); }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        nav { width: 60px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 50px; background: #050505; flex-shrink: 0; }
+        
+        /* Nav Lateral con Logotipo */
+        nav { width: 70px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 20px; background: #050505; flex-shrink: 0; }
+        
+        /* Estilo del Logotipo con Llamita */
+        .logo-container { margin-bottom: 50px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .flame-icon { width: 20px; height: 28px; background-color: var(--bronce); border-radius: 80% 0 55% 50% / 55% 0 80% 50%; transform: rotate(-45deg); position: relative; margin-bottom: 5px; box-shadow: 0 0 10px rgba(166,124,82,0.5); }
+        .flame-icon::after { content: ''; position: absolute; width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; top: 8px; left: 4px; filter: blur(2px); }
+        .logo-text { color: #fff; font-size: 0.6rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 60px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 3px; transition: 0.3s; outline: none; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
+
+        /* Contenido */
         main { flex: 1; padding: 25px; overflow-y: auto; scroll-behavior: smooth; }
         .panel { display: none; max-width: 550px; margin: 0 auto; }
         .panel.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 4px; text-align: center; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        
+        /* Tarjetas Gasolina */
         .card { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--bronce); border-radius: 12px; padding: 18px; margin-bottom: 15px; }
         .grid-prices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .p-box { background: #151515; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #1a1a1a; }
         .p-label { font-size: 0.55rem; color: #555; display: block; margin-bottom: 2px; }
         .p-val { color: var(--bronce); font-family: monospace; font-size: 1.1rem; font-weight: bold; }
+        
+        /* Gráfica Energía (SIN TOCAR) */
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; margin: 25px 0; gap: 3px; }
         .bar { flex: 1; background: #1a1a1a; border-radius: 2px 2px 0 0; transition: 0.5s; min-height: 2px; }
         .bar.active { background: var(--bronce); box-shadow: 0 0 15px var(--bronce); }
         .stats { display: flex; justify-content: space-around; font-size: 0.7rem; color: #555; margin-top: 20px; }
         .stats b { color: var(--bronce); }
-        .error-msg { color: #ff4444; text-align: center; font-size: 0.75rem; padding: 20px; border: 1px dashed #444; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <nav>
+    <div class="logo-container">
+        <div class="flame-icon"></div>
+        <div class="logo-text">HESTIA</div>
+    </div>
+    
     <button onclick="tab('m', this)" class="n-btn active">CLIMA</button>
     <button onclick="tab('g', this)" class="n-btn">FUEL</button>
     <button onclick="tab('l', this)" class="n-btn">LUZ</button>
@@ -44,12 +64,12 @@
 
     <div id="g" class="panel">
         <h1>GASOLINERAS ALMERÍA</h1>
-        <div id="g-list"><div class="card" style="text-align:center;">Sincronizando precios...</div></div>
+        <div id="g-list"><div class="card" style="text-align:center;">Buscando fuel real...</div></div>
     </div>
 
     <div id="l" class="panel">
         <h1>PRECIO ENERGÍA</h1>
-        <div id="l-now">Cargando...</div>
+        <div id="l-now">Cargando mercado...</div>
     </div>
 </main>
 
@@ -60,6 +80,30 @@
         btn.classList.add('active');
     }
 
+    // MOTOR DE GASOLINA (Infiltración por Proxy Rotativo)
+    async function fetchFuelReal() {
+        const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
+        
+        // Lista de proxies para rotar IPs y saltar baneos
+        const proxies = [
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`,
+            `https://corsproxy.io/?${encodeURIComponent(target)}`,
+            `https://api.codetabs.com/v1/proxy?quest=${target}`
+        ];
+
+        for (let url of proxies) {
+            try {
+                // Añadimos un timestamp para forzar una petición nueva cada vez
+                const res = await fetch(`${url}&t=${new Date().getTime()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.ListaEESSPrecio) return data;
+                }
+            } catch(e) { console.log("Ruta bloqueada, probando alternativa..."); }
+        }
+        throw new Error("El Ministerio está bloqueando todas las conexiones.");
+    }
+
     async function load() {
         // 1. CLIMA
         try {
@@ -68,7 +112,7 @@
             document.getElementById('t').innerText = Math.round(dataC.current_weather.temperature) + '°';
         } catch(e) {}
 
-        // 2. LUZ (Directo a Red Eléctrica)
+        // 2. LUZ (SIN TOCAR - DIRECTO A REE)
         try {
             const hoy = new Date().toISOString().split('T')[0];
             const resL = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`);
@@ -88,42 +132,45 @@
 
             document.getElementById('l-now').innerHTML = `
                 <div class="card" style="text-align:center;">
-                    <div style="font-size:0.6rem; color:#444;">PRECIO ACTUAL €/kWh</div>
+                    <div style="font-size:0.6rem; color:#444; letter-spacing:2px;">PRECIO ACTUAL €/kWh</div>
                     <div class="price" style="font-size:3.5rem; margin:15px 0;">${nowL}</div>
                     <div class="chart">${bars}</div>
                     <div class="stats"><span>MÍN: <b>${minL}</b></span><span>MÁX: <b>${maxL}</b></span></div>
                 </div>`;
-        } catch(e) { document.getElementById('l-now').innerHTML = "Fallo en Red Eléctrica."; }
+        } catch(e) { document.getElementById('l-now').innerText = "Fallo en Red Eléctrica."; }
 
-        // 3. GASOLINA (Túnel de Google / Proxy Limpio)
+        // 3. FUEL REAL (SISTEMA DE INFILTRACIÓN)
         try {
-            const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-            // Usamos un proxy que rota IPs para evitar el baneo del Ministerio
-            const resG = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`);
-            const dataG = await resG.json();
-
-            const filtrado = dataG.ListaEESSPrecio
+            const dataG = await fetchFuelReal();
+            const fuelHtml = dataG.ListaEESSPrecio
                 .filter(e => e.Municipio.toUpperCase().includes("ALMERIA"))
+                // Ordenamos por Gasolina 95
                 .sort((a,b) => parseFloat((a['Precio Gasolina 95 E5'] || "9").replace(',','.')) - parseFloat((b['Precio Gasolina 95 E5'] || "9").replace(',','.')))
-                .slice(0, 10);
-
-            document.getElementById('g-list').innerHTML = filtrado.map(e => `
-                <div class="card">
-                    <div style="font-size:0.85rem; font-weight:bold; color:#eee;">${e.Rótulo}</div>
-                    <div style="font-size:0.6rem; color:#444; margin-top:4px;">${e.Dirección}</div>
-                    <div class="grid-prices">
-                        <div class="p-box"><span class="p-label">G95</span><span class="p-val">${e['Precio Gasolina 95 E5']}</span></div>
-                        <div class="p-box"><span class="p-label">GA</span><span class="p-val">${e['Precio Gasoleo A']}</span></div>
+                .slice(0, 12) // Top 12 gasolineras
+                .map(e => `
+                    <div class="card">
+                        <div style="font-size:0.9rem; font-weight:bold; letter-spacing:1px; color:#eee;">${e.Rótulo}</div>
+                        <div style="font-size:0.6rem; color:#444; margin-top:4px; text-transform:uppercase;">${e.Dirección}</div>
+                        <div class="grid-prices">
+                            <div class="p-box"><span class="p-label">G95</span><span class="p-val">${e['Precio Gasolina 95 E5'] || "--"}</span></div>
+                            <div class="p-box"><span class="p-label">G98</span><span class="p-val">${e['Precio Gasolina 98 E5'] || "--"}</span></div>
+                            <div class="p-box"><span class="p-label">GA</span><span class="p-val">${e['Precio Gasoleo A'] || "--"}</span></div>
+                            <div class="p-box"><span class="p-label">G+</span><span class="p-val">${e['Precio Gasoleo Premium'] || "--"}</span></div>
+                        </div>
                     </div>
-                </div>`).join('');
+                `).join('');
+
+            document.getElementById('g-list').innerHTML = fuelHtml || '<div class="card" style="text-align:center;">No hay fuel en Almería capital hoy.</div>';
         } catch(e) { 
             document.getElementById('g-list').innerHTML = `
-                <div class="error-msg">
-                    El Ministerio ha bloqueado la conexión temporalmente.<br><br>
-                    <b>Truco:</b> Si abres la web desde el móvil con 4G/5G en lugar de WiFi, suele saltarse el bloqueo.
+                <div class="card" style="text-align:center; color:#ff4444; border:1px dashed #ff4444;">
+                    El Ministerio está bloqueando la IP.<br><br>
+                    <b>Truco para saltar el muro:</b><br>
+                    Si entras desde el móvil con 4G/5G en lugar de WiFi, el Ministerio te detecta como persona real y te dará los precios al instante.
                 </div>`; 
         }
     }
+
     window.onload = load;
 </script>
 </body>
