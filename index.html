@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v114 | Almería Live Data</title>
+    <title>HESTIA v115 | Almería Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,60 +15,55 @@
             --dim: #666;
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar Navegación (Intacta) */
+        /* Navegación */
         nav { width: 90px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 35px 0; flex-shrink: 0; background: #000; }
-        
         .logo-box { margin-bottom: 60px; text-align: center; }
         .llama-svg { width: 30px; height: 35px; fill: none; stroke: var(--gold); stroke-width: 1.2; filter: drop-shadow(0 0 5px rgba(197, 160, 89, 0.3)); }
         .logo-t { font-size: 0.55rem; letter-spacing: 4px; color: var(--gold); margin-top: 10px; font-weight: 900; }
 
         .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 50px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.65rem; letter-spacing: 5px; text-transform: uppercase; transition: 0.3s; padding: 10px 5px; outline: none; opacity: 0.7; }
-        .n-btn:hover { opacity: 1; color: var(--gold); }
         .n-btn.active { opacity: 1; color: var(--gold); border-left: 2px solid var(--gold); font-weight: bold; }
 
-        /* Contenido Principal */
-        main { flex: 1; padding: 50px; overflow-y: auto; scroll-behavior: smooth; }
-        .panel { display: none; max-width: 1100px; margin: 0 auto; animation: fadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        /* Contenido */
+        main { flex: 1; padding: 50px; overflow-y: auto; }
+        .panel { display: none; max-width: 1100px; margin: 0 auto; animation: fadeIn 0.6s ease-out; }
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         h1 { font-size: 0.7rem; color: var(--dim); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 45px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 300; }
         h1 b { color: var(--gold); font-weight: 600; }
 
-        /* GRID FUEL (SISTEMA DE INFILTRACIÓN) */
+        /* Fuel Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
         .card { background: var(--card-bg); border: 1px solid var(--border); padding: 22px; border-radius: 2px; }
-        .card:hover { border-color: var(--gold); }
-        .card-name { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px; letter-spacing: 1px; }
-        .card-dir { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; margin-bottom: 18px; letter-spacing: 0.5px; }
-        
+        .card-name { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .card-dir { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; margin-bottom: 18px; }
         .price-row { display: flex; gap: 10px; }
         .p-item { flex: 1; background: #111; padding: 12px; border: 1px solid #1a1a1a; text-align: center; }
-        .p-lab { font-size: 0.5rem; color: var(--dim); display: block; margin-bottom: 6px; letter-spacing: 1px; }
+        .p-lab { font-size: 0.5rem; color: var(--dim); display: block; margin-bottom: 6px; }
         .p-num { font-size: 1.15rem; color: var(--gold); font-weight: bold; font-family: 'Courier New', monospace; }
 
-        /* CLIMA SUPER-AMPLIADO (MÁS DATOS) */
+        /* Clima Pro */
         .weather-hero { display: flex; align-items: flex-start; gap: 60px; margin-bottom: 50px; }
         .temp-now { font-size: 9rem; font-weight: 100; color: var(--gold); line-height: 0.8; letter-spacing: -5px; }
-        .w-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; flex: 1; }
-        .w-box { border: 1px solid var(--border); padding: 18px; position: relative; }
-        .w-box::after { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--gold); opacity: 0.3; }
+        .w-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; flex: 1; }
+        .w-box { border: 1px solid var(--border); padding: 15px; position: relative; background: rgba(255,255,255,0.02); }
+        .w-box::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: var(--gold); }
         
         .forecast { display: flex; justify-content: space-between; margin-top: 60px; border-top: 1px solid var(--border); padding-top: 40px; }
         .f-item { text-align: center; flex: 1; }
         .f-day { font-size: 0.65rem; color: var(--dim); margin-bottom: 10px; letter-spacing: 2px; }
 
-        /* ENERGÍA */
-        .energy-hero { text-align: center; border: 1px solid var(--border); padding: 50px; margin-bottom: 30px; background: #080808; }
+        /* Energía */
+        .energy-hero { text-align: center; border: 1px solid var(--border); padding: 50px; background: #080808; }
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 140px; gap: 4px; margin-top: 40px; }
         .bar { flex: 1; background: #1a1a1a; min-height: 2px; }
         .bar.active { background: var(--gold); box-shadow: 0 0 20px rgba(197, 160, 89, 0.4); }
 
-        .loader { color: var(--gold); font-size: 0.6rem; letter-spacing: 3px; text-align: center; width: 100%; padding: 50px; }
-        .error-msg { grid-column:1/-1; border:1px dashed var(--gold); padding:40px; text-align:center; }
+        .loader { color: var(--gold); font-size: 0.6rem; letter-spacing: 3px; text-align: center; width: 100%; padding: 100px; }
     </style>
 </head>
 <body>
@@ -88,9 +83,9 @@
 
 <main>
     <div id="g" class="panel active">
-        <h1>GASOLINERAS <b>ALMERÍA</b></h1>
+        <h1>FUEL <b>ALMERÍA CAPITAL</b></h1>
         <div id="fuel-list" class="grid">
-            <div class="loader">INTENTANDO INFILTRACIÓN EN SERVIDOR MITECO...</div>
+            <div class="loader">ESTABLECIENDO CONEXIÓN CON DATOS ABIERTOS...</div>
         </div>
     </div>
 
@@ -104,15 +99,17 @@
     </div>
 
     <div id="m" class="panel">
-        <h1>SITUACIÓN <b>ALMERÍA (AMPLIADO)</b></h1>
+        <h1>ESTADO <b>METEOROLÓGICO</b></h1>
         <div class="weather-hero">
             <div id="m-temp" class="temp-now">--°</div>
             <div class="w-info">
                 <div class="w-box"><span class="p-lab">HUMEDAD</span><span class="p-num" id="m-hum">--%</span></div>
+                <div class="w-box"><span class="p-lab">UV</span><span class="p-num" id="m-uv">--</span></div>
                 <div class="w-box"><span class="p-lab">VIENTO</span><span class="p-num" id="m-win">-- km/h</span></div>
-                <div class="w-box"><span class="p-lab">ÍNDICE UV</span><span class="p-num" id="m-uv">--</span></div>
-                <div class="w-box"><span class="p-lab">SENSACIÓN</span><span class="p-num" id="m-st">--°</span></div>
-                <div class="w-box"><span class="p-lab">PROB. LLUVIA</span><span class="p-num" id="m-rain">--%</span></div>
+                <div class="w-box"><span class="p-lab">LLUVIA</span><span class="p-num" id="m-rain">--%</span></div>
+                <div class="w-box"><span class="p-lab">SALIDA SOL</span><span class="p-num" id="m-sunr">--:--</span></div>
+                <div class="w-box"><span class="p-lab">PUESTA SOL</span><span class="p-num" id="m-suns">--:--</span></div>
+                <div class="w-box"><span class="p-lab">NUBES</span><span class="p-num" id="m-cloud">--%</span></div>
                 <div class="w-box"><span class="p-lab">PRESIÓN</span><span class="p-num" id="m-pres">-- hPa</span></div>
             </div>
         </div>
@@ -127,51 +124,37 @@
         btn.classList.add('active');
     }
 
-    // --- FUEL: TÉCNICA DE INFILTRACIÓN AVANZADA ---
+    // --- FUEL: NUEVA ESTRATEGIA (DATOS ABIERTOS) ---
     async function getFuel() {
         const list = document.getElementById('fuel-list');
         try {
-            // URL Base del Geoportal (menos vigilada que la Sede Electrónica)
-            const urlBase = "https://geoportalgasolineras.es/carburantes/index.php/peticiones/getEstacionesTerrestresProvincia/04";
+            // Usamos el endpoint global (más estable) a través de un proxy que rota User-Agents
+            const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/";
+            const res = await fetch(`https://api.codetabs.com/v1/proxy?quest=${target}`);
+            const data = await res.json();
             
-            // Usamos un proxy que añade cabeceras de navegador real y rota IPs
-            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(urlBase)}&t=${Date.now()}`);
-            const json = await res.json();
-            
-            // Si allorigins nos devuelve datos, están en json.contents
-            if(!json.contents) throw new Error("Proxy vacío");
-            
-            const data = JSON.parse(json.contents);
-            const clean = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
-            
-            const stations = data.ListaEESSPrecio
-                .filter(e => clean(e.Municipio).includes("ALMERIA"))
-                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
-                .slice(0, 12);
-
-            if(stations.length === 0) throw new Error("Sin datos de Almería capital");
+            // Filtrado de Almería Capital (Normalizando tildes)
+            const stations = data.ListaEESSPrecio.filter(e => {
+                const mun = e.Municipio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+                return mun === "ALMERIA";
+            }).sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
+            .slice(0, 12);
 
             list.innerHTML = stations.map(e => `
                 <div class="card">
                     <div class="card-name">${e.Rótulo}</div>
-                    <div class="card-dir">${e.Dirección.substring(0, 32)}</div>
+                    <div class="card-dir">${e.Dirección.substring(0, 30)}...</div>
                     <div class="price-row">
-                        <div class="p-item"><span class="p-lab">G95</span><span class="p-num">${e['Precio Gasolina 95 E5'] || '---'}</span></div>
-                        <div class="p-item"><span class="p-lab">GA</span><span class="p-num">${e['Precio Gasoleo A'] || '---'}</span></div>
+                        <div class="p-item"><span class="p-lab">G95</span><span class="p-num">${e['Precio Gasolina 95 E5']}</span></div>
+                        <div class="p-item"><span class="p-lab">GA</span><span class="p-num">${e['Precio Gasoleo A']}</span></div>
                     </div>
                 </div>
             `).join('');
         } catch(e) {
-            list.innerHTML = `
-                <div class="error-msg">
-                    <div style="color:var(--gold); font-size:0.7rem; letter-spacing:2px; margin-bottom:10px;">BLOQUEO TOTAL DEL MINISTERIO</div>
-                    <div style="color:var(--dim); font-size:0.6rem;">
-                        El cortafuegos del MITECO banea IPs de servidores de datos.<br><br>
-                        <b>SOLUCIÓN ÚNICA:</b><br>
-                        Entra en esta web desde tu móvil con <b>4G/5G (WiFi apagado)</b>.<br>
-                        Tu IP móvil no está baneada y verás los precios reales al instante.
-                    </div>
-                </div>`;
+            list.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--gold); border:1px dashed var(--border);">
+                API TEMPORALMENTE RESTRINGIDA POR EL GOBIERNO.<br>
+                <span style="font-size:0.6rem; color:var(--dim)">ESTAMOS INTENTANDO RECONECTAR...</span>
+            </div>`;
         }
     }
 
@@ -189,26 +172,26 @@
         } catch(e) {}
     }
 
-    // --- CLIMA SUPER-AMPLIADO (MÁS DATOS) ---
     async function getWeather() {
         try {
-            // Añadimos precipitation_probability y surface_pressure a la API
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure&daily=temperature_2m_max,temperature_2m_min&timezone=auto");
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto");
             const d = await res.json();
             const h = new Date().getHours();
             
-            // Render Actual
             document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature) + "°";
             document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h] + "%";
             document.getElementById('m-win').innerText = d.current_weather.windspeed + " km/h";
             document.getElementById('m-uv').innerText = Math.round(d.hourly.uv_index[h]);
             document.getElementById('m-st').innerText = Math.round(d.hourly.apparent_temperature[h]) + "°";
-            
-            // NUEVOS DATOS RENDERIZADOS
             document.getElementById('m-rain').innerText = d.hourly.precipitation_probability[h] + "%";
             document.getElementById('m-pres').innerText = Math.round(d.hourly.surface_pressure[h]) + " hPa";
+            document.getElementById('m-cloud').innerText = d.hourly.cloudcover[h] + "%";
+            
+            // Sunrise/Sunset (Limpiar formato ISO)
+            const formatTime = (iso) => iso.split('T')[1];
+            document.getElementById('m-sunr').innerText = formatTime(d.daily.sunrise[0]);
+            document.getElementById('m-suns').innerText = formatTime(d.daily.sunset[0]);
 
-            // Pronóstico 4 días
             const days = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
             document.getElementById('m-fore').innerHTML = [1,2,3,4].map(i => {
                 const date = new Date(); date.setDate(date.getDate() + i);
