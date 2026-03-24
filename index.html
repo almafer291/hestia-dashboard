@@ -3,35 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hestia v109 | Redundancia Activa</title>
+    <title>Hestia v110 | Almería Real-Time</title>
     <style>
         :root { --bronce: #a67c52; --bg: #000; --card: #0d0d0d; --border: rgba(166,124,82,0.3); }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
         nav { width: 60px; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding-top: 50px; background: #050505; flex-shrink: 0; }
         .n-btn { background: none; border: none; color: #444; cursor: pointer; margin-bottom: 60px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.7rem; letter-spacing: 3px; transition: 0.3s; outline: none; }
         .n-btn.active { color: var(--bronce); font-weight: bold; }
-
         main { flex: 1; padding: 25px; overflow-y: auto; scroll-behavior: smooth; }
         .panel { display: none; max-width: 550px; margin: 0 auto; }
         .panel.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 4px; text-align: center; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        
         .card { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--bronce); border-radius: 12px; padding: 18px; margin-bottom: 15px; }
         .grid-prices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .p-box { background: #151515; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #1a1a1a; }
         .p-label { font-size: 0.55rem; color: #555; display: block; margin-bottom: 2px; }
         .p-val { color: var(--bronce); font-family: monospace; font-size: 1.1rem; font-weight: bold; }
-        
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; margin: 25px 0; gap: 3px; }
         .bar { flex: 1; background: #1a1a1a; border-radius: 2px 2px 0 0; transition: 0.5s; min-height: 2px; }
         .bar.active { background: var(--bronce); box-shadow: 0 0 15px var(--bronce); }
         .stats { display: flex; justify-content: space-around; font-size: 0.7rem; color: #555; margin-top: 20px; }
         .stats b { color: var(--bronce); }
-        .best-tip { margin-top: 20px; padding: 15px; border: 1px dashed var(--bronce); border-radius: 10px; font-size: 0.75rem; color: #888; text-align: center; }
-        .error-msg { color: #ff4444; text-align: center; font-size: 0.8rem; padding: 20px; border: 1px dashed #ff4444; border-radius: 10px; }
+        .error-msg { color: #ff4444; text-align: center; font-size: 0.75rem; padding: 20px; border: 1px dashed #444; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -50,12 +44,12 @@
 
     <div id="g" class="panel">
         <h1>GASOLINERAS ALMERÍA</h1>
-        <div id="g-list"><div class="card" style="text-align:center;">Buscando ruta segura al Ministerio...</div></div>
+        <div id="g-list"><div class="card" style="text-align:center;">Sincronizando precios...</div></div>
     </div>
 
     <div id="l" class="panel">
         <h1>PRECIO ENERGÍA</h1>
-        <div id="l-now"><div class="card" style="text-align:center;">Conectando con Red Eléctrica...</div></div>
+        <div id="l-now">Cargando...</div>
     </div>
 </main>
 
@@ -66,62 +60,25 @@
         btn.classList.add('active');
     }
 
-    // 1. MOTOR DE LUZ (2 Intentos)
-    async function fetchLuz() {
-        try {
-            let res = await fetch("https://api.preciodelaluz.org/v1/prices/all?zone=PCB");
-            if (res.ok) {
-                let data = await res.json();
-                return Object.values(data).map(h => (h.price / 1000).toFixed(4));
-            }
-        } catch(e) { console.log("Fallo API principal de luz. Cambiando a REE..."); }
-
-        // Si la primera falla, atacamos directo a Red Eléctrica de España (Infalible)
-        const d = new Date();
-        const hoy = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        let res2 = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`);
-        let data2 = await res2.json();
-        let pvpc = data2.included.find(x => x.id === "1001" || x.type === "PVPC") || data2.included[0];
-        return pvpc.attributes.values.map(v => (v.value / 1000).toFixed(4));
-    }
-
-    // 2. MOTOR DE GASOLINA (3 Intentos)
-    async function fetchGasolina() {
-        const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-        const proxies = [
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`,
-            `https://corsproxy.io/?${encodeURIComponent(target)}`,
-            `https://api.codetabs.com/v1/proxy?quest=${target}`
-        ];
-
-        for (let url of proxies) {
-            try {
-                let res = await fetch(url);
-                if (res.ok) {
-                    let data = await res.json();
-                    if (data && data.ListaEESSPrecio) return data;
-                }
-            } catch(e) { console.log("Proxy bloqueado, intentando el siguiente..."); }
-        }
-        throw new Error("Todos los puentes al Ministerio están bloqueados.");
-    }
-
-    // 3. INICIO DE LA APP
     async function load() {
-        // Clima
+        // 1. CLIMA
         try {
             const resC = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
             const dataC = await resC.json();
             document.getElementById('t').innerText = Math.round(dataC.current_weather.temperature) + '°';
-        } catch(e) { document.getElementById('t').innerText = "Err"; }
+        } catch(e) {}
 
-        // Luz
+        // 2. LUZ (Directo a Red Eléctrica)
         try {
-            const pArr = await fetchLuz();
+            const hoy = new Date().toISOString().split('T')[0];
+            const resL = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`);
+            const dataL = await resL.json();
+            const pvpc = dataL.included.find(x => x.id === "1001" || x.type === "PVPC");
+            const pArr = pvpc.attributes.values.map(v => (v.value / 1000).toFixed(4));
+            
             const minL = Math.min(...pArr).toFixed(4);
             const maxL = Math.max(...pArr).toFixed(4);
             const nowL = pArr[new Date().getHours()];
-            const bestH = pArr.indexOf(minL).toString().padStart(2, '0');
             const hNow = new Date().getHours();
 
             const bars = pArr.map((p, i) => {
@@ -131,46 +88,42 @@
 
             document.getElementById('l-now').innerHTML = `
                 <div class="card" style="text-align:center;">
-                    <div style="font-size:0.6rem; color:#444; letter-spacing:2px;">PRECIO ACTUAL €/kWh</div>
+                    <div style="font-size:0.6rem; color:#444;">PRECIO ACTUAL €/kWh</div>
                     <div class="price" style="font-size:3.5rem; margin:15px 0;">${nowL}</div>
                     <div class="chart">${bars}</div>
-                    <div class="stats">
-                        <span>MÍN: <b>${minL}</b></span>
-                        <span>MÁX: <b>${maxL}</b></span>
-                    </div>
-                    <div class="best-tip">💡 La hora más barata hoy es a las <b>${bestH}:00h</b></div>
-                </div>
-            `;
-        } catch(e) { 
-            document.getElementById('l-now').innerHTML = '<div class="error-msg">Red Eléctrica no responde. Reintenta en 5 min.</div>'; 
-        }
+                    <div class="stats"><span>MÍN: <b>${minL}</b></span><span>MÁX: <b>${maxL}</b></span></div>
+                </div>`;
+        } catch(e) { document.getElementById('l-now').innerHTML = "Fallo en Red Eléctrica."; }
 
-        // Gasolina
+        // 3. GASOLINA (Túnel de Google / Proxy Limpio)
         try {
-            const dataG = await fetchGasolina();
-            const fuelHtml = dataG.ListaEESSPrecio
-                .filter(e => e.Municipio.toUpperCase().includes("ALMERIA"))
-                .sort((a,b) => parseFloat((a['Precio Gasolina 95 E5'] || "99").replace(',','.')) - parseFloat((b['Precio Gasolina 95 E5'] || "99").replace(',','.')))
-                .slice(0, 12)
-                .map(e => `
-                    <div class="card">
-                        <div style="font-size:0.9rem; font-weight:bold; letter-spacing:1px; color:#eee;">${e.Rótulo}</div>
-                        <div style="font-size:0.6rem; color:#444; margin-top:4px; text-transform:uppercase;">${e.Dirección}</div>
-                        <div class="grid-prices">
-                            <div class="p-box"><span class="p-label">G95</span><span class="p-val">${e['Precio Gasolina 95 E5'] || "--"}</span></div>
-                            <div class="p-box"><span class="p-label">G98</span><span class="p-val">${e['Precio Gasolina 98 E5'] || "--"}</span></div>
-                            <div class="p-box"><span class="p-label">GA</span><span class="p-val">${e['Precio Gasoleo A'] || "--"}</span></div>
-                            <div class="p-box"><span class="p-label">G+</span><span class="p-val">${e['Precio Gasoleo Premium'] || "--"}</span></div>
-                        </div>
-                    </div>
-                `).join('');
+            const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
+            // Usamos un proxy que rota IPs para evitar el baneo del Ministerio
+            const resG = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`);
+            const dataG = await resG.json();
 
-            document.getElementById('g-list').innerHTML = fuelHtml || '<div class="error-msg">No hay datos para Almería capital hoy.</div>';
+            const filtrado = dataG.ListaEESSPrecio
+                .filter(e => e.Municipio.toUpperCase().includes("ALMERIA"))
+                .sort((a,b) => parseFloat((a['Precio Gasolina 95 E5'] || "9").replace(',','.')) - parseFloat((b['Precio Gasolina 95 E5'] || "9").replace(',','.')))
+                .slice(0, 10);
+
+            document.getElementById('g-list').innerHTML = filtrado.map(e => `
+                <div class="card">
+                    <div style="font-size:0.85rem; font-weight:bold; color:#eee;">${e.Rótulo}</div>
+                    <div style="font-size:0.6rem; color:#444; margin-top:4px;">${e.Dirección}</div>
+                    <div class="grid-prices">
+                        <div class="p-box"><span class="p-label">G95</span><span class="p-val">${e['Precio Gasolina 95 E5']}</span></div>
+                        <div class="p-box"><span class="p-label">GA</span><span class="p-val">${e['Precio Gasoleo A']}</span></div>
+                    </div>
+                </div>`).join('');
         } catch(e) { 
-            document.getElementById('g-list').innerHTML = '<div class="error-msg">El cortafuegos del Ministerio está bloqueando la conexión. Vuelve a abrir la web en unos minutos.</div>'; 
+            document.getElementById('g-list').innerHTML = `
+                <div class="error-msg">
+                    El Ministerio ha bloqueado la conexión temporalmente.<br><br>
+                    <b>Truco:</b> Si abres la web desde el móvil con 4G/5G en lugar de WiFi, suele saltarse el bloqueo.
+                </div>`; 
         }
     }
-
     window.onload = load;
 </script>
 </body>
