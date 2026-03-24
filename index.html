@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hestia v104 | Almería</title>
+    <title>Hestia v108 | Live Data</title>
     <style>
         :root { --bronce: #a67c52; --bg: #000; --card: #0d0d0d; --border: rgba(166,124,82,0.3); }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
@@ -19,18 +19,15 @@
 
         h1 { font-size: 0.8rem; color: var(--bronce); letter-spacing: 4px; text-align: center; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         
-        /* Tarjetas Gasolina Pro */
         .card { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--bronce); border-radius: 12px; padding: 18px; margin-bottom: 15px; }
         .grid-prices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .p-box { background: #151515; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #1a1a1a; }
         .p-label { font-size: 0.55rem; color: #555; display: block; margin-bottom: 2px; }
         .p-val { color: var(--bronce); font-family: monospace; font-size: 1.1rem; font-weight: bold; }
         
-        /* Gráfica Energía */
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; margin: 25px 0; gap: 3px; }
         .bar { flex: 1; background: #1a1a1a; border-radius: 2px 2px 0 0; transition: 0.5s; min-height: 2px; }
         .bar.active { background: var(--bronce); box-shadow: 0 0 15px var(--bronce); }
-        
         .stats { display: flex; justify-content: space-around; font-size: 0.7rem; color: #555; margin-top: 20px; }
         .stats b { color: var(--bronce); }
         .best-tip { margin-top: 20px; padding: 15px; border: 1px dashed var(--bronce); border-radius: 10px; font-size: 0.75rem; color: #888; text-align: center; }
@@ -52,18 +49,16 @@
 
     <div id="g" class="panel">
         <h1>GASOLINERAS ALMERÍA</h1>
-        <div id="g-list">Cargando estaciones...</div>
+        <div id="g-list">Conectando con el Ministerio...</div>
     </div>
 
     <div id="l" class="panel">
         <h1>PRECIO ENERGÍA</h1>
-        <div id="l-now">Cargando mercado...</div>
+        <div id="l-now">Conectando con Red Eléctrica...</div>
     </div>
 </main>
 
 <script>
-    const URL_WORKER = "https://hestia-proxy.almafer291.workers.dev/";
-
     function tab(id, btn) {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -71,57 +66,71 @@
     }
 
     async function load() {
+        // 1. CLIMA (Directo)
         try {
-            // 1. Clima
             const resC = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true');
             const dataC = await resC.json();
             document.getElementById('t').innerText = Math.round(dataC.current_weather.temperature) + '°';
+        } catch(e) {}
 
-            // 2. Worker Data
-            const resW = await fetch(URL_WORKER);
-            const data = await resW.json();
-
-            // 3. Dibujar Gasolineras (Actualizado a p95, p98, da, dp)
-            document.getElementById('g-list').innerHTML = data.fuel.map(e => `
-                <div class="card">
-                    <div style="font-size:0.9rem; font-weight:bold; letter-spacing:1px; color:#eee;">${e.n}</div>
-                    <div style="font-size:0.6rem; color:#444; margin-top:4px; text-transform:uppercase;">${e.a}</div>
-                    <div class="grid-prices">
-                        <div class="p-box"><span class="p-label">G95</span><span class="p-val">${e.p95}</span></div>
-                        <div class="p-box"><span class="p-label">G98</span><span class="p-val">${e.p98}</span></div>
-                        <div class="p-box"><span class="p-label">GA</span><span class="p-val">${e.da}</span></div>
-                        <div class="p-box"><span class="p-label">G+</span><span class="p-val">${e.dp}</span></div>
-                    </div>
-                </div>
-            `).join('');
-
-            // 4. Dibujar Luz (Con sistema de altura de seguridad)
+        // 2. LUZ (Directo a la API pública, sí permite navegadores)
+        try {
+            const resL = await fetch("https://api.preciodelaluz.org/v1/prices/all?zone=PCB");
+            const dataL = await resL.json();
+            const pArr = Object.values(dataL).map(h => (h.price / 1000).toFixed(4));
+            
+            const minL = Math.min(...pArr).toFixed(4);
+            const maxL = Math.max(...pArr).toFixed(4);
+            const nowL = pArr[new Date().getHours()];
+            const bestH = pArr.indexOf(minL).toString();
             const hNow = new Date().getHours();
-            const maxL = parseFloat(data.light.maxL) || 0.20;
-            const bars = data.light.prices.map((p, i) => {
-                const height = maxL > 0 ? (parseFloat(p) / maxL) * 100 : 50;
+
+            const bars = pArr.map((p, i) => {
+                const height = (parseFloat(p) / parseFloat(maxL)) * 100;
                 return `<div class="bar ${i === hNow ? 'active' : ''}" style="height:${height}%"></div>`;
             }).join('');
 
             document.getElementById('l-now').innerHTML = `
                 <div class="card" style="text-align:center;">
                     <div style="font-size:0.6rem; color:#444; letter-spacing:2px;">PRECIO ACTUAL €/kWh</div>
-                    <div class="price" style="font-size:3.5rem; margin:15px 0;">${data.light.nowL}</div>
+                    <div class="price" style="font-size:3.5rem; margin:15px 0;">${nowL}</div>
                     <div class="chart">${bars}</div>
                     <div class="stats">
-                        <span>MÍN: <b>${data.light.minL}</b></span>
-                        <span>MÁX: <b>${data.light.maxL}</b></span>
+                        <span>MÍN: <b>${minL}</b></span>
+                        <span>MÁX: <b>${maxL}</b></span>
                     </div>
-                    ${data.light.bestH !== '--' ? `
-                    <div class="best-tip">
-                        💡 Mejor hora para consumo: <b>${data.light.bestH}:00h</b>
-                    </div>` : ''}
+                    <div class="best-tip">💡 Mejor hora: <b>${bestH}:00h</b></div>
                 </div>
             `;
+        } catch(e) { document.getElementById('l-now').innerText = "Error cargando luz."; }
 
-        } catch (e) { 
-            console.log("Error:", e);
-            document.getElementById('g-list').innerText = "Sincronizando con el servidor...";
+        // 3. GASOLINA (Directo desde el navegador usando un proxy público libre)
+        try {
+            const urlMinisterio = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
+            // Usamos codetabs.com para saltarnos el problema de CORS del navegador sin usar Cloudflare
+            const resG = await fetch(`https://api.codetabs.com/v1/proxy?quest=${urlMinisterio}`);
+            const dataG = await resG.json();
+
+            const fuelHtml = dataG.ListaEESSPrecio
+                .filter(e => e.Municipio.toUpperCase().includes("ALMERIA"))
+                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
+                .slice(0, 12)
+                .map(e => `
+                    <div class="card">
+                        <div style="font-size:0.9rem; font-weight:bold; letter-spacing:1px; color:#eee;">${e.Rótulo}</div>
+                        <div style="font-size:0.6rem; color:#444; margin-top:4px; text-transform:uppercase;">${e.Dirección}</div>
+                        <div class="grid-prices">
+                            <div class="p-box"><span class="p-label">G95</span><span class="p-val">${e['Precio Gasolina 95 E5'] || "--"}</span></div>
+                            <div class="p-box"><span class="p-label">G98</span><span class="p-val">${e['Precio Gasolina 98 E5'] || "--"}</span></div>
+                            <div class="p-box"><span class="p-label">GA</span><span class="p-val">${e['Precio Gasoleo A'] || "--"}</span></div>
+                            <div class="p-box"><span class="p-label">G+</span><span class="p-val">${e['Precio Gasoleo Premium'] || "--"}</span></div>
+                        </div>
+                    </div>
+                `).join('');
+
+            document.getElementById('g-list').innerHTML = fuelHtml;
+        } catch(e) { 
+            document.getElementById('g-list').innerText = "Servidor del ministerio inaccesible temporalmente."; 
         }
     }
 
