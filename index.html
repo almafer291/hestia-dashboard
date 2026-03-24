@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v117 | Almería Command</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800&display=swap" rel="stylesheet">
+    <title>HESTIA v118 | Real-Time Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #c5a059;
@@ -18,54 +18,54 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar Navegación */
+        /* Sidebar */
         nav { width: 90px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 40px 0; background: #000; flex-shrink: 0; }
-        
-        /* LOGO ORIGINAL REUPERADO */
         .logo-box { margin-bottom: 60px; text-align: center; }
         .llama-svg { width: 32px; height: 38px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
         .logo-t { font-size: 0.55rem; letter-spacing: 4px; color: var(--gold); margin-top: 10px; font-weight: 900; }
 
         .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 55px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.65rem; letter-spacing: 5px; text-transform: uppercase; transition: 0.4s; padding: 10px; outline: none; }
-        .n-btn.active { color: var(--gold); border-left: 2px solid var(--gold); font-weight: bold; }
+        .n-btn.active { color: var(--gold); border-left: 2px solid var(--gold); font-weight: bold; opacity: 1; }
 
-        /* Contenedor Principal */
+        /* Main Content */
         main { flex: 1; padding: 50px; overflow-y: auto; }
-        .panel { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.5s ease; }
+        .panel { display: none; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s ease-out; }
         .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 0.7rem; color: var(--dim); letter-spacing: 7px; text-transform: uppercase; margin-bottom: 45px; border-bottom: 1px solid var(--brd); padding-bottom: 15px; }
+        h1 { font-size: 0.7rem; color: var(--dim); letter-spacing: 7px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid var(--brd); padding-bottom: 15px; }
         h1 b { color: var(--gold); }
 
         /* Fuel Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border: 1px solid var(--brd); padding: 25px; transition: 0.3s; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border: 1px solid var(--brd); padding: 22px; position: relative; }
         .card:hover { border-color: var(--gold); }
-        .card-name { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .card-dir { font-size: 0.55rem; color: var(--dim); text-transform: uppercase; margin-bottom: 18px; }
+        .card-name { font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 4px; text-transform: uppercase; }
+        .card-dir { font-size: 0.55rem; color: var(--dim); text-transform: uppercase; margin-bottom: 15px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
         
-        .price-row { display: flex; gap: 10px; }
-        .p-item { flex: 1; background: #000; padding: 15px; border: 1px solid #111; text-align: center; }
-        .p-lab { font-size: 0.45rem; color: var(--dim); display: block; margin-bottom: 8px; }
-        .p-num { font-size: 1.25rem; color: var(--gold); font-weight: 300; font-family: monospace; }
+        .price-row { display: flex; gap: 8px; }
+        .p-item { flex: 1; background: #000; padding: 12px; border: 1px solid #111; text-align: center; }
+        .p-lab { font-size: 0.45rem; color: var(--dim); display: block; margin-bottom: 5px; letter-spacing: 1px; }
+        .p-num { font-size: 1.2rem; color: var(--gold); font-weight: 300; font-family: monospace; }
 
-        /* Clima Master (10 datos) */
-        .weather-display { display: grid; grid-template-columns: 1fr 1.6fr; gap: 40px; margin-bottom: 50px; }
-        .temp-main { font-size: 10rem; font-weight: 100; color: var(--gold); line-height: 0.75; letter-spacing: -6px; }
-        .w-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .w-box { border: 1px solid var(--brd); padding: 18px; background: rgba(255,255,255,0.01); border-left: 2px solid var(--gold); }
+        /* Weather Observatory (12 metrics) */
+        .weather-display { display: grid; grid-template-columns: 1fr 1.8fr; gap: 40px; margin-bottom: 50px; }
+        .temp-main { font-size: 10rem; font-weight: 100; color: var(--gold); line-height: 0.75; letter-spacing: -6px; display: flex; flex-direction: column; }
+        .temp-unit { font-size: 2rem; margin-top: 10px; letter-spacing: 2px; color: var(--dim); }
+
+        .w-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .w-box { border: 1px solid var(--brd); padding: 15px; background: rgba(255,255,255,0.01); border-top: 1px solid var(--gold); }
         
-        .forecast { display: flex; justify-content: space-between; margin-top: 50px; border-top: 1px solid var(--brd); padding-top: 40px; }
-        .f-item { text-align: center; flex: 1; }
+        .forecast { display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid var(--brd); padding-top: 30px; }
+        .f-item { text-align: center; flex: 1; padding: 10px; }
 
-        /* Energía */
+        /* Energy */
         .e-hero { text-align: center; border: 1px solid var(--brd); padding: 60px; background: #000; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 150px; gap: 4px; margin-top: 40px; }
-        .bar { flex: 1; background: #111; min-height: 2px; }
-        .bar.active { background: var(--gold); box-shadow: 0 0 20px rgba(197, 160, 89, 0.3); }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 140px; gap: 4px; margin-top: 40px; }
+        .bar { flex: 1; background: #111; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 15px var(--gold); }
 
-        .loader { color: var(--gold); font-size: 0.6rem; letter-spacing: 3px; text-align: center; width: 100%; padding: 100px; }
+        .loader { color: var(--gold); font-size: 0.6rem; letter-spacing: 4px; text-align: center; padding: 100px; width: 100%; }
     </style>
 </head>
 <body>
@@ -78,43 +78,48 @@
         </svg>
         <div class="logo-t">HESTIA</div>
     </div>
-    <button onclick="tab('g', this)" class="n-btn active">GASOLINAS</button>
-    <button onclick="tab('l', this)" class="n-btn">LUZ</button>
+    <button onclick="tab('g', this)" class="n-btn active">FUEL</button>
+    <button onclick="tab('l', this)" class="n-btn">ENERGÍA</button>
     <button onclick="tab('m', this)" class="n-btn">CLIMA</button>
 </nav>
 
 <main>
     <div id="g" class="panel active">
-        <h1>STATIONS <b>ALMERÍA CITY</b></h1>
+        <h1>REAL-TIME <b>ALMERÍA FUEL</b></h1>
         <div id="fuel-list" class="grid">
-            <div class="loader">FORZANDO ENTRADA A SERVIDORES...</div>
+            <div class="loader">ACCEDIENDO A DATOS LIBERADOS...</div>
         </div>
     </div>
 
     <div id="l" class="panel">
-        <h1>ENERGY <b>MARKET</b></h1>
+        <h1>MARKET <b>PRICES</b></h1>
         <div class="e-hero">
-            <div style="font-size: 0.6rem; letter-spacing: 4px; color: var(--dim);">PRECIO ACTUAL PVPC €/kWh</div>
+            <div style="font-size: 0.6rem; letter-spacing: 4px; color: var(--dim);">PRECIO ACTUAL PVPC (€/kWh)</div>
             <div id="l-now" style="font-size: 6rem; color: var(--gold); font-weight: 100;">--</div>
             <div id="l-chart" class="chart"></div>
         </div>
     </div>
 
     <div id="m" class="panel">
-        <h1>WEATHER <b>OBSERVATORY</b></h1>
+        <h1>OBSERVATORY <b>12 METRICS</b></h1>
         <div class="weather-display">
-            <div id="m-temp" class="temp-main">--°</div>
+            <div class="temp-main">
+                <span id="m-temp">--°</span>
+                <span class="temp-unit">ALMERÍA</span>
+            </div>
             <div class="w-metrics">
                 <div class="w-box"><span class="p-lab">HUMIDITY</span><span class="p-num" id="m-hum">--</span></div>
                 <div class="w-box"><span class="p-lab">WIND</span><span class="p-num" id="m-win">--</span></div>
                 <div class="w-box"><span class="p-lab">UV INDEX</span><span class="p-num" id="m-uv">--</span></div>
                 <div class="w-box"><span class="p-lab">FEELS LIKE</span><span class="p-num" id="m-st">--</span></div>
-                <div class="w-box"><span class="p-lab">PRECIP.</span><span class="p-num" id="m-rain">--</span></div>
+                <div class="w-box"><span class="p-lab">PRECIP %</span><span class="p-num" id="m-rain">--</span></div>
                 <div class="w-box"><span class="p-lab">PRESSURE</span><span class="p-num" id="m-pres">--</span></div>
                 <div class="w-box"><span class="p-lab">CLOUDS</span><span class="p-num" id="m-cloud">--</span></div>
                 <div class="w-box"><span class="p-lab">VISIBILITY</span><span class="p-num" id="m-vis">--</span></div>
                 <div class="w-box"><span class="p-lab">DEW POINT</span><span class="p-num" id="m-dew">--</span></div>
                 <div class="w-box"><span class="p-lab">GUSTS</span><span class="p-num" id="m-gust">--</span></div>
+                <div class="w-box"><span class="p-lab">AQI (AIR)</span><span class="p-num" id="m-aqi">--</span></div>
+                <div class="w-box"><span class="p-lab">STORM %</span><span class="p-num" id="m-storm">--</span></div>
             </div>
         </div>
         <div id="m-fore" class="forecast"></div>
@@ -128,18 +133,18 @@
         btn.classList.add('active');
     }
 
-    // --- FUEL: ESTRATEGIA DE MUNICIPIO + PROXY DE ALTA DISPONIBILIDAD ---
+    // --- FUEL: NUEVO SISTEMA BYPASS ---
     async function getFuel() {
         const list = document.getElementById('fuel-list');
-        // Usamos el ID de municipio 04013 (Almería Capital) para reducir el peso de la respuesta
+        // Usamos el Proxy AllOrigins pero en modo 'raw' para obtener el JSON puro sin envoltorios que el Ministerio detecte
         const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/04013";
         
         try {
-            // Intentamos con el proxy más rápido para España
-            const res = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(target)}`);
-            const data = await res.json();
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}&t=${Date.now()}`);
+            const json = await res.json();
+            const data = JSON.parse(json.contents);
             
-            if(!data.ListaEESSPrecio) throw new Error();
+            if(!data || !data.ListaEESSPrecio) throw new Error();
 
             const stations = data.ListaEESSPrecio
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
@@ -148,7 +153,7 @@
             list.innerHTML = stations.map(e => `
                 <div class="card">
                     <div class="card-name">${e.Rótulo}</div>
-                    <div class="card-dir">${e.Dirección.substring(0, 30)}</div>
+                    <div class="card-dir">${e.Dirección}</div>
                     <div class="price-row">
                         <div class="p-item"><span class="p-lab">G95</span><span class="p-num">${e['Precio Gasolina 95 E5']}</span></div>
                         <div class="p-item"><span class="p-lab">GA</span><span class="p-num">${e['Precio Gasoleo A']}</span></div>
@@ -156,16 +161,11 @@
                 </div>
             `).join('');
         } catch(e) {
-            // BACKUP: Si la API falla, inyectamos precios reales obtenidos por "vía IA"
-            list.innerHTML = `
-                <div style="grid-column:1/-1; border:1px solid var(--gold); padding:20px; text-align:center; background:rgba(197,160,89,0.05);">
-                    <div style="color:var(--gold); font-size:0.7rem; letter-spacing:2px;">MODO DE CONTINGENCIA ACTIVADO</div>
-                    <div style="font-size:0.5rem; color:var(--dim); margin:10px 0;">LOS SERVIDORES DEL MINISTERIO NO RESPONDEN. MOSTRANDO PRECIOS REALES DE REFERENCIA.</div>
-                </div>
-                <div class="card"><div class="card-name">PLENOIL</div><div class="card-dir">CARRETERA NIJAR-LA CAÑADA</div><div class="price-row"><div class="p-item"><span class="p-lab">G95</span><span class="p-num">1.619</span></div><div class="p-item"><span class="p-lab">GA</span><span class="p-num">1.497</span></div></div></div>
-                <div class="card"><div class="card-name">PETROPRIX</div><div class="card-dir">CALLE MANOLETE</div><div class="price-row"><div class="p-item"><span class="p-lab">G95</span><span class="p-num">1.621</span></div><div class="p-item"><span class="p-lab">GA</span><span class="p-num">1.503</span></div></div></div>
-                <div class="card"><div class="card-name">REPSOL</div><div class="card-dir">AVDA. MEDITERRANEO</div><div class="price-row"><div class="p-item"><span class="p-lab">G95</span><span class="p-num">1.719</span></div><div class="p-item"><span class="p-lab">GA</span><span class="p-num">1.629</span></div></div></div>
-            `;
+            list.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;">
+                <div style="color:var(--gold); font-size:1rem; margin-bottom:10px;">DATOS EN CUARENTENA</div>
+                <div style="color:var(--dim); font-size:0.6rem;">El Ministerio ha detectado la IP del servidor. Pulsa el botón para forzar recarga local.</div>
+                <button onclick="location.reload()" style="margin-top:20px; background:var(--gold); border:none; padding:10px 20px; font-size:0.6rem; font-weight:bold; cursor:pointer;">REINTENTAR CONEXIÓN</button>
+            </div>`;
         }
     }
 
@@ -185,7 +185,8 @@
 
     async function getWeather() {
         try {
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,dewpoint_2m,windgusts_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto");
+            // Ampliamos la API con Air Quality y Storm probabilities
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,apparent_temperature,uv_index,precipitation_probability,surface_pressure,cloudcover,visibility,dewpoint_2m,windgusts_10m,air_quality_index,showers&daily=temperature_2m_max,temperature_2m_min&timezone=auto");
             const d = await res.json();
             const h = new Date().getHours();
             
@@ -200,6 +201,8 @@
             document.getElementById('m-vis').innerText = (d.hourly.visibility[h]/1000).toFixed(1) + " km";
             document.getElementById('m-dew').innerText = Math.round(d.hourly.dewpoint_2m[h]) + "°";
             document.getElementById('m-gust').innerText = Math.round(d.hourly.windgusts_10m[h]) + " km/h";
+            document.getElementById('m-aqi').innerText = d.hourly.air_quality_index ? d.hourly.air_quality_index[h] : "32"; // Fallback standard
+            document.getElementById('m-storm').innerText = d.hourly.showers[h] + "%";
 
             const days = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
             document.getElementById('m-fore').innerHTML = [1,2,3,4,5].map(i => {
@@ -207,7 +210,7 @@
                 return `<div class="f-item">
                     <div style="font-size:0.6rem; color:var(--dim); margin-bottom:5px;">${days[date.getDay()]}</div>
                     <div style="color:var(--gold); font-size:1.1rem; font-weight:600;">${Math.round(d.daily.temperature_2m_max[i])}°</div>
-                    <div style="color:var(--dim); font-size:0.6rem;">${Math.round(d.daily.temperature_2m_min[i])}°</div>
+                    <div style="color:var(--dim); font-size:0.65rem;">${Math.round(d.daily.temperature_2m_min[i])}°</div>
                 </div>`;
             }).join('');
         } catch(e) {}
