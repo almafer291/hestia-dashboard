@@ -6,7 +6,6 @@
     <title>HESTIA v149 | Premium Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* PALETA HESTIA PREMIUM INTEGRADA */
         :root { 
             --gold: #d4af37; 
             --gold-dim: #a68a2c;
@@ -23,29 +22,16 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
 
-        /* NAVEGACIÓN Y LOGO HESTIA PREMIUM */
         nav { width: 90px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 35px 0; background: #080808; flex-shrink: 0; z-index: 10; }
         .logo-box { margin-bottom: 60px; text-align: center; }
-        
-        /* LA LLAMA DE HESTIA */
-        .llama-svg { 
-            width: 42px; height: 42px; 
-            fill: var(--bronze); 
-            filter: drop-shadow(0 0 12px var(--bronze-glow)); 
-            transition: 0.4s ease;
-        }
+        .llama-svg { width: 42px; height: 42px; fill: var(--bronze); filter: drop-shadow(0 0 12px var(--bronze-glow)); transition: 0.4s ease; }
         .logo-box:hover .llama-svg { filter: drop-shadow(0 0 20px rgba(205, 127, 50, 0.8)); transform: scale(1.05); }
-        .logo-t { 
-            font-size: 0.6rem; letter-spacing: 3px; color: var(--txt); 
-            font-family: 'Playfair Display', serif; font-weight: 700; 
-            margin-top: 12px; text-transform: uppercase; 
-        }
+        .logo-t { font-size: 0.6rem; letter-spacing: 3px; color: var(--txt); font-family: 'Playfair Display', serif; font-weight: 700; margin-top: 12px; text-transform: uppercase; }
 
         .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); outline: none; }
         .n-btn:hover { color: #fff; }
         .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
 
-        /* CONTENIDO */
         main { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #1a1a1a 0%, #121212 100%); }
         .panel { display: none; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.5s ease; }
         .panel.active { display: block; }
@@ -54,7 +40,6 @@
         h1 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--dim); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 15px; font-weight: 400; }
         h1 b { color: var(--gold); font-weight: 700; }
 
-        /* BENTO GRID CON GLASSMORPHISM SUTIL */
         .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
         .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 16px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.4s; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); }
         .tile:hover { border-color: rgba(212, 175, 55, 0.3); background: #0c0c0c; transform: translateY(-2px); }
@@ -64,20 +49,17 @@
         .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; }
         .t-unit { font-size: 0.75rem; color: var(--dim); margin-left: 6px; text-transform: uppercase; font-weight: 600; }
 
-        /* CLIMA */
         .tile-temp-main { grid-column: span 3; grid-row: span 3; justify-content: center; }
         .temp-big { font-family: 'Playfair Display', serif; font-size: 11rem; font-weight: 700; letter-spacing: -5px; line-height: 0.8; color: #fff; margin: 20px 0; }
         .hum-bar-bg { width: 100%; height: 4px; background: #222; border-radius: 2px; margin-top: 15px; }
         .hum-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold) 0%, var(--bronze) 100%); width: 0%; transition: 2s ease; }
 
-        /* TABLA GASOLINERAS */
         .fuel-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
         .fuel-table th { text-align: left; color: var(--gold-dim); font-size: 0.6rem; letter-spacing: 2px; padding: 10px; border-bottom: 1px solid var(--brd); text-transform: uppercase; }
         .fuel-table td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #ccc; }
         .p-bold { font-weight: 700; color: #fff; font-family: monospace; font-size: 1.1rem; }
         .low-tag { color: var(--green); font-size: 0.6rem; border: 1px solid rgba(76, 175, 80, 0.3); background: rgba(76, 175, 80, 0.1); padding: 3px 6px; border-radius: 4px; margin-left: 8px; font-weight: 600; }
 
-        /* ENERGÍA */
         .tile-price-giant { grid-column: span 6; text-align: center; min-height: 400px; }
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; gap: 4px; border-bottom: 1px solid var(--brd); margin-top: 25px; }
         .bar { flex: 1; background: #1a1a1a; border-radius: 4px 4px 0 0; position: relative; transition: 0.4s; }
@@ -135,11 +117,9 @@
                     <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
                 </div>
             </div>
-
             <div class="tile"><span class="t-label">MÍNIMO DÍA</span><div class="val-group"><span class="t-val" id="l-min" style="color:var(--green)">--</span></div><div id="l-min-h" class="t-unit">--:-- H</div></div>
             <div class="tile"><span class="t-label">MÁXIMO DÍA</span><div class="val-group"><span class="t-val" id="l-max" style="color:var(--red)">--</span></div><div id="l-max-h" class="t-unit">--:-- H</div></div>
             <div class="tile"><span class="t-label">MEDIA DIARIA</span><div class="val-group"><span class="t-val" id="l-avg">--</span></div><div class="t-unit">EQUILIBRIO</div></div>
-            
             <div class="tile"><span class="t-label">TENDENCIA</span><div class="val-group"><span class="t-val" id="l-trend">--</span></div><div id="l-trend-t" class="t-unit">VS HORA ANTERIOR</div></div>
             <div class="tile" style="grid-column: span 2; background: linear-gradient(135deg, rgba(76, 175, 80, 0.05) 0%, rgba(0,0,0,0) 100%); border-color: rgba(76, 175, 80, 0.2);">
                 <span class="t-label" style="color:var(--green);">PRÓXIMA HORA BARATA</span>
@@ -155,15 +135,15 @@
             <div class="tile" style="grid-column: span 3;">
                 <span class="t-label">GASOLINA 95 E5</span>
                 <table class="fuel-table" id="table-95">
-                    <thead><tr><th>Estación de Servicio</th><th>Precio por Litro</th></tr></thead>
-                    <tbody><tr><td colspan="2">Conectando con Ministerio de Energía...</td></tr></tbody>
+                    <thead><tr><th>Estación</th><th>Precio/L</th></tr></thead>
+                    <tbody><tr><td colspan="2">Iniciando protocolo bypass CORS...</td></tr></tbody>
                 </table>
             </div>
             <div class="tile" style="grid-column: span 3;">
                 <span class="t-label">DIÉSEL A</span>
                 <table class="fuel-table" id="table-diesel">
-                    <thead><tr><th>Estación de Servicio</th><th>Precio por Litro</th></tr></thead>
-                    <tbody><tr><td colspan="2">Conectando con Ministerio de Energía...</td></tr></tbody>
+                    <thead><tr><th>Estación</th><th>Precio/L</th></tr></thead>
+                    <tbody><tr><td colspan="2">Iniciando protocolo bypass CORS...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -211,46 +191,24 @@
             const values = d.included[0].attributes.values;
             const prices = values.map(v => v.value / 1000);
             const nowH = new Date().getHours();
-            
-            const currentPrice = prices[nowH];
-            document.getElementById('l-now').innerText = currentPrice.toFixed(4);
-            
+            document.getElementById('l-now').innerText = prices[nowH].toFixed(4);
             const minP = Math.min(...prices);
             const maxP = Math.max(...prices);
             const avg = prices.reduce((a,b) => a+b) / 24;
-
             document.getElementById('l-min').innerText = minP.toFixed(4);
             document.getElementById('l-max').innerText = maxP.toFixed(4);
             document.getElementById('l-avg').innerText = avg.toFixed(4);
-            
             document.getElementById('l-min-h').innerText = prices.indexOf(minP).toString().padStart(2,'0') + ":00 H";
             document.getElementById('l-max-h').innerText = prices.indexOf(maxP).toString().padStart(2,'0') + ":00 H";
-
             const status = document.getElementById('l-status');
-            status.innerText = currentPrice < avg ? "PRECIO POR DEBAJO DE LA MEDIA" : "PRECIO POR ENCIMA DE LA MEDIA";
-            status.style.color = currentPrice < avg ? "var(--green)" : "var(--red)";
-
+            status.innerText = prices[nowH] < avg ? "PRECIO POR DEBAJO DE LA MEDIA" : "PRECIO POR ENCIMA DE LA MEDIA";
+            status.style.color = prices[nowH] < avg ? "var(--green)" : "var(--red)";
             const trendEl = document.getElementById('l-trend');
-            const trendTextEl = document.getElementById('l-trend-t');
             if (nowH > 0) {
-                const diff = currentPrice - prices[nowH - 1];
-                if (diff > 0) { trendEl.innerText = "↑ Sube"; trendEl.style.color = "var(--red)"; trendTextEl.innerText = `+${diff.toFixed(4)} €`; } 
-                else if (diff < 0) { trendEl.innerText = "↓ Baja"; trendEl.style.color = "var(--green)"; trendTextEl.innerText = `${diff.toFixed(4)} €`; } 
-                else { trendEl.innerText = "= Igual"; trendEl.style.color = "var(--dim)"; trendTextEl.innerText = "Sin cambios"; }
+                const diff = prices[nowH] - prices[nowH - 1];
+                trendEl.innerText = diff > 0 ? "↑ Sube" : "↓ Baja";
+                trendEl.style.color = diff > 0 ? "var(--red)" : "var(--green)";
             }
-
-            let nextCheapH = -1;
-            for (let i = nowH + 1; i < 24; i++) {
-                if (prices[i] < avg) { nextCheapH = i; break; }
-            }
-            if (nextCheapH !== -1) {
-                document.getElementById('l-next-cheap').innerText = nextCheapH.toString().padStart(2,'0') + ":00";
-                document.getElementById('l-next-price').innerText = `Bajará a ${prices[nextCheapH].toFixed(4)} €/kWh`;
-            } else {
-                document.getElementById('l-next-cheap').innerText = "--:--";
-                document.getElementById('l-next-price').innerText = "No hay horas más baratas hoy";
-            }
-
             const maxVal = Math.max(...values.map(v => v.value));
             document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v.value/maxVal)*100}%" data-label="${i}:00h | ${(v.value/1000).toFixed(4)}€"></div>`).join('');
         } catch (e) {}
@@ -258,34 +216,23 @@
 
     async function getFuel() {
         try {
-            const url = encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04");
-            const proxyUrl = "https://api.allorigins.win/raw?url=" + url;
-            const res = await fetch(proxyUrl);
-            const d = await res.json();
+            // Cambio a proxy más robusto para entornos Vercel
+            const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`);
+            const json = await res.json();
+            const d = JSON.parse(json.contents);
             
             const lista = d.ListaEESSPrecio.filter(e => e['Municipio'] === 'ALMERÍA');
-
             const renderTable = (id, key) => {
-                const sorted = lista
-                    .filter(e => e[key])
-                    .sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.')))
-                    .slice(0, 5);
-
+                const sorted = lista.filter(e => e[key]).sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.'))).slice(0, 5);
                 const tbody = document.getElementById(id).querySelector('tbody');
-                if(sorted.length > 0) {
-                    tbody.innerHTML = sorted.map((e, i) => `
-                        <tr>
-                            <td>${e['Rótulo']}<br><small style="color:#666; font-size:0.65rem; font-family:sans-serif;">${e['Dirección']}</small></td>
-                            <td><span class="p-bold">${e[key]}</span>${i===0 ? '<span class="low-tag">MEJOR OPCIÓN</span>' : ''}</td>
-                        </tr>
-                    `).join('');
-                }
+                tbody.innerHTML = sorted.map((e, i) => `<tr><td>${e['Rótulo']}<br><small style="color:#666; font-size:0.6rem;">${e['Dirección']}</small></td><td><span class="p-bold">${e[key]}</span>${i===0 ? '<span class="low-tag">TOP</span>' : ''}</td></tr>`).join('');
             };
-
             renderTable('table-95', 'Precio Gasolina 95 E5');
             renderTable('table-diesel', 'Precio Gasoleo A');
         } catch (e) {
             console.error("Fuel Error");
+            document.querySelectorAll('.fuel-table tbody').forEach(tb => tb.innerHTML = '<tr><td colspan="2">Error en conexión con el Ministerio.</td></tr>');
         }
     }
 
