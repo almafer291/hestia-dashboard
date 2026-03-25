@@ -3,138 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v151 | Deity Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <title>HESTIA v152 | True Goddess Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,900;1,700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --gold-main: #d4af37; --gold-dim: #a68a2c; --bronze-main: #cd7f32; --bronze-glow: rgba(205, 127, 50, 0.4);
-            --bg-dark: #0d0d0d; --bg-sidebar: #050505; --txt: #e0e0e0; --dim: #777; --green: #4caf50; --red: #e74c3c;
-            --brd: rgba(255, 255, 255, 0.05);
+            --gold: #d4af37; --bronze: #cd7f32; --glow: rgba(205, 127, 50, 0.5);
+            --bg: #050505; --card: #0d0d0d; --brd: rgba(255, 255, 255, 0.07);
+            --green: #00ff88; --red: #ff4444; --txt: #ffffff;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg-dark); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR CON NUEVA IDENTIDAD */
-        nav { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--brd); display: flex; flex-direction: column; padding: 40px 30px; flex-shrink: 0; }
-        .brand { display: flex; align-items: center; gap: 18px; margin-bottom: 60px; }
+        /* SIDEBAR PREMIUM */
+        nav { width: 300px; background: #000; border-right: 1px solid var(--brd); display: flex; flex-direction: column; padding: 50px 35px; flex-shrink: 0; }
         
-        /* ICONO PROPUESTA 2: CONTOUR FUSION */
-        .hestia-icon { width: 45px; height: 45px; filter: drop-shadow(0 0 10px var(--bronze-glow)); }
-        .hestia-icon path { stroke: var(--bronze-main); stroke-width: 1.8; stroke-linecap: round; transition: 0.3s; }
-        .brand:hover .hestia-icon path { stroke: var(--gold-main); filter: brightness(1.2); }
+        /* LOGO DIOSA + LLAMA (REHECHO) */
+        .brand { display: flex; align-items: center; gap: 20px; margin-bottom: 70px; cursor: pointer; }
+        .hestia-logo { width: 55px; height: 55px; filter: drop-shadow(0 0 12px var(--glow)); }
+        .hestia-logo path { fill: none; stroke: var(--bronze); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .brand h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; letter-spacing: 5px; color: #fff; }
 
-        .brand h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; letter-spacing: 4px; color: var(--txt); font-weight: 700; }
+        .n-btn { background: none; border: none; color: #555; cursor: pointer; padding: 18px 25px; text-align: left; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; transition: 0.4s; border-radius: 15px; margin-bottom: 10px; font-weight: 700; border: 1px solid transparent; }
+        .n-btn:hover { color: var(--gold); background: rgba(255,255,255,0.03); }
+        .n-btn.active { color: var(--gold); background: rgba(212, 175, 55, 0.05); border-color: rgba(212, 175, 55, 0.2); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
-        .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 16px 20px; text-align: left; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; border-radius: 12px; margin-bottom: 8px; font-weight: 600; }
-        .n-btn:hover { background: rgba(255,255,255,0.03); color: #fff; }
-        .n-btn.active { color: var(--gold-main); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%); box-shadow: inset 3px 0 0 var(--gold-main); }
-
-        /* MAIN CONTENT REFINADO */
-        main { flex: 1; padding: 50px 60px; overflow-y: auto; background: radial-gradient(circle at 10% 10%, #161616 0%, #0d0d0d 100%); }
-        .panel { display: none; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* CONTENT AREA */
+        main { flex: 1; padding: 60px; overflow-y: auto; background: radial-gradient(circle at top right, #111 0%, #050505 100%); }
+        .panel { display: none; animation: slideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
         .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(15px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header-box { margin-bottom: 50px; }
-        .section-title { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 400; line-height: 1; }
-        .section-title b { color: var(--gold-main); font-style: italic; }
-        .section-subtitle { color: var(--dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 5px; margin-top: 10px; }
+        .section-header { margin-bottom: 60px; border-left: 4px solid var(--gold); padding-left: 30px; }
+        .section-header h2 { font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 900; line-height: 0.9; text-transform: lowercase; }
+        .section-header h2 b { color: var(--gold); text-transform: uppercase; font-style: italic; font-size: 1.5rem; display: block; letter-spacing: 10px; margin-bottom: 10px; }
 
-        /* BENTO GRID */
-        .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
-        .tile { background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid var(--brd); border-radius: 24px; padding: 30px; position: relative; overflow: hidden; transition: 0.4s; }
-        .tile:hover { border-color: rgba(212, 175, 55, 0.3); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        /* BENTO TILES */
+        .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 25px; }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 30px; padding: 35px; transition: 0.5s; position: relative; }
+        .tile:hover { border-color: var(--gold); transform: scale(1.02); box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
 
-        .t-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-dim); margin-bottom: 20px; display: block; font-weight: 700; }
-        .t-val { font-size: 3rem; font-weight: 700; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
-        .t-unit { font-size: 0.85rem; color: var(--dim); margin-left: 6px; font-weight: 400; }
+        .t-lbl { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 4px; color: var(--bronze); font-weight: 900; margin-bottom: 25px; display: block; }
+        .t-val { font-size: 3.5rem; font-weight: 900; color: #fff; letter-spacing: -2px; line-height: 1; }
+        .t-unit { font-size: 0.8rem; color: #444; font-weight: 700; text-transform: uppercase; margin-top: 10px; display: block; }
 
-        /* ENERGÍA VISUALS */
-        .tile-full { grid-column: span 6; background: rgba(0,0,0,0.2); }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; margin-top: 30px; gap: 6px; }
-        .bar { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px 6px 2px 2px; transition: 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); position: relative; }
-        .bar.active { background: linear-gradient(180deg, var(--gold-main), var(--bronze-main)); box-shadow: 0 0 25px var(--bronze-glow); }
+        /* ENERGY CHART */
+        .tile-main { grid-column: span 6; background: linear-gradient(180deg, #0d0d0d 0%, #000 100%); }
+        .chart-container { height: 200px; display: flex; align-items: flex-end; gap: 8px; margin-top: 40px; }
+        .bar { flex: 1; background: #1a1a1a; border-radius: 8px 8px 0 0; transition: 0.8s ease; position: relative; }
+        .bar.now { background: var(--gold); box-shadow: 0 0 30px var(--glow); }
 
-        /* FUEL TABLES */
-        .fuel-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .fuel-table td { padding: 18px 5px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .st-name { color: #fff; font-weight: 600; font-size: 0.95rem; display: block; }
-        .st-dir { color: var(--dim); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; }
-        .p-price { font-family: monospace; font-weight: 700; color: var(--gold-main); font-size: 1.3rem; text-align: right; }
+        /* FUEL TABLE */
+        .f-table { width: 100%; border-collapse: collapse; }
+        .f-table tr td { padding: 25px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .f-name { font-weight: 700; font-size: 1.1rem; display: block; color: #fff; }
+        .f-addr { color: #555; font-size: 0.7rem; text-transform: uppercase; }
+        .f-price { font-family: 'monospace'; font-size: 1.8rem; font-weight: 900; color: var(--gold); text-align: right; }
     </style>
 </head>
 <body>
 
 <nav>
     <div class="brand">
-        <svg class="hestia-icon" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21 2C21 2 12.5 10.5 12.5 21C12.5 28.5 17 33.5 21 33.5C25 33.5 29.5 28.5 29.5 21C29.5 10.5 21 2 21 2Z" />
-            <path d="M21 21C21 21 18.5 23.5 18.5 26C18.5 28.5 21 31 21 31" />
+        <svg class="hestia-logo" viewBox="0 0 100 100">
+            <path d="M30 85 C35 85, 45 80, 48 70 C48 70, 42 65, 40 55 C38 45, 42 35, 48 30 C50 25, 55 22, 60 25" />
+            <path d="M48 30 C45 20, 50 5, 65 15 C75 25, 60 35, 75 45 C85 55, 70 75, 55 80" />
+            <path d="M52 45 C55 40, 65 38, 68 45 C70 52, 60 60, 65 68" />
         </svg>
         <h1>HESTIA</h1>
     </div>
-    <button onclick="tab('m', this)" class="n-btn">Atmosphere</button>
-    <button onclick="tab('l', this)" class="n-btn active">Smart Energy</button>
-    <button onclick="tab('f', this)" class="n-btn">Fuel Market</button>
-    <button onclick="tab('r', this)" class="n-btn">Core Settings</button>
+    <button onclick="tab('m', this)" class="n-btn active">Atmosphere</button>
+    <button onclick="tab('l', this)" class="n-btn">Energy</button>
+    <button onclick="tab('f', this)" class="n-btn">Fuel</button>
 </nav>
 
 <main>
-    <div id="m" class="panel">
-        <div class="header-box">
-            <h2 class="section-title">Almería <b>Pure</b></h2>
-            <div class="section-subtitle">Monitorización Atmosférica Central</div>
+    <div id="m" class="panel active">
+        <div class="section-header">
+            <h2><b>Almería</b>Atmosphere</h2>
         </div>
-        <div class="bento-grid">
-            <div class="tile" style="grid-column: span 3; grid-row: span 2; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <span class="t-label">Temperatura Exterior</span>
-                <div style="font-family: 'Playfair Display', serif; font-size: 10rem; font-weight: 700; line-height: 0.8; color:#fff;" id="m-temp">--</div>
-                <div style="margin-top: 20px; color: var(--gold-main); letter-spacing: 4px; font-weight: 700;">GRADOS CELSIUS</div>
+        <div class="bento">
+            <div class="tile" style="grid-column: span 3; background: #fff; color: #000;">
+                <span class="t-lbl" style="color: #888;">Outdoor Temp</span>
+                <div class="t-val" id="m-temp" style="color: #000; font-size: 8rem;">--</div>
+                <span class="t-unit" style="color: #000;">Celsius Actual</span>
             </div>
-            <div class="tile"><span class="t-label">Humedad Aire</span><div class="t-val" id="m-hum">--</div><span class="t-unit">% RH</span></div>
-            <div class="tile"><span class="t-label">Vel. Viento</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
-            <div class="tile"><span class="t-label">Índice UV</span><div class="t-val" id="m-uv">--</div><span class="t-unit">MEDIAL</span></div>
-            <div class="tile"><span class="t-label">Precipitación</span><div class="t-val" id="m-rain">--</div><span class="t-unit">% PROB</span></div>
+            <div class="tile"><span class="t-lbl">Humidity</span><div class="t-val" id="m-hum">--</div><span class="t-unit">Percent</span></div>
+            <div class="tile"><span class="t-lbl">Wind Speed</span><div class="t-val" id="m-win">--</div><span class="t-unit">Km/H</span></div>
+            <div class="tile"><span class="t-lbl">UV Index</span><div class="t-val" id="m-uv">--</div><span class="t-unit">Solar Radiation</span></div>
+            <div class="tile"><span class="t-lbl">Rain</span><div class="t-val" id="m-rain">--</div><span class="t-unit">Probability %</span></div>
         </div>
     </div>
 
-    <div id="l" class="panel active">
-        <div class="header-box">
-            <h2 class="section-title">PVPC <b>Intelligence</b></h2>
-            <div class="section-subtitle">Mercado Eléctrico en Tiempo Real</div>
+    <div id="l" class="panel">
+        <div class="section-header">
+            <h2><b>PVPC</b>Intelligence</h2>
         </div>
-        <div class="bento-grid">
-            <div class="tile tile-full">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <span class="t-label">Precio Actual</span>
-                        <div class="t-val" id="l-now" style="font-size: 6rem; color: var(--gold-main);">--</div>
-                        <span class="t-unit" style="margin:0; font-weight: 700; letter-spacing: 2px;">EUROS POR KILOVATIO HORA</span>
-                    </div>
-                    <div style="text-align: right;">
-                        <div id="l-trend-box" style="padding: 10px 20px; border-radius: 50px; background: rgba(255,255,255,0.05); font-weight: 700; font-size: 0.7rem; border: 1px solid var(--brd);">--</div>
-                    </div>
+        <div class="bento">
+            <div class="tile tile-main">
+                <span class="t-lbl">Live Price</span>
+                <div style="display: flex; align-items: baseline; gap: 20px;">
+                    <div class="t-val" id="l-now" style="color: var(--gold); font-size: 7rem;">--</div>
+                    <span class="t-unit">€ / kWh</span>
                 </div>
-                <div class="chart" id="l-chart"></div>
+                <div class="chart-container" id="l-chart"></div>
             </div>
-            <div class="tile"><span class="t-label">Precio Mínimo</span><div class="t-val" id="l-min" style="color:var(--green)">--</div></div>
-            <div class="tile"><span class="t-label">Precio Máximo</span><div class="t-val" id="l-max" style="color:var(--red)">--</div></div>
+            <div class="tile"><span class="t-lbl">Min Today</span><div class="t-val" id="l-min" style="color:var(--green)">--</div></div>
+            <div class="tile"><span class="t-lbl">Max Today</span><div class="t-val" id="l-max" style="color:var(--red)">--</div></div>
         </div>
     </div>
 
     <div id="f" class="panel">
-        <div class="header-box">
-            <h2 class="section-title">Fuel <b>Direct</b></h2>
-            <div class="section-subtitle">Las 5 Estaciones más Económicas de Almería</div>
+        <div class="section-header">
+            <h2><b>Top 5</b>Fuel Market</h2>
         </div>
-        <div class="bento-grid">
+        <div class="bento">
             <div class="tile" style="grid-column: span 3;">
-                <span class="t-label">Gasolina 95 E5</span>
-                <table class="fuel-table" id="table-95"><tbody><tr><td style="color:var(--dim)">Sincronizando con el Ministerio...</td></tr></tbody></table>
+                <span class="t-lbl">Gasolina 95 E5</span>
+                <table class="f-table" id="table-95"><tbody><tr><td>Fetching Ministry Data...</td></tr></tbody></table>
             </div>
             <div class="tile" style="grid-column: span 3;">
-                <span class="t-label">Diésel A</span>
-                <table class="fuel-table" id="table-diesel"><tbody><tr><td style="color:var(--dim)">Sincronizando con el Ministerio...</td></tr></tbody></table>
+                <span class="t-lbl">Diésel A</span>
+                <table class="f-table" id="table-diesel"><tbody><tr><td>Fetching Ministry Data...</td></tr></tbody></table>
             </div>
         </div>
     </div>
@@ -157,7 +146,7 @@
             document.getElementById('m-win').innerText = d.current_weather.windspeed;
             document.getElementById('m-uv').innerText = Math.round(d.hourly.uv_index[h]);
             document.getElementById('m-rain').innerText = d.hourly.precipitation_probability[h];
-        } catch (e) {}
+        } catch(e) {}
     }
 
     async function getEnergy() {
@@ -173,68 +162,40 @@
             document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
             document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
             
-            const trend = document.getElementById('l-trend-box');
-            if(nowH > 0) {
-                const isUp = prices[nowH] > prices[nowH-1];
-                trend.innerText = isUp ? "TENDENCIA ALCISTA ↑" : "TENDENCIA BAJISTA ↓";
-                trend.style.color = isUp ? "var(--red)" : "var(--green)";
-            }
-
             const maxVal = Math.max(...prices);
             document.getElementById('l-chart').innerHTML = prices.map((v, i) => 
-                `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v/maxVal)*100}%" title="${i}:00h - ${v.toFixed(4)}€"></div>`
+                `<div class="bar ${i === nowH ? 'now' : ''}" style="height:${(v/maxVal)*100}%"></div>`
             ).join('');
-        } catch (e) {}
+        } catch(e) {}
     }
 
     async function getFuel() {
-        const endpoints = [
-            "https://api.allorigins.win/get?url=",
-            "https://corsproxy.io/?" 
-        ];
+        // SOLUCIÓN DEFINITIVA CORS: Intento con doble limpieza
         const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-        
-        let data = null;
-
-        // Intentar con proxy 1, si falla, intentar con proxy 2
-        for (let proxy of endpoints) {
-            try {
-                const res = await fetch(proxy + encodeURIComponent(target));
-                const json = await res.json();
-                // AllOrigins devuelve .contents, CORSProxy devuelve el texto directo
-                const rawData = json.contents ? JSON.parse(json.contents) : json;
-                if (rawData && rawData.ListaEESSPrecio) {
-                    data = rawData;
-                    break; 
-                }
-            } catch (e) { console.warn("Proxy fallido, reintentando..."); }
+        try {
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(target)}`);
+            const json = await res.json();
+            const data = JSON.parse(json.contents);
+            
+            const almeria = data.ListaEESSPrecio.filter(e => e['Municipio'].toUpperCase() === 'ALMERÍA');
+            const fill = (id, key) => {
+                const top = almeria.filter(e => e[key]).sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.'))).slice(0, 5);
+                document.getElementById(id).innerHTML = top.map(e => `
+                    <tr>
+                        <td><span class="f-name">${e['Rótulo']}</span><span class="f-addr">${e['Dirección']}</span></td>
+                        <td class="f-price">${e[key]}</td>
+                    </tr>
+                `).join('');
+            };
+            fill('table-95', 'Precio Gasolina 95 E5');
+            fill('table-diesel', 'Precio Gasoleo A');
+        } catch(e) {
+            console.error("Fuel Error");
+            document.querySelectorAll('.f-table').forEach(t => t.innerHTML = "<tr><td style='color:red'>Ministerio Offline / CORS Error</td></tr>");
         }
-
-        if (!data) {
-            document.querySelectorAll('.fuel-table tbody').forEach(tb => tb.innerHTML = "<tr><td>Error crítico de conexión.</td></tr>");
-            return;
-        }
-
-        const almeria = data.ListaEESSPrecio.filter(e => e['Municipio'] === 'ALMERÍA');
-        const fill = (id, key) => {
-            const top = almeria.filter(e => e[key]).sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.'))).slice(0, 5);
-            document.getElementById(id).innerHTML = top.map(e => `
-                <tr>
-                    <td><span class="st-name">${e['Rótulo']}</span><span class="st-dir">${e['Dirección']}</span></td>
-                    <td class="p-price">${e[key]}</td>
-                </tr>
-            `).join('');
-        };
-        fill('table-95', 'Precio Gasolina 95 E5');
-        fill('table-diesel', 'Precio Gasoleo A');
     }
 
-    window.onload = () => {
-        getWeather(); getEnergy(); getFuel();
-        setInterval(getWeather, 300000);
-        setInterval(getEnergy, 300000);
-        setInterval(getFuel, 1800000); // Actualiza fuel cada 30 min
-    };
+    window.onload = () => { getWeather(); getEnergy(); getFuel(); };
 </script>
 </body>
 </html>
