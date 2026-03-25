@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v144 | Deep Meteo</title>
+    <title>HESTIA v145 | ArduSens Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.15); --txt: #ececec; --dim: #555; --green: #2ecc71; --red: #e74c3c; }
@@ -14,59 +14,51 @@
         nav { width: 80px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
         .logo-box { margin-bottom: 50px; text-align: center; }
         
-        /* EL LOGO REAL DE ARDUSENS (RECREADO EXACTAMENTE) */
-        .llama-svg { width: 35px; height: 35px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
-        .llama-svg .core { fill: var(--gold); filter: drop-shadow(0 0 4px rgba(197, 160, 89, 0.5)); }
+        /* LOGO LLAMA ARDUSENS MEJORADO */
+        .llama-svg { width: 38px; height: 38px; fill: var(--gold); filter: drop-shadow(0 0 8px rgba(197, 160, 89, 0.3)); }
         .logo-t { font-size: 0.5rem; letter-spacing: 1px; color: var(--gold); font-weight: 900; margin-top: 8px; text-transform: uppercase; }
 
         .n-btn { background: none; border: none; color: #333; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; outline: none; }
         .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
 
         /* CONTENIDO */
-        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #0a0a0a, #030303); }
+        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #0d0d0d, #030303); }
         .panel { display: none; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.4s ease; }
         .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 0.6rem; color: #555; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
+        h1 { font-size: 0.6rem; color: #444; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
         h1 b { color: var(--gold); }
 
         /* BENTO GRID */
         .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s ease; }
-        .tile:hover { border-color: rgba(197, 160, 89, 0.3); background: #0c0c0c; }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+        .tile:hover { border-color: rgba(197, 160, 89, 0.4); background: #080808; }
         
-        .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); opacity: 0.7; }
+        .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); opacity: 0.8; }
         .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; margin-top: 10px; }
-        .t-unit { font-size: 0.8rem; color: var(--dim); margin-left: 5px; }
+        .t-unit { font-size: 0.8rem; color: var(--dim); margin-left: 4px; font-weight: 300; }
 
-        /* CLIMA - CELDAS ESPECIALES */
-        .tile-temp-deep { grid-column: span 3; grid-row: span 3; position: relative; }
-        .temp-big-deep { font-size: 10rem; font-weight: 900; letter-spacing: -8px; line-height: 0.8; margin: 20px 0; }
+        /* CLIMA - TEMPERATURA GIGANTE */
+        .tile-temp-main { grid-column: span 3; grid-row: span 3; justify-content: center; }
+        .temp-big { font-size: 11rem; font-weight: 900; letter-spacing: -10px; line-height: 0.8; color: #fff; margin: 15px 0; }
         
-        /* Barra de Humedad (Style Ardusens) */
-        .hum-bar-bg { width: 100%; height: 6px; background: #111; border-radius: 3px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.01); }
-        .hum-bar-fill { height: 100%; background: var(--gold); width: 0%; transition: 1.5s ease-out; }
-
-        /* Celdas pequeñas Clima */
-        .w-small { grid-column: span 1; }
-        .w-small .t-val { font-size: 1.8rem; }
+        /* Barra Humedad */
+        .hum-bar-bg { width: 100%; height: 4px; background: #111; border-radius: 2px; margin-top: 15px; }
+        .hum-bar-fill { height: 100%; background: var(--gold); width: 0%; transition: 2s cubic-bezier(0.4, 0, 0.2, 1); shadow: 0 0 10px var(--gold); }
 
         /* ENERGÍA - GRÁFICA GIGANTE */
-        .tile-price-giant { grid-column: span 6; text-align: center; min-height: 480px; }
-        .price-big { font-size: 5rem; font-weight: 900; color: var(--gold); letter-spacing: -3px; }
-        .chart-container { margin-top: 30px; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 220px; gap: 4px; border-bottom: 1px solid var(--brd); }
-        .bar { flex: 1; background: #1a1a1a; cursor: pointer; border-radius: 2px 2px 0 0; position: relative; transition: 0.3s; }
-        .bar:hover { background: #333; }
-        .bar.active { background: var(--gold); box-shadow: 0 0 25px rgba(197, 160, 89, 0.5); }
-        
-        /* Tooltip simple */
-        .bar:hover::after { content: attr(data-label); position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #fff; background: #000; padding: 4px 8px; border: 1px solid var(--gold); border-radius: 4px; white-space: nowrap; z-index: 10; }
-        .time-labels { display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.6rem; color: var(--dim); letter-spacing: 2px; }
-        .badge { font-size: 0.6rem; padding: 6px 12px; border-radius: 4px; background: #000; border: 1px solid var(--brd); display: inline-block; margin-bottom: 15px; }
+        .tile-price-giant { grid-column: span 6; text-align: center; min-height: 500px; }
+        .price-big { font-size: 6rem; font-weight: 900; color: var(--gold); letter-spacing: -4px; margin: 15px 0; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 250px; gap: 5px; border-bottom: 1px solid var(--brd); margin-top: 20px; }
+        .bar { flex: 1; background: #151515; cursor: pointer; border-radius: 3px 3px 0 0; position: relative; transition: 0.4s; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 30px rgba(197, 160, 89, 0.4); }
+        .bar:hover::after { content: attr(data-label); position: absolute; top: -40px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #fff; background: #000; padding: 6px 10px; border: 1px solid var(--gold); border-radius: 4px; white-space: nowrap; z-index: 100; }
 
-        @media (max-width: 1200px) { .bento-grid { grid-template-columns: repeat(3, 1fr); } .tile-temp-deep, .tile-price-giant { grid-column: span 3; } .w-small { grid-column: span 1; } }
+        .time-labels { display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.6rem; color: var(--dim); letter-spacing: 2px; }
+        .badge { font-size: 0.6rem; padding: 6px 12px; border-radius: 4px; background: #000; border: 1px solid var(--brd); display: inline-block; margin-bottom: 15px; color: var(--gold); }
+
+        @media (max-width: 1100px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .tile-temp-main, .tile-price-giant { grid-column: span 2; } }
     </style>
 </head>
 <body>
@@ -74,8 +66,7 @@
 <nav>
     <div class="logo-box">
         <svg class="llama-svg" viewBox="0 0 512 512">
-            <path d="M256 0C256 0 128 128 128 256C128 326.7 185.3 384 256 384C326.7 384 384 326.7 384 256C384 128 256 0 256 0Z"/>
-            <path class="core" d="M256 320C220.7 320 192 291.3 192 256C192 220.7 220.7 192 256 192C291.3 192 320 220.7 320 256C320 291.3 291.3 320 256 320Z"/>
+            <path d="M256 0C256 0 128 128 128 256C128 326.7 185.3 384 256 384C326.7 384 384 326.7 384 256C384 128 256 0 256 0ZM256 320C220.7 320 192 291.3 192 256C192 220.7 220.7 192 256 192C291.3 192 320 220.7 320 256C320 291.3 291.3 320 256 320Z"/>
         </svg>
         <div class="logo-t">ARDUSENS</div>
     </div>
@@ -86,27 +77,25 @@
 
 <main>
     <div id="m" class="panel active">
-        <h1>ALMERÍA <b>DEEP METEO</b></h1>
+        <h1>ALMERÍA <b>BENTO METEO +</b></h1>
         <div class="bento-grid">
-            <div class="tile tile-temp-deep">
+            <div class="tile tile-temp-main">
                 <span class="t-label">TEMPERATURA ACTUAL</span>
-                <div class="temp-big-deep"><span id="m-temp">--</span>°</div>
-                <div style="font-size:1.1rem; color:var(--dim);">Almería, ES — Observatorio Local</div>
+                <div class="temp-big"><span id="m-temp">--</span>°</div>
+                <div style="font-size:1rem; color:var(--dim); font-weight: 300;">Almería, España</div>
             </div>
             
             <div class="tile"><span class="t-label">HUMEDAD</span><div><span class="t-val" id="m-hum">--</span><span class="t-unit">%</span></div><div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div></div>
-            <div class="tile w-small"><span class="t-label">UV INDEX</span><div class="t-val" id="m-uv">--</div></div>
-            <div class="tile w-small"><span class="t-label">LLUVIA</span><div class="t-val" id="m-rain">--</div><span class="t-unit">%</span></div>
-            
-            <div class="tile w-small"><span class="t-label">VIENTO</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
-            <div class="tile w-small"><span class="t-label">SENSACIÓN</span><div class="t-val" id="m-sens">--</div>°</div>
-            <div class="tile w-small"><span class="t-label">P. ROCÍO</span><div class="t-val" id="m-dew">--</div>°</div>
-            <div class="tile w-small"><span class="t-label">RÁFAGAS</span><div class="t-val" id="m-gust">--</div><span class="t-unit">km/h</span></div>
+            <div class="tile"><span class="t-label">VIENTO</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
+            <div class="tile"><span class="t-label">UV INDEX</span><div class="t-val" id="m-uv">--</div></div>
 
-            <div class="tile w-small"><span class="t-label">PRESIÓN</span><div class="t-val" id="m-pres">--</div><span class="t-unit">hPa</span></div>
-            <div class="tile w-small"><span class="t-label">NUBES</span><div class="t-val" id="m-cloud">--</div><span class="t-unit">%</span></div>
-            <div class="tile w-small"><span class="t-label">VISIBILIDAD</span><div class="t-val" id="m-vis">--</div><span class="t-unit">km</span></div>
-            <div class="tile"><span class="t-label">AIRE (AQI)</span><div class="t-val" id="m-aqi">--</div><span class="t-unit">Moderado</span></div>
+            <div class="tile"><span class="t-label">SENSACIÓN</span><div class="t-val" id="m-sens">--</div>°</div>
+            <div class="tile"><span class="t-label">LLUVIA %</span><div class="t-val" id="m-rain">--</div><span class="t-unit">%</span></div>
+            <div class="tile"><span class="t-label">PRESIÓN</span><div class="t-val" id="m-pres">--</div><span class="t-unit">hPa</span></div>
+
+            <div class="tile"><span class="t-label">P. ROCÍO</span><div class="t-val" id="m-dew">--</div>°</div>
+            <div class="tile"><span class="t-label">NUBES</span><div class="t-val" id="m-cloud">--</div><span class="t-unit">%</span></div>
+            <div class="tile"><span class="t-label">VISIBILIDAD</span><div class="t-val" id="m-vis">--</div><span class="t-unit">km</span></div>
         </div>
     </div>
 
@@ -114,27 +103,25 @@
         <h1>SISTEMA ELÉCTRICO <b>PVPC</b></h1>
         <div class="bento-grid">
             <div class="tile tile-price-giant">
-                <span class="t-label">PRECIO AHORA (€/kWh)</span>
+                <span class="t-label">PRECIO ACTUAL (€/kWh)</span>
                 <div class="price-big" id="l-now">--</div>
                 <div id="l-status" class="badge">CALCULANDO...</div>
                 
-                <div class="chart-container">
-                    <div id="l-chart" class="chart"></div>
-                    <div class="time-labels">
-                        <span>00h</span><span>04h</span><span>08h</span><span>12h</span><span>16h</span><span>20h</span><span>23h</span>
-                    </div>
+                <div class="chart" id="l-chart"></div>
+                <div class="time-labels">
+                    <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
                 </div>
             </div>
 
-            <div class="tile"><span class="t-label">MÍNIMO</span><div class="t-val" style="font-size:1.8rem;" id="l-min">--</div><div id="l-min-h" style="font-size:0.7rem; color:var(--green);">--:-- H</div></div>
-            <div class="tile"><span class="t-label">MÁXIMO</span><div class="t-val" style="font-size:1.8rem;" id="l-max">--</div><div id="l-max-h" style="font-size:0.7rem; color:var(--red);">--:-- H</div></div>
-            <div class="tile" style="grid-column: span 2;"><span class="t-label">ESTRATEGIA HESTIA</span><div id="l-tip" style="font-size:0.85rem; margin-top:10px; color:var(--gold);">Analizando mercado...</div></div>
+            <div class="tile"><span class="t-label">MÍNIMO DÍA</span><div class="t-val" id="l-min" style="color:var(--green)">--</div><div id="l-min-h" style="font-size:0.7rem; color:var(--dim);">--:-- H</div></div>
+            <div class="tile"><span class="t-label">MÁXIMO DÍA</span><div class="t-val" id="l-max" style="color:var(--red)">--</div><div id="l-max-h" style="font-size:0.7rem; color:var(--dim);">--:-- H</div></div>
+            <div class="tile" style="grid-column: span 4;"><span class="t-label">ESTRATEGIA HESTIA</span><div id="l-tip" style="font-size:0.9rem; margin-top:10px; color:var(--gold);">Analizando...</div></div>
         </div>
     </div>
 
     <div id="r" class="panel">
-        <h1>CENTRAL <b>DOMÓTICA</b></h1>
-        <div style="color:var(--dim); text-align:center; padding-top:100px;">Panel de relés MQTT listo para vinculación.</div>
+        <h1>CONTROL <b>RELÉS</b></h1>
+        <div style="color:var(--dim); text-align:center; padding-top:100px;">Esperando conexión MQTT...</div>
     </div>
 </main>
 
@@ -147,31 +134,26 @@
 
     async function getWeather() {
         try {
-            // URL Vitaminada con 7 nuevos datos detallados
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,precipitation_probability,surface_pressure,apparent_temperature,dewpoint_2m,windgusts_10m,cloudcover,visibility,air_quality_index&timezone=auto");
+            // URL Corregida (eliminado air_quality_index que causaba el error 400)
+            const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,precipitation_probability,surface_pressure,apparent_temperature,dewpoint_2m,cloudcover,visibility&timezone=auto";
+            const res = await fetch(url);
+            if (!res.ok) throw new Error();
             const d = await res.json();
             const h = new Date().getHours();
             
-            // Datos Bento Deep Meteo
             document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature);
             document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h];
             document.getElementById('hum-fill').style.width = d.hourly.relativehumidity_2m[h] + "%";
             document.getElementById('m-win').innerText = d.current_weather.windspeed;
             document.getElementById('m-uv').innerText = Math.round(d.hourly.uv_index[h]);
             document.getElementById('m-rain').innerText = d.hourly.precipitation_probability[h];
-            
-            // Nuevos Datos (v144)
             document.getElementById('m-sens').innerText = Math.round(d.hourly.apparent_temperature[h]);
-            document.getElementById('m-dew').innerText = Math.round(d.hourly.dewpoint_2m[h]);
-            document.getElementById('m-gust').innerText = Math.round(d.hourly.windgusts_10m[h]);
             document.getElementById('m-pres').innerText = Math.round(d.hourly.surface_pressure[h]);
+            document.getElementById('m-dew').innerText = Math.round(d.hourly.dewpoint_2m[h]);
             document.getElementById('m-cloud').innerText = d.hourly.cloudcover[h];
             document.getElementById('m-vis').innerText = (d.hourly.visibility[h]/1000).toFixed(1);
-            
-            // Calidad del Aire (Copia de seguridad si el AQI de Open-Meteo falla)
-            document.getElementById('m-aqi').innerText = d.hourly.air_quality_index ? Math.round(d.hourly.air_quality_index[h]) : "24";
 
-        } catch (e) { console.error("Error Clima"); }
+        } catch (e) { console.error("Error en Clima: URL o API no disponible"); }
     }
 
     async function getEnergy() {
@@ -193,17 +175,17 @@
             document.getElementById('l-max-h').innerText = prices.indexOf(maxP) + ":00 H";
 
             const avg = prices.reduce((a,b) => a+b) / 24;
-            const status = document.getElementById('l-status');
             const tip = document.getElementById('l-tip');
+            const status = document.getElementById('l-status');
             
             if(prices[nowH] < avg) {
-                status.innerText = "MERCADO BARATO";
+                status.innerText = "PRECIO BAJO";
                 status.style.color = "var(--green)";
-                tip.innerText = "Nivel óptimo. Momento ideal para consumos intensivos.";
+                tip.innerText = "Momento ideal para consumos altos. El precio está por debajo de la media diaria.";
             } else {
-                status.innerText = "MERCADO CARO";
+                status.innerText = "PRECIO ALTO";
                 status.style.color = "var(--red)";
-                tip.innerText = "Precio sobre la media. El punto más barato llegará a las " + prices.indexOf(minP) + ":00.";
+                tip.innerText = "Se recomienda posponer grandes consumos hasta las " + prices.indexOf(minP) + ":00 H.";
             }
 
             const maxVal = Math.max(...values.map(v => v.value));
@@ -211,7 +193,7 @@
                 const p = (v.value / 1000).toFixed(3);
                 return `<div class="bar ${i === nowH ? 'active' : ''}" 
                              style="height:${(v.value/maxVal)*100}%" 
-                             data-label="${i}:00h | ${p}€/kWh"></div>`;
+                             data-label="${i}:00h | ${p}€"></div>`;
             }).join('');
             
         } catch(e) {}
