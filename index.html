@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v147 | ArduSens Almería</title>
+    <title>HESTIA v148 | Energy Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.15); --txt: #ececec; --dim: #555; --green: #2ecc71; --red: #e74c3c; }
@@ -38,7 +38,7 @@
         .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; }
         .t-unit { font-size: 0.75rem; color: var(--dim); margin-left: 4px; text-transform: uppercase; font-weight: 600; }
 
-        /* CLIMA GIGANTE */
+        /* CLIMA */
         .tile-temp-main { grid-column: span 3; grid-row: span 3; justify-content: center; }
         .temp-big { font-size: 11rem; font-weight: 900; letter-spacing: -10px; line-height: 0.8; color: #fff; margin: 15px 0; }
         .hum-bar-bg { width: 100%; height: 4px; background: #111; border-radius: 2px; margin-top: 15px; }
@@ -51,11 +51,12 @@
         .p-bold { font-weight: 700; color: #fff; font-family: monospace; font-size: 1rem; }
         .low-tag { color: var(--green); font-size: 0.6rem; border: 1px solid var(--green); padding: 2px 4px; border-radius: 3px; margin-left: 5px; }
 
-        /* ENERGÍA */
-        .tile-price-giant { grid-column: span 6; text-align: center; min-height: 500px; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 250px; gap: 5px; border-bottom: 1px solid var(--brd); margin-top: 20px; }
+        /* ENERGÍA MEJORADA */
+        .tile-price-giant { grid-column: span 6; text-align: center; min-height: 400px; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; gap: 5px; border-bottom: 1px solid var(--brd); margin-top: 20px; }
         .bar { flex: 1; background: #151515; border-radius: 3px 3px 0 0; position: relative; transition: 0.4s; }
         .bar.active { background: var(--gold); box-shadow: 0 0 30px rgba(197, 160, 89, 0.4); }
+        .bar:hover::after { content: attr(data-label); position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #fff; background: #000; padding: 4px 8px; border: 1px solid var(--gold); border-radius: 4px; white-space: nowrap; z-index: 10; }
 
         @media (max-width: 1100px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .tile-temp-main, .tile-price-giant { grid-column: span 2; } }
     </style>
@@ -69,14 +70,14 @@
         </svg>
         <div class="logo-t">ARDUSENS</div>
     </div>
-    <button onclick="tab('m', this)" class="n-btn active">CLIMA</button>
-    <button onclick="tab('l', this)" class="n-btn">ENERGÍA</button>
+    <button onclick="tab('m', this)" class="n-btn">CLIMA</button>
+    <button onclick="tab('l', this)" class="n-btn active">ENERGÍA</button>
     <button onclick="tab('f', this)" class="n-btn">FUEL</button>
     <button onclick="tab('r', this)" class="n-btn">RELÉS</button>
 </nav>
 
 <main>
-    <div id="m" class="panel active">
+    <div id="m" class="panel">
         <h1>ALMERÍA <b>BENTO METEO +</b></h1>
         <div class="bento-grid">
             <div class="tile tile-temp-main">
@@ -84,11 +85,7 @@
                 <div class="temp-big"><span id="m-temp">--</span>°</div>
                 <div style="font-size:1rem; color:var(--dim);">Observatorio Almería</div>
             </div>
-            <div class="tile">
-                <span class="t-label">HUMEDAD</span>
-                <div class="val-group"><span class="t-val" id="m-hum">--</span><span class="t-unit">% UR</span></div>
-                <div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div>
-            </div>
+            <div class="tile"><span class="t-label">HUMEDAD</span><div class="val-group"><span class="t-val" id="m-hum">--</span><span class="t-unit">% UR</span></div><div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div></div>
             <div class="tile"><span class="t-label">VIENTO</span><div class="val-group"><span class="t-val" id="m-win">--</span><span class="t-unit">km/h</span></div></div>
             <div class="tile"><span class="t-label">UV INDEX</span><div class="val-group"><span class="t-val" id="m-uv">--</span><span class="t-unit">UV</span></div></div>
             <div class="tile"><span class="t-label">SENSACIÓN</span><div class="val-group"><span class="t-val" id="m-sens">--</span><span class="t-unit">°C</span></div></div>
@@ -100,14 +97,28 @@
         </div>
     </div>
 
-    <div id="l" class="panel">
-        <h1>SISTEMA ELÉCTRICO <b>PVPC</b></h1>
+    <div id="l" class="panel active">
+        <h1>SISTEMA ELÉCTRICO <b>PVPC INTELIGENTE</b></h1>
         <div class="bento-grid">
             <div class="tile tile-price-giant">
                 <span class="t-label">PRECIO ACTUAL (€/kWh)</span>
-                <div style="font-size: 6rem; font-weight: 900; color: var(--gold); letter-spacing: -4px;" id="l-now">--</div>
-                <div id="l-status" style="font-size: 0.6rem; padding: 6px 12px; border-radius: 4px; background: #000; border: 1px solid var(--brd); display: inline-block;">--</div>
+                <div style="font-size: 6rem; font-weight: 900; color: var(--gold); letter-spacing: -4px; line-height: 1;" id="l-now">--</div>
+                <div id="l-status" style="font-size: 0.65rem; padding: 6px 12px; border-radius: 4px; background: #000; border: 1px solid var(--brd); display: inline-block; margin-top:10px; font-weight: 600;">--</div>
                 <div class="chart" id="l-chart"></div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.6rem; color:var(--dim); font-weight: 700; letter-spacing: 1px;">
+                    <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
+                </div>
+            </div>
+
+            <div class="tile"><span class="t-label">MÍNIMO DÍA</span><div class="val-group"><span class="t-val" id="l-min" style="color:var(--green)">--</span></div><div id="l-min-h" class="t-unit">--:-- H</div></div>
+            <div class="tile"><span class="t-label">MÁXIMO DÍA</span><div class="val-group"><span class="t-val" id="l-max" style="color:var(--red)">--</span></div><div id="l-max-h" class="t-unit">--:-- H</div></div>
+            <div class="tile"><span class="t-label">MEDIA DIARIA</span><div class="val-group"><span class="t-val" id="l-avg">--</span></div><div class="t-unit">EQUILIBRIO</div></div>
+            
+            <div class="tile"><span class="t-label">TENDENCIA</span><div class="val-group"><span class="t-val" id="l-trend">--</span></div><div id="l-trend-t" class="t-unit">VS HORA ANTERIOR</div></div>
+            <div class="tile" style="grid-column: span 2; background: linear-gradient(45deg, #0a0a0a, #11150a); border-color: rgba(46, 204, 113, 0.2);">
+                <span class="t-label" style="color:var(--green);">PRÓXIMA HORA BARATA</span>
+                <div class="val-group"><span class="t-val" id="l-next-cheap">--:--</span><span class="t-unit">H</span></div>
+                <div id="l-next-price" style="font-size:0.8rem; color:var(--dim); margin-top:5px;">-- €/kWh</div>
             </div>
         </div>
     </div>
@@ -119,14 +130,14 @@
                 <span class="t-label">GASOLINA 95 E5</span>
                 <table class="fuel-table" id="table-95">
                     <thead><tr><th>ESTACIÓN</th><th>PRECIO</th></tr></thead>
-                    <tbody><tr><td colspan="2">Cargando mejores precios...</td></tr></tbody>
+                    <tbody><tr><td colspan="2">Cargando datos seguros...</td></tr></tbody>
                 </table>
             </div>
             <div class="tile" style="grid-column: span 3;">
                 <span class="t-label">DIÉSEL A</span>
                 <table class="fuel-table" id="table-diesel">
                     <thead><tr><th>ESTACIÓN</th><th>PRECIO</th></tr></thead>
-                    <tbody><tr><td colspan="2">Cargando mejores precios...</td></tr></tbody>
+                    <tbody><tr><td colspan="2">Cargando datos seguros...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -172,42 +183,96 @@
             const values = d.included[0].attributes.values;
             const prices = values.map(v => v.value / 1000);
             const nowH = new Date().getHours();
-            document.getElementById('l-now').innerText = prices[nowH].toFixed(4);
+            
+            const currentPrice = prices[nowH];
+            document.getElementById('l-now').innerText = currentPrice.toFixed(4);
+            
+            const minP = Math.min(...prices);
+            const maxP = Math.max(...prices);
             const avg = prices.reduce((a,b) => a+b) / 24;
+
+            document.getElementById('l-min').innerText = minP.toFixed(4);
+            document.getElementById('l-max').innerText = maxP.toFixed(4);
+            document.getElementById('l-avg').innerText = avg.toFixed(4);
+            
+            document.getElementById('l-min-h').innerText = prices.indexOf(minP).toString().padStart(2,'0') + ":00 H";
+            document.getElementById('l-max-h').innerText = prices.indexOf(maxP).toString().padStart(2,'0') + ":00 H";
+
+            // Status Badge
             const status = document.getElementById('l-status');
-            status.innerText = prices[nowH] < avg ? "PRECIO BAJO" : "PRECIO ALTO";
-            status.style.color = prices[nowH] < avg ? "var(--green)" : "var(--red)";
+            status.innerText = currentPrice < avg ? "ESTADO: BARRERA INFERIOR (BARATO)" : "ESTADO: BARRERA SUPERIOR (CARO)";
+            status.style.color = currentPrice < avg ? "#000" : "#000";
+            status.style.background = currentPrice < avg ? "var(--green)" : "var(--red)";
+
+            // Tendencia (Comparado con hora anterior)
+            const trendEl = document.getElementById('l-trend');
+            const trendTextEl = document.getElementById('l-trend-t');
+            if (nowH > 0) {
+                const diff = currentPrice - prices[nowH - 1];
+                if (diff > 0) { trendEl.innerText = "↑ Sube"; trendEl.style.color = "var(--red)"; trendTextEl.innerText = `+${diff.toFixed(4)} €`; } 
+                else if (diff < 0) { trendEl.innerText = "↓ Baja"; trendEl.style.color = "var(--green)"; trendTextEl.innerText = `${diff.toFixed(4)} €`; } 
+                else { trendEl.innerText = "= Igual"; trendEl.style.color = "var(--dim)"; trendTextEl.innerText = "Sin cambios"; }
+            } else { trendEl.innerText = "Inicio"; }
+
+            // Próxima hora barata (Menor que la media a partir de ahora)
+            let nextCheapH = -1;
+            for (let i = nowH + 1; i < 24; i++) {
+                if (prices[i] < avg) { nextCheapH = i; break; }
+            }
+            if (nextCheapH !== -1) {
+                document.getElementById('l-next-cheap').innerText = nextCheapH.toString().padStart(2,'0') + ":00";
+                document.getElementById('l-next-price').innerText = `El precio bajará a ${prices[nextCheapH].toFixed(4)} €/kWh`;
+            } else {
+                document.getElementById('l-next-cheap').innerText = "Mañana";
+                document.getElementById('l-next-price').innerText = "Ya no hay horas baratas hoy.";
+            }
+
+            // Gráfica
             const maxVal = Math.max(...values.map(v => v.value));
-            document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v.value/maxVal)*100}%"></div>`).join('');
+            document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v.value/maxVal)*100}%" data-label="${i}:00h | ${(v.value/1000).toFixed(4)}€"></div>`).join('');
         } catch (e) {}
     }
 
     async function getFuel() {
         try {
-            const res = await fetch("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04");
+            // PROXY PÚBLICO para evitar el bloqueo CORS del Ministerio
+            const url = encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04");
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + url;
+            
+            const res = await fetch(proxyUrl);
             const d = await res.json();
-            // Filtrar SOLO Almería Capital para que sea relevante
+            
             const lista = d.ListaEESSPrecio.filter(e => e['Municipio'] === 'ALMERÍA');
 
-            const renderTable = (id, key, label) => {
+            const renderTable = (id, key) => {
                 const sorted = lista
                     .filter(e => e[key])
                     .sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.')))
                     .slice(0, 5);
 
-                document.getElementById(id).querySelector('tbody').innerHTML = sorted.map((e, i) => `
-                    <tr>
-                        <td>${e['Rótulo']}<br><small style="color:#555; font-size:0.6rem;">${e['Dirección']}</small></td>
-                        <td><span class="p-bold">${e[key]}</span>${i===0 ? '<span class="low-tag">TOP</span>' : ''}</td>
-                    </tr>
-                `).join('');
+                const tbody = document.getElementById(id).querySelector('tbody');
+                if(sorted.length > 0) {
+                    tbody.innerHTML = sorted.map((e, i) => `
+                        <tr>
+                            <td>${e['Rótulo']}<br><small style="color:#555; font-size:0.6rem;">${e['Dirección']}</small></td>
+                            <td><span class="p-bold">${e[key]}</span>${i===0 ? '<span class="low-tag">TOP</span>' : ''}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="2">No se encontraron datos.</td></tr>`;
+                }
             };
 
             renderTable('table-95', 'Precio Gasolina 95 E5');
             renderTable('table-diesel', 'Precio Gasoleo A');
-        } catch (e) { console.error("Fuel Error"); }
+        } catch (e) {
+            document.getElementById('table-95').querySelector('tbody').innerHTML = `<tr><td colspan="2" style="color:var(--red);">Error de conexión CORS/API.</td></tr>`;
+            document.getElementById('table-diesel').querySelector('tbody').innerHTML = `<tr><td colspan="2" style="color:var(--red);">Error de conexión CORS/API.</td></tr>`;
+            console.error("Fuel Error", e);
+        }
     }
 
+    // He puesto el panel de ENERGÍA como activo por defecto para que veas los cambios rápido.
     window.onload = () => { getWeather(); getEnergy(); getFuel(); setInterval(getWeather, 300000); setInterval(getEnergy, 300000); setInterval(getFuel, 3600000); };
 </script>
 </body>
