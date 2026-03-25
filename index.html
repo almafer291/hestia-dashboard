@@ -1,40 +1,85 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v144 | Deep Meteo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.15); --txt: #ececec; --dim: #555; --green: #2ecc71; --red: #e74c3c; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HESTIA v144 | Deep Meteo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.15); --txt: #ececec; --dim: #555; --green: #2ecc71; --red: #e74c3c; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--txt); display: flex; height: 100vh; overflow: hidden; }
 
-        /* NAVEGACIÓN */
-        nav { width: 80px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
-        .logo-box { margin-bottom: 50px; text-align: center; }
-        
-        /* EL LOGO REAL DE ARDUSENS */
-        .llama-svg { width: 35px; height: 35px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
-        .llama-svg .core { fill: var(--gold); filter: drop-shadow(0 0 4px rgba(197, 160, 89, 0.5)); }
-        .logo-t { font-size: 0.5rem; letter-spacing: 1px; color: var(--gold); font-weight: 900; margin-top: 8px; text-transform: uppercase; }
+        /* NAVEGACIÓN */
+        nav { width: 80px; border-right: 1px solid var(--brd); display: flex; flex-direction: column; align-items: center; padding: 30px 0; background: #000; flex-shrink: 0; }
+        .logo-box { margin-bottom: 50px; text-align: center; }
+        
+        /* EL LOGO REAL DE ARDUSENS (RECREADO EXACTAMENTE) */
+        .llama-svg { width: 35px; height: 35px; fill: none; stroke: var(--gold); stroke-width: 1.2; }
+        .llama-svg .core { fill: var(--gold); filter: drop-shadow(0 0 4px rgba(197, 160, 89, 0.5)); }
+        .logo-t { font-size: 0.5rem; letter-spacing: 1px; color: var(--gold); font-weight: 900; margin-top: 8px; text-transform: uppercase; }
 
-        .n-btn { background: none; border: none; color: #333; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; outline: none; }
-        .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
+        .n-btn { background: none; border: none; color: #333; cursor: pointer; margin-bottom: 45px; writing-mode: vertical-lr; transform: rotate(180deg); font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; transition: 0.3s; outline: none; }
+        .n-btn.active { color: var(--gold); font-weight: 900; border-left: 2px solid var(--gold); }
 
-        /* CONTENIDO */
-        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #0a0a0a, #030303); }
-        .panel { display: none; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.4s ease; }
-        .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* CONTENIDO */
+        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top right, #0a0a0a, #030303); }
+        .panel { display: none; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        h1 { font-size: 0.6rem; color: #555; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
-        h1 b { color: var(--gold); }
+        h1 { font-size: 0.6rem; color: #555; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--brd); padding-bottom: 10px; }
+        h1 b { color: var(--gold); }
 
-        /* BENTO GRID */
-        .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s ease; }
-        .tile:hover { border-color: rgba(197, 160, 89, 0.3); background: #0c0c0c; }
+        /* BENTO GRID */
+        .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s ease; }
+        .tile:hover { border-color: rgba(197, 160, 89, 0.3); background: #0c0c0c; }
+        
+        .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); opacity: 0.7; }
+        .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; margin-top: 10px; }
+        .t-unit { font-size: 0.8rem; color: var(--dim); margin-left: 5px; }
+
+        /* CLIMA - CELDAS ESPECIALES */
+        .tile-temp-deep { grid-column: span 3; grid-row: span 3; position: relative; }
+        .temp-big-deep { font-size: 10rem; font-weight: 900; letter-spacing: -8px; line-height: 0.8; margin: 20px 0; }
+        
+        /* Barra de Humedad (Style Ardusens) */
+        .hum-bar-bg { width: 100%; height: 6px; background: #111; border-radius: 3px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.01); }
+        .hum-bar-fill { height: 100%; background: var(--gold); width: 0%; transition: 1.5s ease-out; }
+
+        /* Celdas pequeñas Clima */
+        .w-small { grid-column: span 1; }
+        .w-small .t-val { font-size: 1.8rem; }
+
+        /* ENERGÍA - GRÁFICA GIGANTE */
+        .tile-price-giant { grid-column: span 6; text-align: center; min-height: 480px; }
+        .price-big { font-size: 5rem; font-weight: 900; color: var(--gold); letter-spacing: -3px; }
+        .chart-container { margin-top: 30px; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 220px; gap: 4px; border-bottom: 1px solid var(--brd); }
+        .bar { flex: 1; background: #1a1a1a; cursor: pointer; border-radius: 2px 2px 0 0; position: relative; transition: 0.3s; }
+        .bar:hover { background: #333; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 25px rgba(197, 160, 89, 0.5); }
+        
+        /* Tooltip simple */
+        .bar:hover::after { content: attr(data-label); position: absolute; top: -35px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #fff; background: #000; padding: 4px 8px; border: 1px solid var(--gold); border-radius: 4px; white-space: nowrap; z-index: 10; }
+        .time-labels { display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.6rem; color: var(--dim); letter-spacing: 2px; }
+        .badge { font-size: 0.6rem; padding: 6px 12px; border-radius: 4px; background: #000; border: 1px solid var(--brd); display: inline-block; margin-bottom: 15px; }
+
+        @media (max-width: 1200px) { .bento-grid { grid-template-columns: repeat(3, 1fr); } .tile-temp-deep, .tile-price-giant { grid-column: span 3; } .w-small { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo-box">
+        <svg class="llama-svg" viewBox="0 0 512 512">
+            <path d="M256 0C256 0 128 128 128 256C128 326.7 185.3 384 256 384C326.7 384 384 326.7 384 256C384 128 256 0 256 0Z"/>
+            <path class="core" d="M256 320C220.7 320 192 291.3 192 256C192 220.7 220.7 192 256 192C291.3 192 320 220.7 320 256C320 291.3 291.3 320 256 320Z"/>
+        </svg>
+        <div class="logo-t">ARDUSENS</div>
+    </div>
+  No me recibe los datos del tiempo genera el código sin tocar el resto y que reciba los datos que se supone q ofrece        .tile:hover { border-color: rgba(197, 160, 89, 0.3); background: #0c0c0c; }
         
         .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); opacity: 0.7; }
         .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; margin-top: 10px; }
