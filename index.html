@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v146 | ArduSens System</title>
+    <title>HESTIA v147 | ArduSens Almería</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #c5a059; --bg: #030303; --card: #0a0a0a; --brd: rgba(197, 160, 89, 0.15); --txt: #ececec; --dim: #555; --green: #2ecc71; --red: #e74c3c; }
@@ -30,12 +30,13 @@
 
         /* BENTO GRID */
         .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; transition: 0.3s; }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; }
         .tile:hover { border-color: rgba(197, 160, 89, 0.4); background: #080808; }
         
         .t-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); opacity: 0.8; }
-        .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; margin-top: 10px; }
-        .t-unit { font-size: 0.8rem; color: var(--dim); margin-left: 4px; }
+        .val-group { display: flex; align-items: baseline; margin-top: 10px; }
+        .t-val { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; }
+        .t-unit { font-size: 0.75rem; color: var(--dim); margin-left: 4px; text-transform: uppercase; font-weight: 600; }
 
         /* CLIMA GIGANTE */
         .tile-temp-main { grid-column: span 3; grid-row: span 3; justify-content: center; }
@@ -43,13 +44,18 @@
         .hum-bar-bg { width: 100%; height: 4px; background: #111; border-radius: 2px; margin-top: 15px; }
         .hum-bar-fill { height: 100%; background: var(--gold); width: 0%; transition: 2s ease; }
 
-        /* ENERGÍA GIGANTE */
+        /* TABLA GASOLINERAS */
+        .fuel-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
+        .fuel-table th { text-align: left; color: var(--gold); font-size: 0.6rem; letter-spacing: 1px; padding: 10px; border-bottom: 1px solid var(--brd); }
+        .fuel-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); color: #ccc; }
+        .p-bold { font-weight: 700; color: #fff; font-family: monospace; font-size: 1rem; }
+        .low-tag { color: var(--green); font-size: 0.6rem; border: 1px solid var(--green); padding: 2px 4px; border-radius: 3px; margin-left: 5px; }
+
+        /* ENERGÍA */
         .tile-price-giant { grid-column: span 6; text-align: center; min-height: 500px; }
-        .price-big { font-size: 6rem; font-weight: 900; color: var(--gold); letter-spacing: -4px; margin: 15px 0; }
         .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 250px; gap: 5px; border-bottom: 1px solid var(--brd); margin-top: 20px; }
-        .bar { flex: 1; background: #151515; cursor: pointer; border-radius: 3px 3px 0 0; position: relative; transition: 0.4s; }
+        .bar { flex: 1; background: #151515; border-radius: 3px 3px 0 0; position: relative; transition: 0.4s; }
         .bar.active { background: var(--gold); box-shadow: 0 0 30px rgba(197, 160, 89, 0.4); }
-        .bar:hover::after { content: attr(data-label); position: absolute; top: -40px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #fff; background: #000; padding: 6px 10px; border: 1px solid var(--gold); border-radius: 4px; white-space: nowrap; z-index: 100; }
 
         @media (max-width: 1100px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .tile-temp-main, .tile-price-giant { grid-column: span 2; } }
     </style>
@@ -76,17 +82,21 @@
             <div class="tile tile-temp-main">
                 <span class="t-label">TEMPERATURA ACTUAL</span>
                 <div class="temp-big"><span id="m-temp">--</span>°</div>
-                <div style="font-size:1rem; color:var(--dim);">Almería, ES</div>
+                <div style="font-size:1rem; color:var(--dim);">Observatorio Almería</div>
             </div>
-            <div class="tile"><span class="t-label">HUMEDAD</span><div><span class="t-val" id="m-hum">--</span><span class="t-unit">%</span></div><div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div></div>
-            <div class="tile"><span class="t-label">VIENTO</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
-            <div class="tile"><span class="t-label">UV INDEX</span><div class="t-val" id="m-uv">--</div></div>
-            <div class="tile"><span class="t-label">SENSACIÓN</span><div class="t-val" id="m-sens">--</div>°</div>
-            <div class="tile"><span class="t-label">LLUVIA</span><div class="t-val" id="m-rain">--</div><span class="t-unit">%</span></div>
-            <div class="tile"><span class="t-label">PRESIÓN</span><div class="t-val" id="m-pres">--</div><span class="t-unit">hPa</span></div>
-            <div class="tile"><span class="t-label">P. ROCÍO</span><div class="t-val" id="m-dew">--</div>°</div>
-            <div class="tile"><span class="t-label">NUBES</span><div class="t-val" id="m-cloud">--</div><span class="t-unit">%</span></div>
-            <div class="tile"><span class="t-label">VISIBILIDAD</span><div class="t-val" id="m-vis">--</div><span class="t-unit">km</span></div>
+            <div class="tile">
+                <span class="t-label">HUMEDAD</span>
+                <div class="val-group"><span class="t-val" id="m-hum">--</span><span class="t-unit">% UR</span></div>
+                <div class="hum-bar-bg"><div class="hum-bar-fill" id="hum-fill"></div></div>
+            </div>
+            <div class="tile"><span class="t-label">VIENTO</span><div class="val-group"><span class="t-val" id="m-win">--</span><span class="t-unit">km/h</span></div></div>
+            <div class="tile"><span class="t-label">UV INDEX</span><div class="val-group"><span class="t-val" id="m-uv">--</span><span class="t-unit">UV</span></div></div>
+            <div class="tile"><span class="t-label">SENSACIÓN</span><div class="val-group"><span class="t-val" id="m-sens">--</span><span class="t-unit">°C</span></div></div>
+            <div class="tile"><span class="t-label">LLUVIA</span><div class="val-group"><span class="t-val" id="m-rain">--</span><span class="t-unit">% Prob</span></div></div>
+            <div class="tile"><span class="t-label">PRESIÓN</span><div class="val-group"><span class="t-val" id="m-pres">--</span><span class="t-unit">hPa</span></div></div>
+            <div class="tile"><span class="t-label">P. ROCÍO</span><div class="val-group"><span class="t-val" id="m-dew">--</span><span class="t-unit">°C</span></div></div>
+            <div class="tile"><span class="t-label">NUBES</span><div class="val-group"><span class="t-val" id="m-cloud">--</span><span class="t-unit">% Sky</span></div></div>
+            <div class="tile"><span class="t-label">VISIBILIDAD</span><div class="val-group"><span class="t-val" id="m-vis">--</span><span class="t-unit">km</span></div></div>
         </div>
     </div>
 
@@ -95,33 +105,30 @@
         <div class="bento-grid">
             <div class="tile tile-price-giant">
                 <span class="t-label">PRECIO ACTUAL (€/kWh)</span>
-                <div class="price-big" id="l-now">--</div>
-                <div id="l-status" class="badge">--</div>
+                <div style="font-size: 6rem; font-weight: 900; color: var(--gold); letter-spacing: -4px;" id="l-now">--</div>
+                <div id="l-status" style="font-size: 0.6rem; padding: 6px 12px; border-radius: 4px; background: #000; border: 1px solid var(--brd); display: inline-block;">--</div>
                 <div class="chart" id="l-chart"></div>
-                <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.6rem; color:var(--dim);">
-                    <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span>
-                </div>
             </div>
-            <div class="tile"><span class="t-label">MÍNIMO DÍA</span><div class="t-val" id="l-min" style="color:var(--green)">--</div></div>
-            <div class="tile"><span class="t-label">MÁXIMO DÍA</span><div class="t-val" id="l-max" style="color:var(--red)">--</div></div>
-            <div class="tile" style="grid-column: span 4;"><span class="t-label">ESTRATEGIA</span><div id="l-tip" style="font-size:0.9rem; margin-top:10px; color:var(--gold);">Analizando...</div></div>
         </div>
     </div>
 
     <div id="f" class="panel">
-        <h1>GASOLINERAS <b>ALMERÍA LOW COST</b></h1>
+        <h1>TOP 5 <b>ALMERÍA CAPITAL</b></h1>
         <div class="bento-grid">
-            <div class="tile" style="grid-column: span 3; background:linear-gradient(45deg, #0a0a0a, #1a150a);">
-                <span class="t-label">SIN PLOMO 95</span>
-                <div class="t-val" id="f-95-p" style="color:var(--gold)">--</div><span class="t-unit">€/L</span>
-                <div id="f-95-n" style="font-size:0.7rem; color:var(--dim); margin-top:10px;">Buscando...</div>
+            <div class="tile" style="grid-column: span 3;">
+                <span class="t-label">GASOLINA 95 E5</span>
+                <table class="fuel-table" id="table-95">
+                    <thead><tr><th>ESTACIÓN</th><th>PRECIO</th></tr></thead>
+                    <tbody><tr><td colspan="2">Cargando mejores precios...</td></tr></tbody>
+                </table>
             </div>
-            <div class="tile" style="grid-column: span 3; background:linear-gradient(45deg, #0a0a0a, #0a1510);">
-                <span class="t-label">DIESEL A</span>
-                <div class="t-val" id="f-da-p" style="color:var(--green)">--</div><span class="t-unit">€/L</span>
-                <div id="f-da-n" style="font-size:0.7rem; color:var(--dim); margin-top:10px;">Buscando...</div>
+            <div class="tile" style="grid-column: span 3;">
+                <span class="t-label">DIÉSEL A</span>
+                <table class="fuel-table" id="table-diesel">
+                    <thead><tr><th>ESTACIÓN</th><th>PRECIO</th></tr></thead>
+                    <tbody><tr><td colspan="2">Cargando mejores precios...</td></tr></tbody>
+                </table>
             </div>
-            <div class="tile" style="grid-column: span 6;"><span class="t-label">ESTADO DEL CARBURANTE</span><div style="font-size:0.9rem; margin-top:10px; color:var(--txt);">Datos oficiales del Ministerio actualizados en tiempo real.</div></div>
         </div>
     </div>
 
@@ -166,16 +173,12 @@
             const prices = values.map(v => v.value / 1000);
             const nowH = new Date().getHours();
             document.getElementById('l-now').innerText = prices[nowH].toFixed(4);
-            const minP = Math.min(...prices);
-            const maxP = Math.max(...prices);
-            document.getElementById('l-min').innerText = minP.toFixed(4);
-            document.getElementById('l-max').innerText = maxP.toFixed(4);
             const avg = prices.reduce((a,b) => a+b) / 24;
             const status = document.getElementById('l-status');
             status.innerText = prices[nowH] < avg ? "PRECIO BAJO" : "PRECIO ALTO";
             status.style.color = prices[nowH] < avg ? "var(--green)" : "var(--red)";
             const maxVal = Math.max(...values.map(v => v.value));
-            document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v.value/maxVal)*100}%" data-label="${i}h: ${(v.value/1000).toFixed(3)}€"></div>`).join('');
+            document.getElementById('l-chart').innerHTML = values.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v.value/maxVal)*100}%"></div>`).join('');
         } catch (e) {}
     }
 
@@ -183,18 +186,26 @@
         try {
             const res = await fetch("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04");
             const d = await res.json();
-            const lista = d.ListaEESSPrecio;
-            const sp95 = lista.filter(e => e['Precio Gasolina 95 E5']).sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')));
-            const da = lista.filter(e => e['Precio Gasoleo A']).sort((a,b) => parseFloat(a['Precio Gasoleo A'].replace(',','.')) - parseFloat(b['Precio Gasoleo A'].replace(',','.')));
-            if(sp95.length > 0) { 
-                document.getElementById('f-95-p').innerText = sp95[0]['Precio Gasolina 95 E5'];
-                document.getElementById('f-95-n').innerText = sp95[0]['Rótulo'] + " (" + sp95[0]['Municipio'] + ")";
-            }
-            if(da.length > 0) {
-                document.getElementById('f-da-p').innerText = da[0]['Precio Gasoleo A'];
-                document.getElementById('f-da-n').innerText = da[0]['Rótulo'] + " (" + da[0]['Municipio'] + ")";
-            }
-        } catch (e) {}
+            // Filtrar SOLO Almería Capital para que sea relevante
+            const lista = d.ListaEESSPrecio.filter(e => e['Municipio'] === 'ALMERÍA');
+
+            const renderTable = (id, key, label) => {
+                const sorted = lista
+                    .filter(e => e[key])
+                    .sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.')))
+                    .slice(0, 5);
+
+                document.getElementById(id).querySelector('tbody').innerHTML = sorted.map((e, i) => `
+                    <tr>
+                        <td>${e['Rótulo']}<br><small style="color:#555; font-size:0.6rem;">${e['Dirección']}</small></td>
+                        <td><span class="p-bold">${e[key]}</span>${i===0 ? '<span class="low-tag">TOP</span>' : ''}</td>
+                    </tr>
+                `).join('');
+            };
+
+            renderTable('table-95', 'Precio Gasolina 95 E5');
+            renderTable('table-diesel', 'Precio Gasoleo A');
+        } catch (e) { console.error("Fuel Error"); }
     }
 
     window.onload = () => { getWeather(); getEnergy(); getFuel(); setInterval(getWeather, 300000); setInterval(getEnergy, 300000); setInterval(getFuel, 3600000); };
