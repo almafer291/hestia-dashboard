@@ -3,137 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA | ATELIER NERO v1400</title>
+    <title>HESTIA PREMIUM | v1500</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
-            --bg: #000000;
-            --surface: #060606;
+            --bg: #000;
+            --surface: #070707;
             --accent: #D4AF37; 
-            --border: #121212;
-            --text: #FFFFFF;
-            --text-dim: #333333;
+            --border: #151515;
+            --text: #FFF;
+            --text-dim: #555;
+            --green: #4CAF50; --red: #FF5252; --orange: #FF9800;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; 
-            display: flex; height: 100vh; overflow: hidden;
-        }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR BLINDADA */
-        aside {
-            width: 240px; background: #000; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 40px 20px;
-        }
+        /* SIDEBAR */
+        aside { width: 240px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 40px 20px; }
         .brand { text-align: center; margin-bottom: 50px; }
-        .hestia-txt { font-weight: 600; font-size: 0.8rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; margin-top: 10px; display: block; }
-        
-        nav { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-        .nav-item { 
-            display: flex; align-items: center; gap: 12px; color: var(--text-dim);
-            padding: 12px; border-radius: 4px; cursor: pointer; transition: 0.2s;
-            font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-        }
-        .nav-item i { font-size: 1.2rem; }
-        .nav-item.active { color: var(--accent); background: rgba(212, 175, 55, 0.03); }
+        .hestia-txt { font-weight: 600; font-size: 0.9rem; color: var(--accent); letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; display: block; }
+        nav { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; color: var(--text-dim); padding: 14px; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .nav-item.active { color: var(--accent); background: rgba(212, 175, 55, 0.05); }
 
-        /* MAIN CONTENT */
-        main { flex: 1; overflow-y: auto; padding: 40px 50px; }
-        .panel { display: none; max-width: 1100px; }
-        .panel.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* CONTENT */
+        main { flex: 1; overflow-y: auto; padding: 40px; }
+        .panel { display: none; }
+        .panel.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .tag { font-size: 0.55rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; font-weight: 800; margin-bottom: 25px; display: block; }
+        /* GRID */
+        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-bottom: 20px; }
+        .card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 4px; display: flex; flex-direction: column; }
+        .c-tit { font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-weight: 800; margin-bottom: 12px; }
+        .c-val { font-size: 2.8rem; font-weight: 100; line-height: 1; }
+        .c-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 8px; font-weight: 600; }
 
-        /* GRID COMPACTA */
-        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
-        .cell { background: var(--surface); padding: 20px; display: flex; flex-direction: column; justify-content: center; }
-        .cell-l { font-size: 0.5rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px; }
-        .cell-v { font-size: 2.2rem; font-weight: 100; color: #fff; letter-spacing: -1px; }
-        .cell-u { font-size: 0.7rem; color: var(--text-dim); margin-left: 4px; font-weight: 400; }
+        /* ENERGY CHART */
+        .chart-box { grid-column: span 12; padding: 30px; background: #030303; border: 1px solid var(--border); }
+        .bars { display: flex; align-items: flex-end; gap: 4px; height: 150px; margin-top: 20px; }
+        .bar { flex: 1; min-width: 18px; border-radius: 2px 2px 0 0; position: relative; transition: 0.3s; cursor: pointer; }
+        .bar:hover::after { content: attr(data-val); position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; padding: 4px 8px; font-size: 0.6rem; font-weight: 900; border-radius: 2px; white-space: nowrap; z-index: 10; }
 
-        /* COMPASS SLIM */
-        .compass-sm { width: 60px; height: 60px; border: 1px solid #111; border-radius: 50%; position: relative; margin: 0 auto; }
-        .needle-sm { 
-            position: absolute; top: 15%; left: 49%; width: 1px; height: 35%; 
-            background: var(--accent); transform-origin: 50% 100%; transition: 1.5s ease;
-        }
+        /* FORECAST SLOTS */
+        .f-day { text-align: center; border-right: 1px solid var(--border); padding: 10px; }
+        .f-day:last-child { border: none; }
 
-        /* ENERGY CHART SLIM */
-        .chart-box { grid-column: span 12; padding: 30px; background: #020202; }
-        .bars { display: flex; align-items: flex-end; gap: 2px; height: 120px; justify-content: center; }
-        .bar { 
-            width: 12px; background: #151515; border-radius: 1px; position: relative; 
-            transition: 0.3s; cursor: crosshair;
-        }
-        .bar.active { background: var(--accent); }
-        .bar:hover::before {
-            content: attr(data-val); position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-            background: var(--accent); color: #000; font-size: 0.55rem; font-weight: 800;
-            padding: 3px 7px; border-radius: 2px; white-space: nowrap; z-index: 10;
-        }
+        /* COMPASS */
+        .compass { width: 80px; height: 80px; border: 2px solid #111; border-radius: 50%; position: relative; margin: 10px auto; }
+        .needle { position: absolute; top: 10%; left: 49%; width: 2px; height: 40%; background: var(--accent); transform-origin: 50% 100%; transition: 1s ease; }
 
-        /* FUEL */
-        .fuel-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-        .f-item { background: var(--surface); border: 1px solid var(--border); padding: 20px; }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } .card { grid-column: span 1 !important; } body { flex-direction: column; } aside { width: 100%; height: auto; order: 2; flex-direction: row; } main { order: 1; } }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="brand">
-        <i class="ph-fill ph-fire" style="font-size: 1.8rem; color: var(--accent);"></i>
-        <span class="hestia-txt">Hestia</span>
-    </div>
+    <div class="brand"><i class="ph-fill ph-fire" style="font-size: 1.8rem; color: var(--accent);"></i><span class="hestia-txt">Hestia</span></div>
     <nav>
-        <div class="nav-item active" onclick="tab('clima', this)"><i class="ph-duotone ph-cloud-sun"></i><span>Atmosphere</span></div>
-        <div class="nav-item" onclick="tab('energia', this)"><i class="ph-duotone ph-lightning"></i><span>Power Grid</span></div>
-        <div class="nav-item" onclick="tab('fuel', this)"><i class="ph-duotone ph-gas-pump"></i><span>Market</span></div>
+        <div class="nav-item active" onclick="tab('clima', this)"><i class="ph-bold ph-cloud-sun"></i><span>Atmosphere</span></div>
+        <div class="nav-item" onclick="tab('energia', this)"><i class="ph-bold ph-lightning"></i><span>Energy</span></div>
+        <div class="nav-item" onclick="tab('fuel', this)"><i class="ph-bold ph-gas-pump"></i><span>Market</span></div>
     </nav>
-    <div style="font-size: 0.4rem; color: #111; letter-spacing: 3px; text-align: center;">ATELIER NERO v1400</div>
 </aside>
 
 <main>
     <div id="clima" class="panel active">
-        <span class="tag">Atmospheric Telemetry</span>
         <div class="grid">
-            <div class="cell" style="grid-column: span 4;"><span class="cell-l">Temperatura</span><div class="cell-v" id="w-temp">--<span class="cell-u">°C</span></div></div>
-            <div class="cell" style="grid-column: span 4;"><span class="cell-l">Sensación</span><div class="cell-v" id="w-app">--<span class="cell-u">°</span></div></div>
-            <div class="cell" style="grid-column: span 4; flex-direction: row; align-items: center; gap: 20px;">
-                <div class="compass-sm"><div class="needle-sm" id="w-needle"></div></div>
-                <div><span class="cell-l">Viento</span><div class="cell-v" style="font-size: 1.2rem;" id="w-win">--<span class="cell-u">km/h</span></div></div>
+            <div class="card" style="grid-column: span 6;"><span class="c-tit">Temperatura Actual</span><div class="c-val" id="w-temp">--°</div><div class="c-sub" id="w-desc">SINCRONIZANDO...</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Sensación</span><div class="c-val" style="font-size: 1.8rem;" id="w-app">--°</div></div>
+            <div class="card" style="grid-column: span 3; align-items: center;"><span class="c-tit">Viento</span><div class="compass"><div class="needle" id="w-needle"></div></div><div class="c-sub" id="w-win">-- km/h</div></div>
+            
+            <div class="card" style="grid-column: span 12;"><span class="c-tit">Calidad del Aire & Partículas</span>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <div><small class="c-tit" style="font-size: 0.5rem;">PM2.5</small><p id="aq-pm2">--</p></div>
+                    <div><small class="c-tit" style="font-size: 0.5rem;">PM10</small><p id="aq-pm10">--</p></div>
+                    <div><small class="c-tit" style="font-size: 0.5rem;">NO2</small><p id="aq-no2">--</p></div>
+                    <div><small class="c-tit" style="font-size: 0.5rem;">O3 (Ozono)</small><p id="aq-o3">--</p></div>
+                </div>
             </div>
-            
-            <div class="cell" style="grid-column: span 3;"><span class="cell-l">Humedad</span><div class="cell-v" style="font-size: 1.5rem;" id="w-hum">--<span class="cell-u">%</span></div></div>
-            <div class="cell" style="grid-column: span 3;"><span class="cell-l">Ráfagas Máx</span><div class="cell-v" style="font-size: 1.5rem;" id="w-gst">--<span class="cell-u">km/h</span></div></div>
-            <div class="cell" style="grid-column: span 3;"><span class="cell-l">Presión</span><div class="cell-v" style="font-size: 1.5rem;" id="w-pres">--</div></div>
-            <div class="cell" style="grid-column: span 3;"><span class="cell-l">UV Index</span><div class="cell-v" style="font-size: 1.5rem;" id="w-uv">--</div></div>
-            
-            <div class="cell" style="grid-column: span 4;"><span class="cell-l">Calidad Aire (PM2.5)</span><div class="cell-v" style="font-size: 1.5rem;" id="w-aqi">--<span class="cell-u">µg/m³</span></div></div>
-            <div class="cell" style="grid-column: span 4;"><span class="cell-l">Nubosidad</span><div class="cell-v" style="font-size: 1.5rem;" id="w-cloud">--<span class="cell-u">%</span></div></div>
-            <div class="cell" style="grid-column: span 4;"><span class="cell-l">Visibilidad</span><div class="cell-v" style="font-size: 1.5rem;" id="w-vis">--<span class="cell-u">km</span></div></div>
+
+            <div class="card" style="grid-column: span 12;"><span class="c-tit">Previsión 3 Días</span>
+                <div style="display: flex; margin-top: 15px;" id="w-fore"></div>
+            </div>
         </div>
     </div>
 
     <div id="energia" class="panel">
-        <span class="tag">Energy PVPC Analytics</span>
         <div class="grid">
             <div class="chart-box">
-                <span class="cell-l">Curva de Precios Hoy (€/kWh)</span>
+                <span class="c-tit">Curva de Precios Real-Time (€/kWh)</span>
                 <div class="bars" id="e-bars"></div>
             </div>
-            <div class="cell" style="grid-column: span 12; background: #000; border-top: 1px solid var(--border);">
-                <span class="cell-l">Precio Actual</span>
-                <div class="cell-v" id="e-now" style="color: var(--accent);">--<span class="cell-u">€/kWh</span></div>
-            </div>
-            <div class="cell" style="grid-column: span 6;"><span class="cell-l">Mínimo Diario</span><div class="cell-v" style="font-size: 1.5rem; color: #fff;" id="e-min">--</div></div>
-            <div class="cell" style="grid-column: span 6;"><span class="cell-l">Máximo Diario</span><div class="cell-v" style="font-size: 1.5rem; color: #fff;" id="e-max">--</div></div>
+            <div class="card" style="grid-column: span 4; border-bottom: 3px solid var(--green);"><span class="c-tit">Mínimo Hoy</span><div class="c-val" style="font-size: 2rem; color: var(--green);" id="e-min">--</div><div class="c-sub" id="e-min-h">--:--h</div></div>
+            <div class="card" style="grid-column: span 4; border-bottom: 3px solid var(--red);"><span class="c-tit">Máximo Hoy</span><div class="c-val" style="font-size: 2rem; color: var(--red);" id="e-max">--</div><div class="c-sub" id="e-max-h">--:--h</div></div>
+            <div class="card" style="grid-column: span 4;"><span class="c-tit">Ahorro / Tendencia</span><div class="c-val" style="font-size: 2rem;" id="e-diff">--%</div><div class="c-sub" id="e-status">ANALIZANDO...</div></div>
+            <div class="card" style="grid-column: span 12;"><span class="c-tit">Precio Actual PVPC</span><div class="c-val" style="color: var(--accent);" id="e-now">-- <small style="font-size: 1rem;">€/kWh</small></div></div>
         </div>
     </div>
 
-    <div id="fuel" class="panel"><span class="tag">Fuel Index</span><div class="fuel-list" id="f-list"></div></div>
+    <div id="fuel" class="panel">
+        <div class="grid" id="f-grid"></div>
+    </div>
 </main>
 
 <script type="module">
@@ -144,53 +117,72 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // FUEL
     onSnapshot(doc(db, "market", "fuel"), (snap) => {
         const data = snap.data();
         if (data?.stations) {
             const sorted = data.stations.filter(s => s['Precio Gasolina 95 E5']).sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.'))).slice(0, 8);
-            document.getElementById('f-list').innerHTML = sorted.map(s => `
-                <div class="f-item">
-                    <span class="cell-l">${s['Rótulo']}</span>
-                    <div style="font-size: 1.2rem; font-weight: 200; color: var(--accent); margin-top:10px;">${s['Precio Gasolina 95 E5']}€</div>
+            document.getElementById('f-grid').innerHTML = sorted.map(s => `
+                <div class="card" style="grid-column: span 6;">
+                    <span class="c-tit">${s['Rótulo']}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div><small style="color:var(--text-dim)">G95:</small><b style="color:var(--accent); font-size:1.5rem; margin-left:10px;">${s['Precio Gasolina 95 E5']}€</b></div>
+                        <div><small style="color:var(--text-dim)">Diesel:</small><b style="font-size:1.5rem; margin-left:10px;">${s['Precio Gasoleo A']}€</b></div>
+                    </div>
+                    <div class="c-sub">${s['Dirección']}</div>
                 </div>
             `).join('');
         }
     });
 
-    // CLIMA + AQI
     async function getW() {
-        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,surface_pressure,apparent_temperature,windgusts_10m,cloudcover,visibility,pm2_5&timezone=auto").then(r => r.json());
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=pm2_5,pm10,nitrogen_dioxide,ozone,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=auto").then(r => r.json());
         const h = new Date().getHours();
-        document.getElementById('w-temp').firstChild.textContent = Math.round(res.current_weather.temperature);
-        document.getElementById('w-app').firstChild.textContent = Math.round(res.hourly.apparent_temperature[h]);
-        document.getElementById('w-hum').firstChild.textContent = res.hourly.relativehumidity_2m[h];
-        document.getElementById('w-gst').firstChild.textContent = Math.round(res.hourly.windgusts_10m[h]);
-        document.getElementById('w-win').firstChild.textContent = res.current_weather.windspeed;
-        document.getElementById('w-pres').firstChild.textContent = Math.round(res.hourly.surface_pressure[h]);
-        document.getElementById('w-uv').innerText = res.hourly.uv_index[h];
-        document.getElementById('w-cloud').firstChild.textContent = res.hourly.cloudcover[h];
-        document.getElementById('w-vis').firstChild.textContent = (res.hourly.visibility[h]/1000).toFixed(1);
-        document.getElementById('w-aqi').firstChild.textContent = res.hourly.pm2_5 ? res.hourly.pm2_5[h] : '--';
+        document.getElementById('w-temp').innerText = Math.round(res.current_weather.temperature) + "°C";
+        document.getElementById('w-app').innerText = Math.round(res.hourly.apparent_temperature[h]) + "°";
+        document.getElementById('aq-pm2').innerText = res.hourly.pm2_5[h] + " µg";
+        document.getElementById('aq-pm10').innerText = res.hourly.pm10[h] + " µg";
+        document.getElementById('aq-no2').innerText = res.hourly.nitrogen_dioxide[h] + " µg";
+        document.getElementById('aq-o3').innerText = res.hourly.ozone[h] + " µg";
         document.getElementById('w-needle').style.transform = `rotate(${res.current_weather.winddirection}deg)`;
+        document.getElementById('w-win').innerText = res.current_weather.windspeed + " km/h";
+
+        const days = ['Hoy', 'Mañana', 'Pasado'];
+        document.getElementById('w-fore').innerHTML = days.map((d, i) => `
+            <div class="f-day" style="flex:1">
+                <div class="c-tit" style="font-size:0.5rem">${d}</div>
+                <div style="font-size:1.2rem; margin:5px 0">${Math.round(res.daily.temperature_2m_max[i])}° / ${Math.round(res.daily.temperature_2m_min[i])}°</div>
+                <div style="color:var(--accent); font-size:0.6rem; font-weight:800">${res.daily.precipitation_probability_max[i]}% LLUVIA</div>
+            </div>
+        `).join('');
     }
 
-    // ENERGIA SOBRIA (2 COLORES)
     async function getE() {
         const hoy = new Date().toISOString().split('T')[0];
         const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`).then(r => r.json());
         const prices = res.included[0].attributes.values.map(v => v.value / 1000);
         const h = new Date().getHours();
         const current = prices[h];
-        const max = Math.max(...prices);
+        const minVal = Math.min(...prices), maxVal = Math.max(...prices), avg = prices.reduce((a,b)=>a+b)/24;
 
         document.getElementById('e-now').firstChild.textContent = current.toFixed(4);
-        document.getElementById('e-min').innerText = Math.min(...prices).toFixed(4) + " €";
-        document.getElementById('e-max').innerText = max.toFixed(4) + " €";
+        document.getElementById('e-min').innerText = minVal.toFixed(4);
+        document.getElementById('e-max').innerText = maxVal.toFixed(4);
+        document.getElementById('e-min-h').innerText = "A las " + prices.indexOf(minVal) + ":00h";
+        document.getElementById('e-max-h').innerText = "A las " + prices.indexOf(maxVal) + ":00h";
 
-        document.getElementById('e-bars').innerHTML = prices.map((p, i) => `
-            <div class="bar ${i === h ? 'active' : ''}" style="height:${(p/max)*100}%" data-val="${i}:00h | ${p.toFixed(4)}€"></div>
-        `).join('');
+        const diff = (((current - avg) / avg) * 100).toFixed(1);
+        document.getElementById('e-diff').innerText = (diff > 0 ? "+" : "") + diff + "%";
+        document.getElementById('e-status').innerText = current < avg ? "AHORRANDO VS MEDIA" : "PRECIO POR ENCIMA DE MEDIA";
+        document.getElementById('e-status').style.color = current < avg ? "var(--green)" : "var(--red)";
+
+        document.getElementById('e-bars').innerHTML = prices.map((p, i) => {
+            let color = "var(--text-dim)";
+            if (p === minVal) color = "var(--green)";
+            else if (p === maxVal) color = "var(--red)";
+            else if (p < avg) color = "var(--accent)";
+            else color = "var(--orange)";
+            return `<div class="bar ${i === h ? 'active' : ''}" style="height:${(p/maxVal)*100}%; background:${color}" data-val="${i}:00h | ${p.toFixed(4)}€"></div>`;
+        }).join('');
     }
 
     window.tab = (id, btn) => {
