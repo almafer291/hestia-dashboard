@@ -3,193 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v170 | Aeterna Organic</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <title>HESTIA v180 | Aeterna Nero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
-            --bg: #050506;
-            --card: rgba(20, 20, 22, 0.6);
-            --border: rgba(255, 255, 255, 0.05);
-            --accent: #d4af37; /* Oro */
-            --bronze: #cd7f32;
-            --text: #ffffff;
-            --text-dim: #88888e;
-            --glass: blur(12px) saturate(180%);
+            --bg: #080808;
+            --card: rgba(18, 18, 20, 0.8);
+            --border: rgba(255, 255, 255, 0.07);
+            --accent: #E5D1B3; /* Dorado Champagne */
+            --text: #F0F0F0;
+            --text-dim: #636366;
+            --glass: blur(15px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: var(--bg); 
-            color: var(--text); 
+            background: var(--bg); color: var(--text); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden;
-            background-image: radial-gradient(circle at 50% -20%, #1a1a1e 0%, #050506 100%);
+            display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* SIDEBAR MINIMALISTA */
+        /* SIDEBAR */
         nav { 
-            width: 100px; 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 40px 0; 
-            gap: 40px;
-            background: rgba(0,0,0,0.2);
+            width: 90px; border-right: 1px solid var(--border); 
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 40px 0; gap: 35px; background: #000;
         }
 
-        /* NUEVA LLAMA ULTRA-FINA */
-        .logo { width: 32px; height: 32px; position: relative; }
-        .logo-line { 
-            fill: none; stroke: var(--accent); stroke-width: 1; 
-            stroke-linecap: round; filter: drop-shadow(0 0 5px var(--accent));
-        }
+        /* NUEVA LLAMA GEOMÉTRICA FINÍSIMA */
+        .logo-hestia { width: 34px; height: 34px; stroke: var(--accent); stroke-width: 1.2; fill: none; filter: drop-shadow(0 0 4px rgba(229, 209, 179, 0.3)); }
 
-        .nav-link { 
-            color: var(--text-dim); font-size: 1.5rem; cursor: pointer; 
-            transition: 0.4s; position: relative; 
-        }
+        .nav-link { color: var(--text-dim); font-size: 1.6rem; cursor: pointer; transition: 0.3s; }
         .nav-link:hover, .nav-link.active { color: var(--accent); }
-        .nav-link.active::after {
-            content: ''; position: absolute; right: -38px; top: 50%;
-            width: 4px; height: 20px; background: var(--accent);
-            border-radius: 4px 0 0 4px; transform: translateY(-50%);
-            box-shadow: -5px 0 15px var(--accent);
-        }
 
         /* MAIN CONTENT */
-        main { flex: 1; padding: 60px; overflow-y: auto; }
-        .panel { display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        main { flex: 1; padding: 60px; overflow-y: auto; background: radial-gradient(at top right, #121214, #080808); }
+        .panel { display: none; animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
         .panel.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        .header-box { margin-bottom: 50px; }
-        .header-box h1 { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 600; }
+        .header-box h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 500; letter-spacing: -1px; margin-bottom: 50px; }
         .header-box span { color: var(--accent); font-style: italic; }
 
-        /* BENTO GRID REFINADO */
-        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
-        .card { 
-            background: var(--card); border: 1px solid var(--border); 
-            border-radius: 32px; padding: 32px; backdrop-filter: var(--glass);
-            transition: 0.3s;
-        }
-        .card:hover { border-color: rgba(212, 175, 55, 0.3); }
+        /* BENTO GRID */
+        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 30px; backdrop-filter: var(--glass); }
 
-        /* WIDGET CLIMA & BRÚJULA */
-        .compass-box { position: relative; width: 100px; height: 100px; margin: 0 auto; }
-        .compass-ring { 
-            width: 100%; height: 100%; border: 1px dashed var(--text-dim); 
-            border-radius: 50%; position: absolute; 
-        }
+        /* CLIMA & BRÚJULA */
+        .compass-box { position: relative; width: 120px; height: 120px; border: 1px solid var(--border); border-radius: 50%; }
         .compass-needle {
-            position: absolute; top: 10%; left: 48%; width: 4px; height: 40%;
-            background: linear-gradient(to bottom, var(--accent), transparent);
-            border-radius: 4px; transform-origin: 50% 100%; transition: 1s ease-in-out;
+            position: absolute; top: 15%; left: 49%; width: 2px; height: 35%;
+            background: var(--accent); transform-origin: 50% 100%; transition: 2s cubic-bezier(0.1, 0, 0, 1);
         }
 
-        /* FUEL REFINADO */
-        .fuel-list { display: flex; flex-direction: column; gap: 15px; }
-        .fuel-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; border-radius: 20px; background: rgba(255,255,255,0.02);
+        /* ENERGY INTERACTIVO */
+        .energy-chart { display: flex; align-items: flex-end; height: 180px; gap: 4px; margin-top: 30px; }
+        .energy-bar { 
+            flex: 1; background: rgba(229, 209, 179, 0.1); border-radius: 2px; position: relative; 
+            transition: 0.3s; cursor: crosshair;
         }
-        .fuel-info b { display: block; font-size: 0.9rem; letter-spacing: 0.5px; }
-        .fuel-info small { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; }
-        .price-badge { font-family: monospace; font-weight: 800; font-size: 1.2rem; color: var(--accent); }
-
-        /* RELÉS (BOTONES) */
-        .relay-btn {
-            width: 100%; padding: 25px; border-radius: 24px; border: 1px solid var(--border);
-            background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; gap: 10px; transition: 0.3s;
+        .energy-bar:hover { background: var(--accent); }
+        .energy-bar:hover::after {
+            content: attr(data-label); position: absolute; top: -50px; left: 50%;
+            transform: translateX(-50%); background: var(--accent); color: #000;
+            padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; white-space: nowrap; z-index: 10;
         }
-        .relay-btn i { font-size: 2rem; }
-        .relay-btn.on { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); border: none; }
 
-        /* ENERGY CHART ORGÁNICO */
-        .energy-chart { display: flex; align-items: flex-end; height: 120px; gap: 6px; margin-top: 20px; }
-        .energy-bar { flex: 1; background: rgba(212, 175, 55, 0.1); border-radius: 4px 4px 0 0; position: relative; }
-        .energy-bar.now { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        /* FUEL MARKET - ORDENADO */
+        .fuel-grid { display: grid; gap: 10px; }
+        .fuel-card { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 18px 24px; border-radius: 18px; background: rgba(255,255,255,0.03);
+            border: 1px solid transparent; transition: 0.3s;
+        }
+        .fuel-card:hover { border-color: var(--accent); background: rgba(229, 209, 179, 0.05); }
+        .f-main b { font-size: 1rem; letter-spacing: 0.5px; color: #fff; }
+        .f-main p { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; }
+        .f-price { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 200; font-size: 1.8rem; color: var(--accent); }
+
+        /* ICONS E INFO EXTRA */
+        .stat-row { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+        .stat-row i { color: var(--accent); font-size: 1.4rem; }
+        .stat-val { font-weight: 600; font-size: 1.1rem; }
+        .stat-lbl { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
     </style>
 </head>
 <body>
 
 <nav>
     <div class="logo">
-        <svg viewBox="0 0 24 24"><path class="logo-line" d="M12 2c0 0-5 5.5-5 11.5s5 7.5 5 7.5 5-1.5 5-7.5S12 2 12 2zM12 7v5"/></svg>
+        <svg class="logo-hestia" viewBox="0 0 24 24">
+            <path d="M12 2C12 2 7 6 7 12s5 10 5 10 5-4 5-10S12 2 12 2z"/>
+            <path d="M12 18s-2-2-2-5 2-5 2-5" />
+        </svg>
     </div>
-    <i class="ph-bold ph-house nav-link active" onclick="tab('m', this)"></i>
-    <i class="ph-bold ph-lightning nav-link" onclick="tab('l', this)"></i>
-    <i class="ph-bold ph-gas-pump nav-link" onclick="tab('f', this)"></i>
-    <i class="ph-bold ph-toggle-left nav-link" onclick="tab('r', this)"></i>
+    <i class="ph ph-wind nav-link active" onclick="tab('m', this)"></i>
+    <i class="ph ph-lightning-z nav-link" onclick="tab('l', this)"></i>
+    <i class="ph ph-drop nav-link" onclick="tab('f', this)"></i>
+    <i class="ph ph-cpu nav-link" onclick="tab('r', this)"></i>
 </nav>
 
 <main>
     <div id="m" class="panel active">
         <div class="header-box"><h1>Almería <span>Atmosphere</span></h1></div>
         <div class="grid">
-            <div class="card" style="grid-column: span 4; display: flex; align-items: center; gap: 30px;">
-                <div style="font-size: 5rem; font-weight: 800;" id="m-temp">--°</div>
-                <div><p id="m-desc" style="color: var(--accent); letter-spacing: 2px; font-weight: 600; text-transform: uppercase;">Sincronizando</p><p id="m-city">Almería, ES</p></div>
-            </div>
-            <div class="card" style="grid-column: span 4;">
-                <p style="color:var(--text-dim); font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; margin-bottom:15px;">Viento y Dirección</p>
-                <div style="display: flex; align-items: center; justify-content: space-around;">
-                    <div class="compass-box">
-                        <div class="compass-ring"></div>
-                        <div class="compass-needle" id="m-needle"></div>
-                    </div>
-                    <div style="text-align: center;"><span id="m-win" style="font-size: 2.5rem; font-weight: 800;">--</span><br><small>km/h</small></div>
+            <div class="card" style="grid-column: span 5; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="stat-lbl">Temperatura Exterior</span>
+                    <div style="font-size: 6rem; font-weight: 200; line-height: 1;" id="m-temp">--°</div>
+                    <p id="m-desc" style="color: var(--accent); margin-top: 10px; font-weight: 600; text-transform: uppercase; font-size: 0.8rem;">---</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="stat-row"><i class="ph ph-thermometer-hot"></i><div><p class="stat-lbl">Sensación</p><p class="stat-val" id="m-app">--°</p></div></div>
+                    <div class="stat-row"><i class="ph ph-eye"></i><div><p class="stat-lbl">Visibilidad</p><p class="stat-val" id="m-vis">-- km</p></div></div>
                 </div>
             </div>
-            <div class="card" style="grid-column: span 2; text-align: center;"><i class="ph-bold ph-drop" style="color:var(--accent); font-size:2rem;"></i><p style="margin-top:10px; color:var(--text-dim); font-size:0.7rem;">HUMEDAD</p><div id="m-hum" style="font-size:1.8rem; font-weight:800;">--</div></div>
-            <div class="card" style="grid-column: span 2; text-align: center;"><i class="ph-bold ph-sun" style="color:var(--accent); font-size:2rem;"></i><p style="margin-top:10px; color:var(--text-dim); font-size:0.7rem;">UV INDEX</p><div id="m-uv" style="font-size:1.8rem; font-weight:800;">--</div></div>
+            
+            <div class="card" style="grid-column: span 4; display: flex; flex-direction: column; align-items: center;">
+                <span class="stat-lbl" style="margin-bottom: 20px;">Dirección del Viento</span>
+                <div class="compass-box"><div class="compass-needle" id="m-needle"></div></div>
+                <div style="margin-top: 20px; font-size: 1.5rem; font-weight: 600;"><span id="m-win">--</span> <small style="font-size: 0.7rem; color: var(--text-dim);">km/h</small></div>
+            </div>
+
+            <div class="card" style="grid-column: span 3;">
+                <div class="stat-row"><i class="ph ph-drop"></i><div><p class="stat-lbl">Humedad</p><p class="stat-val" id="m-hum">--%</p></div></div>
+                <div class="stat-row"><i class="ph ph-sun-horizon"></i><div><p class="stat-lbl">Índice UV</p><p class="stat-val" id="m-uv">--</p></div></div>
+                <div class="stat-row"><i class="ph ph-gauge"></i><div><p class="stat-lbl">Presión</p><p class="stat-val" id="m-pres">-- hPa</p></div></div>
+            </div>
         </div>
     </div>
 
     <div id="l" class="panel">
         <div class="header-box"><h1>Smart <span>Energy</span></h1></div>
         <div class="grid">
-            <div class="card" style="grid-column: span 8;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div><p style="color:var(--text-dim); font-size:0.7rem; letter-spacing:2px;">PRECIO PVPC ACTUAL</p><div id="l-now" style="font-size:3.5rem; font-weight:800; color:var(--accent)">--€/kWh</div></div>
-                    <div style="text-align: right;"><p id="l-status" style="padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: 800;"></p></div>
+            <div class="card" style="grid-column: span 12;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div><span class="stat-lbl">Precio Actual PVPC</span><div id="l-now" style="font-size: 4rem; font-weight: 200; color: var(--accent);">--€/MWh</div></div>
+                    <div style="text-align: right;">
+                        <span class="stat-lbl">Rango Diario</span>
+                        <p style="color: #50fa7b; font-weight: 600;">MIN: <span id="l-min">--</span></p>
+                        <p style="color: #ff5555; font-weight: 600;">MAX: <span id="l-max">--</span></p>
+                    </div>
                 </div>
                 <div class="energy-chart" id="l-chart"></div>
-            </div>
-            <div class="card" style="grid-column: span 4;">
-                <p style="color:var(--text-dim); font-size:0.7rem; letter-spacing:2px; margin-bottom:20px;">EXTREMOS HOY</p>
-                <div style="display:flex; justify-content: space-between; margin-bottom:20px;"><span>Mínimo</span><b id="l-min" style="color:#00ff88">--</b></div>
-                <div style="display:flex; justify-content: space-between;"><span>Máximo</span><b id="l-max" style="color:#ff3344">--</b></div>
+                <p style="font-size: 0.6rem; color: var(--text-dim); margin-top: 15px; text-align: center; letter-spacing: 2px;">DESLIZA EL RATÓN PARA VER PRECIOS POR HORA</p>
             </div>
         </div>
     </div>
 
     <div id="f" class="panel">
-        <div class="header-box"><h1>Fuel <span>Sync</span></h1></div>
+        <div class="header-box"><h1>Market <span>Fuel</span></h1></div>
         <div class="grid">
             <div class="card" style="grid-column: span 6;">
-                <h3 style="margin-bottom:25px; font-size:0.8rem; letter-spacing:2px; color:var(--accent)">TOP 5 GASOLINA 95</h3>
-                <div class="fuel-list" id="list-95"></div>
+                <span class="stat-lbl" style="margin-bottom: 25px; display: block;">Gasolina 95 (Almería)</span>
+                <div class="fuel-grid" id="list-95"></div>
             </div>
             <div class="card" style="grid-column: span 6;">
-                <h3 style="margin-bottom:25px; font-size:0.8rem; letter-spacing:2px; color:var(--accent)">TOP 5 DIÉSEL A</h3>
-                <div class="fuel-list" id="list-diesel"></div>
+                <span class="stat-lbl" style="margin-bottom: 25px; display: block;">Diésel A (Almería)</span>
+                <div class="fuel-grid" id="list-diesel"></div>
             </div>
-        </div>
-    </div>
-
-    <div id="r" class="panel">
-        <div class="header-box"><h1>Smart <span>Control</span></h1></div>
-        <div class="grid">
-            <div class="card" style="grid-column: span 3;"><button class="relay-btn" onclick="this.classList.toggle('on')"><i class="ph-bold ph-lightbulb"></i><b>Salón</b></button></div>
-            <div class="card" style="grid-column: span 3;"><button class="relay-btn" onclick="this.classList.toggle('on')"><i class="ph-bold ph-thermometer"></i><b>Caldera</b></button></div>
-            <div class="card" style="grid-column: span 3;"><button class="relay-btn" onclick="this.classList.toggle('on')"><i class="ph-bold ph-video-camera"></i><b>Cámaras</b></button></div>
-            <div class="card" style="grid-column: span 3;"><button class="relay-btn" onclick="this.classList.toggle('on')"><i class="ph-bold ph-broadcast"></i><b>Robot Sync</b></button></div>
         </div>
     </div>
 </main>
@@ -198,7 +172,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // TU CONFIGURACIÓN (Usando los IDs de tu captura)
     const firebaseConfig = {
         apiKey: "AIzaSyAhKc7R97_ph2VQOq-uLMXFv-Wnyy0srXw",
         projectId: "hestia-31da3",
@@ -208,61 +181,54 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ESCUCHA FIREBASE (Fuel)
     onSnapshot(doc(db, "market", "fuel"), (snap) => {
         const data = snap.data();
-        if (data && data.stations) renderFuel(data.stations);
+        if (data && data.stations) {
+            const render = (id, key) => {
+                const stations = [...data.stations].sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.'))).slice(0,5);
+                document.getElementById(id).innerHTML = stations.map(e => `
+                    <div class="fuel-card">
+                        <div class="f-main"><b>${e['Rótulo']}</b><p>${e['Dirección']}</p></div>
+                        <div class="f-price">${e[key]}</div>
+                    </div>
+                `).join('');
+            };
+            render('list-95', 'Precio Gasolina 95 E5');
+            render('list-diesel', 'Precio Gasoleo A');
+        }
     });
 
-    function renderFuel(stations) {
-        const fill = (id, key) => {
-            const sorted = [...stations].sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.')));
-            document.getElementById(id).innerHTML = sorted.slice(0, 5).map(e => `
-                <div class="fuel-item">
-                    <div class="fuel-info"><b>${e['Rótulo']}</b><small>${e['Dirección'].substring(0,30)}...</small></div>
-                    <div class="price-badge">${e[key]}</div>
-                </div>
-            `).join('');
-        };
-        fill('list-95', 'Precio Gasolina 95 E5');
-        fill('list-diesel', 'Precio Gasoleo A');
-    }
-
-    // CLIMA COMPLETO + BRÚJULA
-    async function loadWeather() {
-        const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,winddirection_10m&timezone=auto";
+    async function loadAtmosphere() {
+        const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,winddirection_10m,apparent_temperature,visibility,surface_pressure&timezone=auto";
         const res = await fetch(url).then(r => r.json());
-        const now = new Date().getHours();
+        const h = new Date().getHours();
 
         document.getElementById('m-temp').innerText = Math.round(res.current_weather.temperature) + "°";
+        document.getElementById('m-app').innerText = Math.round(res.hourly.apparent_temperature[h]) + "°";
+        document.getElementById('m-vis').innerText = (res.hourly.visibility[h] / 1000).toFixed(1);
+        document.getElementById('m-pres').innerText = Math.round(res.hourly.surface_pressure[h]);
         document.getElementById('m-win').innerText = res.current_weather.windspeed;
-        document.getElementById('m-hum').innerText = res.hourly.relativehumidity_2m[now] + "%";
-        document.getElementById('m-uv').innerText = res.hourly.uv_index[now];
+        document.getElementById('m-hum').innerText = res.hourly.relativehumidity_2m[h];
+        document.getElementById('m-uv').innerText = res.hourly.uv_index[h];
         document.getElementById('m-needle').style.transform = `rotate(${res.current_weather.winddirection}deg)`;
-        
-        const codes = { 0: "Despejado", 1: "Mayormente Despejado", 3: "Nublado", 45: "Niebla", 61: "Lluvia Ligera" };
-        document.getElementById('m-desc').innerText = codes[res.current_weather.weathercode] || "Despejado";
+        document.getElementById('m-desc').innerText = "Cielo despejado";
     }
 
-    // ENERGÍA ORGÁNICA
     async function loadEnergy() {
         const hoy = new Date().toISOString().split('T')[0];
         const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`).then(r => r.json());
         const prices = res.included[0].attributes.values.map(v => v.value / 1000);
         const nowH = new Date().getHours();
-        
-        const current = prices[nowH];
-        document.getElementById('l-now').innerText = current.toFixed(4) + "€";
-        document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4) + "€";
-        document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4) + "€";
 
-        const status = document.getElementById('l-status');
-        if(current < 0.1) { status.innerText = "BARATA"; status.style.background = "#00ff8822"; status.style.color = "#00ff88"; }
-        else { status.innerText = "CARA"; status.style.background = "#ff334422"; status.style.color = "#ff3344"; }
+        document.getElementById('l-now').innerText = prices[nowH].toFixed(4) + " €";
+        document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
+        document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
 
         const max = Math.max(...prices);
         document.getElementById('l-chart').innerHTML = prices.map((p, i) => `
-            <div class="energy-bar ${i === nowH ? 'now' : ''}" style="height:${(p/max)*100}%"></div>
+            <div class="energy-bar ${i === nowH ? 'active' : ''}" 
+                 style="height:${(p/max)*100}%" 
+                 data-label="${i}:00h - ${p.toFixed(4)}€"></div>
         `).join('');
     }
 
@@ -270,9 +236,9 @@
         document.querySelectorAll('.panel, .nav-link').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
-    };
+    }
 
-    loadWeather();
+    loadAtmosphere();
     loadEnergy();
 </script>
 </body>
