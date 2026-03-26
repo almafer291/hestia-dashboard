@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hestia Dashboard | Atelier Nero v1300</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+    <title>HESTIA | ATELIER NERO v1300</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
@@ -14,7 +14,7 @@
             --accent: #D4AF37; /* Bronce/Oro Pulido */
             --border: #121212;
             --text: #FFFFFF;
-            --text-dim: #3D3D3D; /* Gris Titanio suave */
+            --text-dim: #444444; /* Gris Titanio suave */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,15 +32,15 @@
         .brand-box { text-align: center; margin-bottom: 60px; }
         .llama-ico { color: var(--accent); font-size: 2rem; margin-bottom: 8px; }
         .hestia-name { 
-            font-family: 'Playfair Display', serif; font-style: italic; 
-            font-size: 0.8rem; color: var(--accent); letter-spacing: 3px; text-transform: uppercase;
+            font-weight: 600; font-size: 0.75rem; color: var(--accent); 
+            letter-spacing: 3px; text-transform: uppercase;
         }
 
         nav { display: flex; flex-direction: column; gap: 8px; flex: 1; }
         .nav-link { 
             display: flex; align-items: center; gap: 15px; color: var(--text-dim);
             padding: 15px; border-radius: 4px; cursor: pointer; transition: 0.2s;
-            font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
         }
         .nav-link i { font-size: 1.4rem; }
         .nav-link:hover { color: #eee; background: rgba(255,255,255,0.01); }
@@ -56,15 +56,16 @@
 
         .section-tag { font-size: 0.6rem; color: var(--accent); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 40px; font-weight: 900; }
 
-        /* DASHBOARD GRID (NO BENTO, SISTEMÁTICO) */
-        .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-        .tile { 
-            background: var(--surface); padding: 30px; 
+        /* DASHBOARD GRID (BENTO SYSTEM) */
+        .dash-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
+        .card { 
+            background: var(--surface); border: 1px solid var(--border); 
+            border-radius: 12px; padding: 30px; 
             display: flex; flex-direction: column; justify-content: space-between;
         }
-        .tile-h { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 20px; }
-        .tile-v { font-size: 5rem; font-weight: 100; color: #fff; line-height: 1; letter-spacing: -3px;}
-        .tile-u { font-size: 1rem; color: var(--text-dim); font-weight: 300; margin-left: 5px; }
+        .label { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 20px; display: block; }
+        .value { font-size: 5rem; font-weight: 100; color: #fff; line-height: 1; letter-spacing: -3px;}
+        .unit { font-size: 1rem; color: var(--text-dim); font-weight: 300; margin-left: 5px; }
 
         /* BRÚJULA DINÁMICA (OPTIMIZADA) */
         .compass-wrap { position: relative; width: 140px; height: 140px; border: 1px solid var(--border); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: #000;}
@@ -76,14 +77,13 @@
         }
 
         /* GRÁFICA ENERGÍA CON TOOLTIP */
-        .e-chart { grid-column: span 12; background: #050505; padding: 40px; position: relative; }
+        .chart-container { grid-column: span 12; height: 280px; position: relative; }
         .bars { display: flex; align-items: flex-end; gap: 4px; height: 180px; margin-top: 30px; }
         .bar { 
-            flex: 1; background: #111; border-radius: 1px; position: relative; 
+            flex: 1; background: #111; border-radius: 2px; position: relative; 
             transition: height 0.3s, background 0.3s; cursor: crosshair;
         }
         .bar.active { background: var(--accent); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
-        .bar:hover { background: #333; }
         
         /* TOOLTIP */
         .bar:hover::before {
@@ -122,20 +122,20 @@
     <div id="clima" class="panel active">
         <div class="section-tag">Atmospheric Control Center</div>
         <div class="dash-grid">
-            <div class="tile" style="grid-column: span 12; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #070707, #000);">
+            <div class="card" style="grid-column: span 12; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #070707, #000);">
                 <div>
-                    <span class="tile-h">Temperatura Real / Almería</span>
-                    <div class="tile-v" id="w-temp" style="font-size: 6.5rem;">--<span class="tile-u">°C</span></div>
-                    <p id="w-desc" style="color: var(--accent); font-style: italic; font-weight: 300; font-size: 1rem; font-family:'Playfair Display',serif;">Cargando...</p>
+                    <span class="label">Temperatura Real / Almería</span>
+                    <div class="value" id="w-temp" style="font-size: 6.5rem;">--<span class="unit">°C</span></div>
+                    <p id="w-desc" style="color: var(--accent); font-style: italic; font-weight: 300; font-size: 1rem;">Cargando...</p>
                 </div>
                 <div style="text-align: right;">
-                    <div style="margin-bottom: 20px;"><span class="tile-h">Sensación</span><p style="font-size: 1.5rem; font-weight: 600;" id="w-app">--°</p></div>
-                    <div><span class="tile-h">Visibilidad</span><p style="font-size: 1.5rem; font-weight: 600;" id="w-vis">--<span class="tile-u">km</span></p></div>
+                    <div style="margin-bottom: 20px;"><span class="label">Sensación</span><p style="font-size: 1.5rem; font-weight: 600;" id="w-app">--°</p></div>
+                    <div><span class="label">Visibilidad</span><p style="font-size: 1.5rem; font-weight: 600;" id="w-vis">--<span class="unit">km</span></p></div>
                 </div>
             </div>
             
-            <div class="tile" style="grid-column: span 6; text-align: center;">
-                <span class="tile-h" style="margin-bottom: 25px;">Dirección del Viento</span>
+            <div class="card" style="grid-column: span 6; text-align: center;">
+                <span class="label" style="margin-bottom: 25px;">Dirección del Viento</span>
                 <div class="compass-wrap">
                     <div class="needle" id="w-needle"></div>
                     <span style="font-size: 1.8rem; font-weight: 700; color: #fff;" id="w-win-deg">--°</span>
@@ -143,25 +143,41 @@
                 <div style="margin-top: 25px; font-size: 1.3rem; font-weight: 600;"><span id="w-win-spd">--</span> <small style="font-size: 0.7rem; color: var(--text-dim);">km/h Sust.</small></div>
             </div>
 
-            <div class="tile" style="grid-column: span 3;"><span class="tile-h">Humedad</span><div class="tile-v" style="font-size: 2.8rem; color:#fff;" id="w-hum">--%</div></div>
-            <div class="tile" style="grid-column: span 3;"><span class="tile-h">Presión</span><div class="tile-v" style="font-size: 2.8rem; color:#fff;" id="w-pres">--<span class="tile-u">hPa</span></div></div>
-            <div class="tile" style="grid-column: span 3;"><span class="tile-h">Índice UV</span><div class="tile-v" style="font-size: 2.8rem; color:#fff;" id="w-uv">--</div></div>
-            <div class="tile" style="grid-column: span 3;"><span class="tile-h">Ráfagas</span><div class="tile-v" style="font-size: 2.8rem; color:#fff;" id="w-win-gst">--<span class="tile-u">km/h</span></div></div>
+            <div class="card" style="grid-column: span 3;"><span class="label">Humedad</span><div class="value" style="font-size: 2.8rem; color:#fff;" id="w-hum">--%</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="label">Presión</span><div class="value" style="font-size: 2.8rem; color:#fff;" id="w-pres">--<span class="unit">hPa</span></div></div>
+            <div class="card" style="grid-column: span 3;"><span class="label">Índice UV</span><div class="value" style="font-size: 2.8rem; color:#fff;" id="w-uv">--</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="label">Ráfagas</span><div class="value" style="font-size: 2.8rem; color:#fff;" id="w-win-gst">--<span class="unit">km/h</span></div></div>
         </div>
     </div>
 
     <div id="energia" class="panel">
         <div class="section-tag">Energy Telemetry & PVPC Analytics</div>
         <div class="dash-grid">
-            <div class="tile e-chart">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div><span class="tile-h">Histórico 24h (€/kWh)</span><div class="tile-v" id="e-now" style="color: var(--accent); font-size: 4rem;">--<span class="tile-u">€/kWh Now</span></div></div>
-                    <div style="text-align: right; margin-top: 10px;">
-                        <span id="e-status" style="padding: 6px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">CARA</span>
-                        <div style="margin-top: 15px; font-size: 1rem;"><span style="color: #4CAF50;">MIN: <b id="e-min">--</b></span> | <span style="color: #FF5252;">MAX: <b id="e-max">--</b></span></div>
-                    </div>
-                </div>
+            <div class="card chart-container">
+                <span class="label">Histórico 24h PVPC Hoy (€/kWh)</span>
                 <div class="bars" id="e-bars-cnt"></div>
+                <div style="text-align: center; margin-top: 20px;"><small style="color:var(--text-dim); font-size:0.6rem; letter-spacing:1px;">TAP / HOVER FOR DATA</small></div>
+            </div>
+            <div class="card" style="grid-column: span 4; border-left: 3px solid #4CAF50;">
+                <span class="label">Mínimo Hoy</span>
+                <div class="value" id="e-min" style="color: #4CAF50; font-size: 3rem;">--</div>
+                <p id="e-min-h" style="color:var(--text-dim); font-size: 0.7rem; font-weight: 600;">--:--h</p>
+            </div>
+            <div class="card" style="grid-column: span 4; border-left: 3px solid #FF5252;">
+                <span class="label">Máximo Hoy</span>
+                <div class="value" id="e-max" style="color: #FF5252; font-size: 3rem;">--</div>
+                <p id="e-max-h" style="color:var(--text-dim); font-size: 0.7rem; font-weight: 600;">--:--h</p>
+            </div>
+            <div class="card" style="grid-column: span 4;">
+                <span class="label">Variación vs Media</span>
+                <div class="value" id="e-avg" style="font-size: 3rem;">--<span class="unit">%</span></div>
+            </div>
+            <div class="card" style="grid-column: span 12; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="label">Precio PVPC Actual</span>
+                    <div class="value" id="e-now" style="color: var(--accent); font-size: 4rem;">--<span class="unit">€/kWh</span></div>
+                </div>
+                <div id="e-status" style="font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">CALCULANDO...</div>
             </div>
         </div>
     </div>
@@ -172,12 +188,12 @@
     </div>
 
     <div id="reles" class="panel">
-        <div class="section-tag">Domotics Relay Nodes</div>
+        <div class="section-tag">Hardware Domotics</div>
         <div class="dash-grid">
-            <div class="tile" style="grid-column: span 4; cursor: pointer;" onclick="this.style.borderColor='var(--accent)'">
-                <span class="tile-h">BT_Relay_01</span>
-                <div style="font-size: 1.5rem; font-weight: 300;">Climatización Principal</div>
-                <div style="margin-top: 20px; color: var(--accent); font-size: 0.6rem; font-weight: 800;">READY TO CONNECT</div>
+            <div class="card" style="grid-column: span 4; cursor: pointer;" onclick="this.style.borderColor='var(--accent)'">
+                <span class="label">BT_Relay_01</span>
+                <div style="font-size: 1.5rem; font-weight: 300;">Carga Vehículo</div>
+                <p style="color: var(--text-dim); font-size: 0.7rem; margin-top: 10px;">TAP TO TOGGLE</p>
             </div>
         </div>
     </div>
@@ -197,74 +213,85 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ESCUCHA FIREBASE (Gasolineras Data-Dense)
+    // FUEL
     onSnapshot(doc(db, "market", "fuel"), (snap) => {
         const data = snap.data();
         if (data && data.stations) {
-            const k95 = 'Precio Gasolina 95 E5';
-            const kDiesel = 'Precio Gasoleo A';
             const sorted = data.stations
-                .filter(s => s[k95])
-                .sort((a,b) => parseFloat(a[k95].replace(',','.')) - parseFloat(b[k95].replace(',','.')))
+                .filter(s => s['Precio Gasolina 95 E5'])
+                .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
                 .slice(0, 10);
             
             document.getElementById('f-container').innerHTML = sorted.map(s => `
                 <div class="f-card">
                     <div class="f-meta">
                         <div>
-                            <b style="color:#fff; font-size:1rem;">${s['Rótulo']}</b>
-                            <p style="color:var(--text-dim); font-size: 0.6rem; margin-top:5px; text-transform:uppercase;">${s['Dirección']}</p>
+                            <b style="font-size:1rem; display:block; margin-bottom:5px;">${s['Rótulo']}</b>
+                            <small style="color:#444; font-size:0.6rem; letter-spacing:1px; text-transform:uppercase;">${s['Dirección']}</small>
                         </div>
                     </div>
                     <div class="f-prices">
-                        <div class="p-box"><span>Gasolina 95 E5</span><b>${s[k95]}€</b></div>
-                        <div class="p-box" style="text-align:right"><span>Diésel A</span><b style="color:#fff">${s[kDiesel] || '--'}€</b></div>
+                        <div class="p-box"><span>Gasolina 95</span><b>${s['Precio Gasolina 95 E5']}€</b></div>
+                        <div class="p-box" style="text-align:right"><span>Diésel A</span><b style="color:var(--accent)">${s['Precio Gasoleo A'] || '--'}€</b></div>
                     </div>
                 </div>
             `).join('');
         }
     });
 
-    // CLIMA OPEN-METEO (DATOS MASIVOS)
+    // CLIMA COMPLETO
     async function getW() {
-        const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,surface_pressure,apparent_temperature,dewpoint_2m,visibility,windgusts_10m&timezone=auto";
-        const res = await fetch(url).then(r => r.json());
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,surface_pressure,apparent_temperature,windgusts_10m&timezone=auto").then(r => r.json());
         const h = new Date().getHours();
         document.getElementById('w-temp').firstChild.textContent = Math.round(res.current_weather.temperature);
-        document.getElementById('w-app').innerText = Math.round(res.hourly.apparent_temperature[h]) + "°";
-        document.getElementById('w-vis').innerText = (res.hourly.visibility[h] / 1000).toFixed(1);
+        document.getElementById('w-app').firstChild.textContent = Math.round(res.hourly.apparent_temperature[h]);
+        document.getElementById('w-hum').firstChild.textContent = res.hourly.relativehumidity_2m[h];
+        document.getElementById('w-uv').innerText = res.hourly.uv_index[h];
         document.getElementById('w-win-spd').innerText = res.current_weather.windspeed;
         document.getElementById('w-win-deg').innerText = res.current_weather.winddirection + "°";
         document.getElementById('w-win-gst').innerText = Math.round(res.hourly.windgusts_10m[h]);
-        document.getElementById('w-hum').firstChild.textContent = res.hourly.relativehumidity_2m[h];
-        document.getElementById('w-uv').innerText = res.hourly.uv_index[h];
         document.getElementById('w-pres').firstChild.textContent = Math.round(res.hourly.surface_pressure[h]);
         document.getElementById('w-needle').style.transform = `rotate(${res.current_weather.winddirection}deg)`;
         
-        const codes = { 0: "DESPEJADO", 1: "MAYORMENTE DESPEJADO", 3: "CUBIERTO", 61: "LLUVIA DÉBIL" };
-        document.getElementById('w-desc').innerText = codes[res.current_weather.weathercode] || "ESTABLE";
+        const codes = { 0: "DESPEJADO", 1: "PARCIALMENTE NUBOSO", 3: "CUBIERTO", 61: "LLUVIA DÉBIL" };
+        document.getElementById('w-desc').innerText = codes[res.current_weather.weathercode] || "DESPEJADO";
     }
 
-    // ENERGÍA PVPC CON TOOLTIP
+    // ENERGÍA
     async function getE() {
         const hoy = new Date().toISOString().split('T')[0];
         const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`).then(r => r.json());
         const prices = res.included[0].attributes.values.map(v => v.value / 1000);
-        const nowH = new Date().getHours();
-        const current = prices[nowH];
-        const avg = prices.reduce((a,b)=>a+b)/24;
+        const h = new Date().getHours();
+        const current = prices[h];
+        const minVal = Math.min(...prices), maxVal = Math.max(...prices);
+        const minH = prices.indexOf(minVal), maxH = prices.indexOf(maxVal);
 
         document.getElementById('e-now').firstChild.textContent = current.toFixed(4);
-        document.getElementById('e-min').innerText = Math.min(...prices).toFixed(4);
-        document.getElementById('e-max').innerText = Math.max(...prices).toFixed(4);
+        document.getElementById('e-min').innerText = minVal.toFixed(4) + " €";
+        document.getElementById('e-min-h').innerText = `Ocurrió a las ${minH}:00h`;
+        document.getElementById('e-max').innerText = maxVal.toFixed(4) + " €";
+        document.getElementById('e-max-h').innerText = `Ocurrió a las ${maxH}:00h`;
+        
+        const avg = prices.reduce((a,b)=>a+b)/24;
+        const avgVar = (((current - avg) / avg) * 100).toFixed(1);
+        document.getElementById('e-avg').firstChild.textContent = (avgVar > 0 ? "+" : "") + avgVar;
 
         const status = document.getElementById('e-status');
-        if(current < avg) { status.innerText = "BARATA"; status.style.background = "#50fa7b1a"; status.style.color = "#32d74b"; }
-        else { status.innerText = "CARA"; status.style.background = "#ff55551a"; status.style.color = "#ff453a"; }
+        if(current < avg) { status.innerText = "PERIODO VALLE"; status.style.color = "#4CAF50"; }
+        else { status.innerText = "PERIODO PUNTA"; status.style.color = "#FF5252"; }
 
         const max = Math.max(...prices);
+        const barColors = prices.map(p => {
+            if(p < (max*0.3)) return "#4CAF50"; // Verde (Barato)
+            if(p < (max*0.6)) return "#FF9F00"; // Naranja (Medio)
+            return "#FF5252"; // Rojo (Caro)
+        });
+
         document.getElementById('e-bars-cnt').innerHTML = prices.map((p, i) => `
-            <div class="bar ${i === nowH ? 'active' : ''}" style="height:${(p/max)*100}%" data-val="${i}h | ${p.toFixed(4)}€/kWh"></div>
+            <div class="bar ${i === h ? 'active' : ''}" 
+                 style="height:${(p/max)*100}%; background:${barColors[i]}" 
+                 data-val="${i}:00h | ${p.toFixed(4)}€/kWh"></div>
         `).join('');
     }
 
