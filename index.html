@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v160 | Aeterna Premium</title>
+    <title>HESTIA v165 | Aeterna Sync</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --gold: #d4af37; --gold-dim: #a68a2c; 
-            --bronze: #ff8c42; /* Bronce más vibrante */
+            --bronze: #ff8c42; 
             --glow: rgba(255, 140, 66, 0.3);
             --bg: #050505; --card: #0f0f0f; --txt: #ffffff; --dim: #666;
             --green: #00ff88; --red: #ff3344; --brd: rgba(255, 255, 255, 0.08);
@@ -20,7 +20,7 @@
         nav { width: 280px; background: #000; border-right: 1px solid var(--brd); display: flex; flex-direction: column; padding: 40px 25px; flex-shrink: 0; }
         .brand { display: flex; align-items: center; gap: 15px; margin-bottom: 60px; }
         
-        /* LLAMA HUECA SVG */
+        /* LLAMA HUECA BRONCE */
         .llama-contorno { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--glow)); }
         .llama-contorno path { stroke: var(--bronze); stroke-width: 1.5; fill: none; stroke-linecap: round; }
 
@@ -36,42 +36,30 @@
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        .header-meta { margin-bottom: 40px; }
-        .section-title { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 700; line-height: 1; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 700; line-height: 1; margin-bottom: 40px; }
         .section-title b { color: var(--gold); font-style: italic; }
 
         /* BENTO GRID */
         .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
         .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 25px; padding: 30px; transition: 0.4s; }
-        .tile:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .tile:hover { border-color: var(--gold); transform: translateY(-3px); }
 
         .t-lbl { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px; color: var(--gold-dim); margin-bottom: 15px; display: block; font-weight: 800; }
         .t-val { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 1; }
         .t-unit { font-size: 0.8rem; color: var(--dim); margin-left: 5px; }
 
-        /* HERO WEATHER */
-        .tile-weather { grid-column: span 3; grid-row: span 2; display: flex; flex-direction: column; justify-content: center; }
-        .temp-main { font-size: 8rem; font-weight: 800; letter-spacing: -6px; margin: 10px 0; color: #fff; }
-        .weather-desc { text-transform: uppercase; letter-spacing: 5px; font-size: 0.8rem; color: var(--bronze); font-weight: 700; }
-
-        /* ENERGY CHART */
+        /* ENERGY */
         .tile-full { grid-column: span 6; }
-        .energy-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; gap: 5px; margin-top: 20px; }
-        .bar { flex: 1; background: #1a1a1a; border-radius: 5px 5px 0 0; transition: 0.5s; position: relative; }
-        .bar.active { background: var(--gold); box-shadow: 0 0 20px var(--gold); }
-        .bar:hover::after { content: attr(data-price); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--gold); }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 160px; gap: 4px; margin-top: 25px; }
+        .bar { flex: 1; background: #1a1a1a; border-radius: 3px; transition: 0.5s; position: relative; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 15px var(--gold); }
 
-        /* TABLES */
+        /* FUEL TABLE */
         .f-table { width: 100%; border-collapse: collapse; }
         .f-table td { padding: 15px 0; border-bottom: 1px solid var(--brd); }
-        .f-name { font-weight: 600; font-size: 0.9rem; display: block; }
-        .f-addr { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; }
-        .f-price { font-family: monospace; font-weight: 800; color: var(--gold); font-size: 1.2rem; text-align: right; }
-
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: 800; margin-left: 10px; }
-        .up { background: rgba(255, 51, 68, 0.1); color: var(--red); }
-        .down { background: rgba(0, 255, 136, 0.1); color: var(--green); }
+        .f-name { font-weight: 600; font-size: 0.9rem; display: block; color: #fff; }
+        .f-addr { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; }
+        .f-price { font-family: monospace; font-weight: 800; color: var(--gold); font-size: 1.3rem; text-align: right; }
     </style>
 </head>
 <body>
@@ -84,51 +72,32 @@
         </svg>
         <h1>HESTIA</h1>
     </div>
-    <button onclick="tab('m', this)" class="n-btn">Atmosphere</button>
-    <button onclick="tab('l', this)" class="n-btn active">Smart Energy</button>
+    <button onclick="tab('m', this)" class="n-btn active">Atmosphere</button>
+    <button onclick="tab('l', this)" class="n-btn">Energy</button>
     <button onclick="tab('f', this)" class="n-btn">Fuel Market</button>
 </nav>
 
 <main>
-    <div id="m" class="panel">
-        <div class="header-meta">
-            <h2 class="section-title">Almería <b>Aeterna</b></h2>
-        </div>
+    <div id="m" class="panel active">
+        <h2 class="section-title">Almería <b>Atmosphere</b></h2>
         <div class="bento">
-            <div class="tile tile-weather">
-                <span class="t-lbl">Estado Actual</span>
-                <div class="temp-main"><span id="m-temp">--</span>°</div>
-                <div class="weather-desc" id="m-desc">Sincronizando...</div>
-                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--dim);">
-                    Sensación de <span id="m-app" style="color:#fff">--</span>° 
-                </div>
+            <div class="tile" style="grid-column: span 3; background: linear-gradient(45deg, #0f0f0f, #1a1a1a);">
+                <span class="t-lbl">Temperatura</span>
+                <div class="t-val" id="m-temp" style="font-size: 6rem;">--</div>
+                <div id="m-desc" style="letter-spacing: 4px; color: var(--bronze); font-weight: 700; text-transform: uppercase; font-size: 0.7rem;">Sincronizando...</div>
             </div>
-            <div class="tile"><span class="t-lbl">Humedad</span><div class="t-val" id="m-hum">--</div><span class="t-unit">% UR</span></div>
+            <div class="tile"><span class="t-lbl">Humedad</span><div class="t-val" id="m-hum">--</div><span class="t-unit">%</span></div>
             <div class="tile"><span class="t-lbl">Viento</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
-            <div class="tile"><span class="t-lbl">Índice UV</span><div class="t-val" id="m-uv">--</div><span class="t-unit">Extremo</span></div>
-            <div class="tile"><span class="t-lbl">Visibilidad</span><div class="t-val" id="m-vis">--</div><span class="t-unit">km</span></div>
+            <div class="tile"><span class="t-lbl">UV</span><div class="t-val" id="m-uv">--</div><span class="t-unit">Index</span></div>
         </div>
     </div>
 
-    <div id="l" class="panel active">
-        <div class="header-meta">
-            <h2 class="section-title">Energy <b>Monitor</b></h2>
-        </div>
+    <div id="l" class="panel">
+        <h2 class="section-title">Smart <b>Energy</b></h2>
         <div class="bento">
             <div class="tile tile-full">
-                <div class="energy-header">
-                    <div>
-                        <span class="t-lbl">Precio Actual</span>
-                        <div style="display: flex; align-items: center;">
-                            <div class="t-val" id="l-now" style="color: var(--gold); font-size: 4rem;">--</div>
-                            <span id="l-trend" class="badge">--</span>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <span class="t-lbl">Ahorro Estimado</span>
-                        <div class="t-val" style="font-size: 1.5rem; color: var(--green);">+14%</div>
-                    </div>
-                </div>
+                <span class="t-lbl">Precio PVPC Actual</span>
+                <div class="t-val" id="l-now" style="color: var(--gold); font-size: 4rem;">--</div>
                 <div class="chart" id="l-chart"></div>
             </div>
             <div class="tile"><span class="t-lbl">Mínimo Hoy</span><div class="t-val" id="l-min" style="color:var(--green)">--</div></div>
@@ -137,118 +106,87 @@
     </div>
 
     <div id="f" class="panel">
-        <div class="header-meta">
-            <h2 class="section-title">Fuel <b>Intelligence</b></h2>
-        </div>
+        <h2 class="section-title">Fuel <b>Sync</b></h2>
         <div class="bento">
-            <div class="tile" style="grid-column: span 3;">
-                <span class="t-lbl">Gasolina 95 (Almería Capital)</span>
-                <table class="f-table" id="table-95"><tbody><tr><td style="color:var(--dim)">Obteniendo precios...</td></tr></tbody></table>
-            </div>
-            <div class="tile" style="grid-column: span 3;">
-                <span class="t-lbl">Diésel A (Almería Capital)</span>
-                <table class="f-table" id="table-diesel"><tbody><tr><td style="color:var(--dim)">Obteniendo precios...</td></tr></tbody></table>
-            </div>
+            <div class="tile" style="grid-column: span 3;"><span class="t-lbl">Gasolina 95 E5</span><table class="f-table" id="table-95"></table></div>
+            <div class="tile" style="grid-column: span 3;"><span class="t-lbl">Diésel A</span><table class="f-table" id="table-diesel"></table></div>
         </div>
     </div>
 </main>
 
-<script>
-    function tab(id, btn) {
+<script type="module">
+    // INTEGRACIÓN FIREBASE CON TUS DATOS DE IMAGEN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAhKc7R97_ph2VQOq-uLMXFv-Wnyy0srXw",
+        authDomain: "hestia-31da3.firebaseapp.com",
+        projectId: "hestia-31da3",
+        storageBucket: "hestia-31da3.firebasestorage.app",
+        messagingSenderId: "577704397868",
+        appId: "1:577704397868:web:e83026e730640a0bc1d589"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Escuchar cambios en la gasolina (Colección market, Documento fuel)
+    onSnapshot(doc(db, "market", "fuel"), (snap) => {
+        const data = snap.data();
+        if (data && data.stations) {
+            renderFuel(data.stations);
+        }
+    });
+
+    function renderFuel(stations) {
+        const fill = (id, key) => {
+            const sorted = [...stations].sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.')));
+            document.getElementById(id).innerHTML = sorted.slice(0, 5).map(e => `
+                <tr>
+                    <td><span class="f-name">${e['Rótulo']}</span><span class="f-addr">${e['Dirección']}</span></td>
+                    <td class="f-price">${e[key]}</td>
+                </tr>
+            `).join('');
+        };
+        fill('table-95', 'Precio Gasolina 95 E5');
+        fill('table-diesel', 'Precio Gasoleo A');
+    }
+
+    // Lógica de Tabs
+    window.tab = (id, btn) => {
         document.querySelectorAll('.panel, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
-    }
-
-    async function getWeather() {
-        try {
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,apparent_temperature,visibility&timezone=auto");
-            const d = await res.json();
-            const h = new Date().getHours();
-            
-            document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature);
-            document.getElementById('m-desc').innerText = getWeatherDesc(d.current_weather.weathercode);
-            document.getElementById('m-app').innerText = Math.round(d.hourly.apparent_temperature[h]);
-            document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h];
-            document.getElementById('m-win').innerText = Math.round(d.current_weather.windspeed);
-            document.getElementById('m-uv').innerText = d.hourly.uv_index[h].toFixed(1);
-            document.getElementById('m-vis').innerText = (d.hourly.visibility[h] / 1000).toFixed(0);
-        } catch (e) { console.error("Weather error"); }
-    }
-
-    function getWeatherDesc(code) {
-        const codes = { 0: 'Cielo Despejado', 1: 'Principalmente Despejado', 2: 'Nubes Parciales', 3: 'Nublado', 45: 'Niebla', 51: 'Llovizna', 61: 'Lluvia Ligera' };
-        return codes[code] || 'Despejado';
-    }
-
-    async function getEnergy() {
-        try {
-            const hoy = new Date().toISOString().split('T')[0];
-            const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`);
-            const d = await res.json();
-            const values = d.included[0].attributes.values;
-            const prices = values.map(v => v.value / 1000);
-            const nowH = new Date().getHours();
-            
-            const currentPrice = prices[nowH];
-            const prevPrice = prices[nowH-1] || currentPrice;
-            
-            document.getElementById('l-now').innerText = currentPrice.toFixed(4);
-            document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
-            document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
-            
-            const trend = document.getElementById('l-trend');
-            if(currentPrice > prevPrice) {
-                trend.innerText = 'ALZA ↑'; trend.className = 'badge up';
-            } else {
-                trend.innerText = 'BAJA ↓'; trend.className = 'badge down';
-            }
-
-            const maxVal = Math.max(...prices);
-            document.getElementById('l-chart').innerHTML = prices.map((v, i) => `
-                <div class="bar ${i === nowH ? 'active' : ''}" 
-                     style="height:${(v/maxVal)*100}%" 
-                     data-price="${v.toFixed(3)}">
-                </div>`).join('');
-        } catch (e) { console.error("Energy error"); }
-    }
-
-    async function getFuel() {
-        // USO DE CORSPROXY.IO (Más robusto que AllOrigins para HTTPS)
-        const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
-        try {
-            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(target)}`);
-            const data = await res.json();
-            const almeria = data.ListaEESSPrecio.filter(e => e['Municipio'].toUpperCase() === 'ALMERÍA');
-
-            const fillTable = (id, key) => {
-                const top = almeria
-                    .filter(e => e[key])
-                    .sort((a,b) => parseFloat(a[key].replace(',','.')) - parseFloat(b[key].replace(',','.')))
-                    .slice(0, 5);
-                
-                document.getElementById(id).innerHTML = top.map(e => `
-                    <tr>
-                        <td><span class="f-name">${e['Rótulo']}</span><span class="f-addr">${e['Dirección']}</span></td>
-                        <td class="f-price">${e[key]}</td>
-                    </tr>
-                `).join('');
-            };
-
-            fillTable('table-95', 'Precio Gasolina 95 E5');
-            fillTable('table-diesel', 'Precio Gasoleo A');
-        } catch (e) {
-            console.error("Fuel CORS Error, reintentando fallback...");
-            document.getElementById('table-95').innerHTML = "<tr><td>Error de conexión servidor.</td></tr>";
-        }
-    }
-
-    window.onload = () => {
-        getWeather(); getEnergy(); getFuel();
-        setInterval(getWeather, 300000);
-        setInterval(getEnergy, 300000);
-        setInterval(getFuel, 3600000);
     };
+
+    // APIs Clima y Energía (Libres de CORS)
+    async function loadData() {
+        // Clima Almería
+        const w = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index&timezone=auto").then(r => r.json());
+        const h = new Date().getHours();
+        document.getElementById('m-temp').innerText = Math.round(w.current_weather.temperature) + "°";
+        document.getElementById('m-hum').innerText = w.hourly.relativehumidity_2m[h];
+        document.getElementById('m-win').innerText = Math.round(w.current_weather.windspeed);
+        document.getElementById('m-uv').innerText = w.hourly.uv_index[h];
+        document.getElementById('m-desc').innerText = "Cielo Despejado • Almería";
+
+        // Energía REE
+        const hoy = new Date().toISOString().split('T')[0];
+        const e = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`).then(r => r.json());
+        const prices = e.included[0].attributes.values.map(v => v.value / 1000);
+        const nowH = new Date().getHours();
+        document.getElementById('l-now').innerText = prices[nowH].toFixed(4) + "€";
+        document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
+        document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
+        
+        const max = Math.max(...prices);
+        document.getElementById('l-chart').innerHTML = prices.map((p, i) => `
+            <div class="bar ${i === nowH ? 'active' : ''}" style="height:${(p/max)*100}%"></div>
+        `).join('');
+    }
+
+    loadData();
 </script>
 </body>
 </html>
