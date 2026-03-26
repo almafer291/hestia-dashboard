@@ -3,120 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v150 | Premium Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <title>HESTIA v160 | Aeterna Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --gold-main: #d4af37; --gold-dim: #a68a2c; --bronze-main: #cd7f32; --bronze-glow: rgba(205, 127, 50, 0.4);
-            --bg-dark: #121212; --bg-sidebar: #0a0a0a; --txt: #e0e0e0; --dim: #888; --green: #4caf50; --red: #e74c3c;
-            --brd: rgba(255, 255, 255, 0.05);
+            --gold: #d4af37; --gold-dim: #a68a2c; 
+            --bronze: #ff8c42; /* Bronce más vibrante */
+            --glow: rgba(255, 140, 66, 0.3);
+            --bg: #050505; --card: #0f0f0f; --txt: #ffffff; --dim: #666;
+            --green: #00ff88; --red: #ff3344; --brd: rgba(255, 255, 255, 0.08);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg-dark); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR SEGÚN TU CÓDIGO HESTIA PREMIUM */
-        nav { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--brd); display: flex; flex-direction: column; padding: 40px 30px; flex-shrink: 0; }
+        /* SIDEBAR */
+        nav { width: 280px; background: #000; border-right: 1px solid var(--brd); display: flex; flex-direction: column; padding: 40px 25px; flex-shrink: 0; }
         .brand { display: flex; align-items: center; gap: 15px; margin-bottom: 60px; }
         
-        /* LA LLAMA DEL CÓDIGO ENVIADO */
-        .fire-icon { 
-            font-size: 2.2rem; 
-            color: var(--bronze-main); 
-            text-shadow: 0 0 15px var(--bronze-glow); 
-            cursor: default;
-        }
-        .brand h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; letter-spacing: 2px; color: var(--txt); }
+        /* LLAMA HUECA SVG */
+        .llama-contorno { width: 40px; height: 40px; filter: drop-shadow(0 0 8px var(--glow)); }
+        .llama-contorno path { stroke: var(--bronze); stroke-width: 1.5; fill: none; stroke-linecap: round; }
 
-        .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 15px 20px; text-align: left; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; border-radius: 12px; margin-bottom: 5px; }
-        .n-btn:hover { background: rgba(255,255,255,0.02); color: #fff; }
-        .n-btn.active { color: var(--gold-main); background: linear-gradient(90deg, rgba(212, 175, 55, 0.08) 0%, transparent 100%); font-weight: 700; box-shadow: inset 4px 0 0 var(--gold-main); }
+        .brand h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; letter-spacing: 4px; font-weight: 700; }
 
-        /* MAIN CONTENT */
-        main { flex: 1; padding: 40px 50px; overflow-y: auto; background: radial-gradient(circle at center, #1a1a1a 0%, #121212 100%); }
-        .panel { display: none; animation: fadeIn 0.4s ease; }
+        .n-btn { background: none; border: none; color: var(--dim); cursor: pointer; padding: 15px 20px; text-align: left; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; border-radius: 12px; margin-bottom: 8px; font-weight: 600; }
+        .n-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+        .n-btn.active { color: var(--gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%); box-shadow: inset 4px 0 0 var(--gold); }
+
+        /* MAIN */
+        main { flex: 1; padding: 50px; overflow-y: auto; background: radial-gradient(circle at 0% 0%, #151515 0%, #050505 100%); }
+        .panel { display: none; animation: fadeIn 0.5s ease-out; }
         .panel.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        .section-title { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 40px; font-weight: 400; }
-        .section-title b { color: var(--gold-main); }
+        .header-meta { margin-bottom: 40px; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 700; line-height: 1; }
+        .section-title b { color: var(--gold); font-style: italic; }
 
         /* BENTO GRID */
-        .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
-        .tile { background: rgba(255,255,255,0.03); border: 1px solid var(--brd); border-radius: 20px; padding: 25px; backdrop-filter: blur(10px); transition: 0.3s; }
-        .tile:hover { border-color: rgba(212, 175, 55, 0.2); background: rgba(255,255,255,0.05); }
+        .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .tile { background: var(--card); border: 1px solid var(--brd); border-radius: 25px; padding: 30px; transition: 0.4s; }
+        .tile:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
-        .t-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-dim); margin-bottom: 15px; display: block; }
-        .t-val { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
+        .t-lbl { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px; color: var(--gold-dim); margin-bottom: 15px; display: block; font-weight: 800; }
+        .t-val { font-size: 2.8rem; font-weight: 800; color: #fff; line-height: 1; }
         .t-unit { font-size: 0.8rem; color: var(--dim); margin-left: 5px; }
 
-        /* CLIMA MAESTRO */
-        .tile-hero { grid-column: span 3; grid-row: span 2; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .temp-huge { font-family: 'Playfair Display', serif; font-size: 8rem; font-weight: 700; margin: 10px 0; letter-spacing: -4px; }
+        /* HERO WEATHER */
+        .tile-weather { grid-column: span 3; grid-row: span 2; display: flex; flex-direction: column; justify-content: center; }
+        .temp-main { font-size: 8rem; font-weight: 800; letter-spacing: -6px; margin: 10px 0; color: #fff; }
+        .weather-desc { text-transform: uppercase; letter-spacing: 5px; font-size: 0.8rem; color: var(--bronze); font-weight: 700; }
 
-        /* TABLAS FUEL */
-        .fuel-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .fuel-table td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 0.9rem; }
-        .p-price { font-family: monospace; font-weight: 700; color: var(--gold-main); font-size: 1.1rem; }
-
-        /* ENERGÍA */
+        /* ENERGY CHART */
         .tile-full { grid-column: span 6; }
-        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 150px; margin-top: 20px; border-bottom: 1px solid var(--brd); gap: 4px; }
-        .bar { flex: 1; background: #222; border-radius: 4px 4px 0 0; transition: 0.3s; position: relative; }
-        .bar.active { background: var(--gold-main); box-shadow: 0 0 15px var(--gold-main); }
+        .energy-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .chart { display: flex; align-items: flex-end; justify-content: space-between; height: 180px; gap: 5px; margin-top: 20px; }
+        .bar { flex: 1; background: #1a1a1a; border-radius: 5px 5px 0 0; transition: 0.5s; position: relative; }
+        .bar.active { background: var(--gold); box-shadow: 0 0 20px var(--gold); }
+        .bar:hover::after { content: attr(data-price); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: var(--gold); }
+
+        /* TABLES */
+        .f-table { width: 100%; border-collapse: collapse; }
+        .f-table td { padding: 15px 0; border-bottom: 1px solid var(--brd); }
+        .f-name { font-weight: 600; font-size: 0.9rem; display: block; }
+        .f-addr { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; }
+        .f-price { font-family: monospace; font-weight: 800; color: var(--gold); font-size: 1.2rem; text-align: right; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: 800; margin-left: 10px; }
+        .up { background: rgba(255, 51, 68, 0.1); color: var(--red); }
+        .down { background: rgba(0, 255, 136, 0.1); color: var(--green); }
     </style>
 </head>
 <body>
 
 <nav>
     <div class="brand">
-        <span class="fire-icon">🔥</span>
+        <svg class="llama-contorno" viewBox="0 0 24 24">
+            <path d="M12 2C12 2 7 7.5 7 13.5C7 16.5 9.24 19 12 19C14.76 19 17 16.5 17 13.5C17 7.5 12 2 12 2Z" />
+            <path d="M12 7C12 7 10 9.5 10 12.5C10 13.88 11.12 15 12.5 15" />
+        </svg>
         <h1>HESTIA</h1>
     </div>
     <button onclick="tab('m', this)" class="n-btn">Atmosphere</button>
-    <button onclick="tab('l', this)" class="n-btn active">Energy PVPC</button>
+    <button onclick="tab('l', this)" class="n-btn active">Smart Energy</button>
     <button onclick="tab('f', this)" class="n-btn">Fuel Market</button>
-    <button onclick="tab('r', this)" class="n-btn">Core System</button>
 </nav>
 
 <main>
     <div id="m" class="panel">
-        <h2 class="section-title">Atmosphere <b>Real-Time</b></h2>
-        <div class="bento-grid">
-            <div class="tile tile-hero">
-                <span class="t-label">Almería Exterior</span>
-                <div class="temp-huge"><span id="m-temp">--</span>°</div>
-                <div id="m-desc" style="text-transform:uppercase; letter-spacing:3px; color:var(--dim)">Actualizado ahora</div>
+        <div class="header-meta">
+            <h2 class="section-title">Almería <b>Aeterna</b></h2>
+        </div>
+        <div class="bento">
+            <div class="tile tile-weather">
+                <span class="t-lbl">Estado Actual</span>
+                <div class="temp-main"><span id="m-temp">--</span>°</div>
+                <div class="weather-desc" id="m-desc">Sincronizando...</div>
+                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--dim);">
+                    Sensación de <span id="m-app" style="color:#fff">--</span>° 
+                </div>
             </div>
-            <div class="tile"><span class="t-label">Humedad</span><div class="t-val" id="m-hum">--</div><span class="t-unit">% UR</span></div>
-            <div class="tile"><span class="t-label">Viento</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
-            <div class="tile"><span class="t-label">UV Index</span><div class="t-val" id="m-uv">--</div><span class="t-unit">Index</span></div>
-            <div class="tile"><span class="t-label">Lluvia</span><div class="t-val" id="m-rain">--</div><span class="t-unit">% Prob.</span></div>
+            <div class="tile"><span class="t-lbl">Humedad</span><div class="t-val" id="m-hum">--</div><span class="t-unit">% UR</span></div>
+            <div class="tile"><span class="t-lbl">Viento</span><div class="t-val" id="m-win">--</div><span class="t-unit">km/h</span></div>
+            <div class="tile"><span class="t-lbl">Índice UV</span><div class="t-val" id="m-uv">--</div><span class="t-unit">Extremo</span></div>
+            <div class="tile"><span class="t-lbl">Visibilidad</span><div class="t-val" id="m-vis">--</div><span class="t-unit">km</span></div>
         </div>
     </div>
 
     <div id="l" class="panel active">
-        <h2 class="section-title">Smart <b>Energy</b></h2>
-        <div class="bento-grid">
+        <div class="header-meta">
+            <h2 class="section-title">Energy <b>Monitor</b></h2>
+        </div>
+        <div class="bento">
             <div class="tile tile-full">
-                <span class="t-label">Precio Actual (€/kWh)</span>
-                <div class="t-val" id="l-now" style="font-size: 5rem; color:var(--gold-main)">--</div>
+                <div class="energy-header">
+                    <div>
+                        <span class="t-lbl">Precio Actual</span>
+                        <div style="display: flex; align-items: center;">
+                            <div class="t-val" id="l-now" style="color: var(--gold); font-size: 4rem;">--</div>
+                            <span id="l-trend" class="badge">--</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="t-lbl">Ahorro Estimado</span>
+                        <div class="t-val" style="font-size: 1.5rem; color: var(--green);">+14%</div>
+                    </div>
+                </div>
                 <div class="chart" id="l-chart"></div>
             </div>
-            <div class="tile"><span class="t-label">Mínimo</span><div class="t-val" id="l-min" style="color:var(--green)">--</div></div>
-            <div class="tile"><span class="t-label">Máximo</span><div class="t-val" id="l-max" style="color:var(--red)">--</div></div>
+            <div class="tile"><span class="t-lbl">Mínimo Hoy</span><div class="t-val" id="l-min" style="color:var(--green)">--</div></div>
+            <div class="tile"><span class="t-lbl">Máximo Hoy</span><div class="t-val" id="l-max" style="color:var(--red)">--</div></div>
         </div>
     </div>
 
     <div id="f" class="panel">
-        <h2 class="section-title">Fuel <b>Prices</b></h2>
-        <div class="bento-grid">
+        <div class="header-meta">
+            <h2 class="section-title">Fuel <b>Intelligence</b></h2>
+        </div>
+        <div class="bento">
             <div class="tile" style="grid-column: span 3;">
-                <span class="t-label">Gasolina 95 (Top Almería)</span>
-                <table class="fuel-table" id="table-95"><tbody><tr><td>Cargando datos...</td></tr></tbody></table>
+                <span class="t-lbl">Gasolina 95 (Almería Capital)</span>
+                <table class="f-table" id="table-95"><tbody><tr><td style="color:var(--dim)">Obteniendo precios...</td></tr></tbody></table>
             </div>
             <div class="tile" style="grid-column: span 3;">
-                <span class="t-label">Diésel A (Top Almería)</span>
-                <table class="fuel-table" id="table-diesel"><tbody><tr><td>Cargando datos...</td></tr></tbody></table>
+                <span class="t-lbl">Diésel A (Almería Capital)</span>
+                <table class="f-table" id="table-diesel"><tbody><tr><td style="color:var(--dim)">Obteniendo precios...</td></tr></tbody></table>
             </div>
         </div>
     </div>
@@ -131,15 +162,23 @@
 
     async function getWeather() {
         try {
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,precipitation_probability&timezone=auto");
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,apparent_temperature,visibility&timezone=auto");
             const d = await res.json();
             const h = new Date().getHours();
+            
             document.getElementById('m-temp').innerText = Math.round(d.current_weather.temperature);
+            document.getElementById('m-desc').innerText = getWeatherDesc(d.current_weather.weathercode);
+            document.getElementById('m-app').innerText = Math.round(d.hourly.apparent_temperature[h]);
             document.getElementById('m-hum').innerText = d.hourly.relativehumidity_2m[h];
-            document.getElementById('m-win').innerText = d.current_weather.windspeed;
-            document.getElementById('m-uv').innerText = Math.round(d.hourly.uv_index[h]);
-            document.getElementById('m-rain').innerText = d.hourly.precipitation_probability[h];
-        } catch (e) { console.error("Weather Error"); }
+            document.getElementById('m-win').innerText = Math.round(d.current_weather.windspeed);
+            document.getElementById('m-uv').innerText = d.hourly.uv_index[h].toFixed(1);
+            document.getElementById('m-vis').innerText = (d.hourly.visibility[h] / 1000).toFixed(0);
+        } catch (e) { console.error("Weather error"); }
+    }
+
+    function getWeatherDesc(code) {
+        const codes = { 0: 'Cielo Despejado', 1: 'Principalmente Despejado', 2: 'Nubes Parciales', 3: 'Nublado', 45: 'Niebla', 51: 'Llovizna', 61: 'Lluvia Ligera' };
+        return codes[code] || 'Despejado';
     }
 
     async function getEnergy() {
@@ -150,21 +189,37 @@
             const values = d.included[0].attributes.values;
             const prices = values.map(v => v.value / 1000);
             const nowH = new Date().getHours();
-            document.getElementById('l-now').innerText = prices[nowH].toFixed(4);
+            
+            const currentPrice = prices[nowH];
+            const prevPrice = prices[nowH-1] || currentPrice;
+            
+            document.getElementById('l-now').innerText = currentPrice.toFixed(4);
             document.getElementById('l-min').innerText = Math.min(...prices).toFixed(4);
             document.getElementById('l-max').innerText = Math.max(...prices).toFixed(4);
+            
+            const trend = document.getElementById('l-trend');
+            if(currentPrice > prevPrice) {
+                trend.innerText = 'ALZA ↑'; trend.className = 'badge up';
+            } else {
+                trend.innerText = 'BAJA ↓'; trend.className = 'badge down';
+            }
+
             const maxVal = Math.max(...prices);
-            document.getElementById('l-chart').innerHTML = prices.map((v, i) => `<div class="bar ${i === nowH ? 'active' : ''}" style="height:${(v/maxVal)*100}%"></div>`).join('');
-        } catch (e) { console.error("Energy Error"); }
+            document.getElementById('l-chart').innerHTML = prices.map((v, i) => `
+                <div class="bar ${i === nowH ? 'active' : ''}" 
+                     style="height:${(v/maxVal)*100}%" 
+                     data-price="${v.toFixed(3)}">
+                </div>`).join('');
+        } catch (e) { console.error("Energy error"); }
     }
 
     async function getFuel() {
+        // USO DE CORSPROXY.IO (Más robusto que AllOrigins para HTTPS)
+        const target = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04";
         try {
-            // PROXY ALTERNATIVO para evitar el error 500
-            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04")}`);
+            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(target)}`);
             const data = await res.json();
-            const cleanData = JSON.parse(data.contents);
-            const almeria = cleanData.ListaEESSPrecio.filter(e => e['Municipio'] === 'ALMERÍA');
+            const almeria = data.ListaEESSPrecio.filter(e => e['Municipio'].toUpperCase() === 'ALMERÍA');
 
             const fillTable = (id, key) => {
                 const top = almeria
@@ -174,8 +229,8 @@
                 
                 document.getElementById(id).innerHTML = top.map(e => `
                     <tr>
-                        <td><b style="color:#fff">${e['Rótulo']}</b><br><small style="color:var(--dim)">${e['Dirección']}</small></td>
-                        <td class="p-price">${e[key]}</td>
+                        <td><span class="f-name">${e['Rótulo']}</span><span class="f-addr">${e['Dirección']}</span></td>
+                        <td class="f-price">${e[key]}</td>
                     </tr>
                 `).join('');
             };
@@ -183,8 +238,8 @@
             fillTable('table-95', 'Precio Gasolina 95 E5');
             fillTable('table-diesel', 'Precio Gasoleo A');
         } catch (e) {
-            console.error("Fuel Error", e);
-            document.getElementById('table-95').innerHTML = "<tr><td>Error al conectar con el Ministerio.</td></tr>";
+            console.error("Fuel CORS Error, reintentando fallback...");
+            document.getElementById('table-95').innerHTML = "<tr><td>Error de conexión servidor.</td></tr>";
         }
     }
 
