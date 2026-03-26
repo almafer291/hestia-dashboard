@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA ATELIER | v2500 APEX</title>
+    <title>HESTIA ATELIER | v2600 FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -17,6 +17,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
+        /* NAVEGACIÓN */
         aside { width: 220px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 30px 15px; }
         .brand { text-align: center; margin-bottom: 40px; }
         .hestia-txt { font-weight: 600; font-size: 0.8rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; margin-top: 8px; display: block; }
@@ -24,11 +25,13 @@
         .nav-item { display: flex; align-items: center; gap: 10px; color: var(--text-dim); padding: 12px; border-radius: 6px; cursor: pointer; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
         .nav-item.active { color: var(--accent); background: rgba(212, 175, 55, 0.05); }
 
+        /* CONTENIDO */
         main { flex: 1; overflow-y: auto; padding: 25px; scroll-behavior: smooth; }
-        .panel { display: none; max-width: 1400px; margin: 0 auto; }
+        .panel { display: none; width: 100%; margin: 0 auto; }
         .panel.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* GRID BENTO */
         .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-bottom: 20px; }
         .card { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 4px; position: relative; }
         .c-tit { font-size: 0.55rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
@@ -36,16 +39,17 @@
         .c-val.bold { font-weight: 800; }
         .c-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 8px; font-weight: 700; text-transform: uppercase; }
 
-        /* BRÚJULA PRECIOSA */
-        .compass-wrap { width: 100px; height: 100px; margin: 0 auto; position: relative; border: 2px solid #111; border-radius: 50%; box-shadow: inset 0 0 15px #000; }
-        .compass-mark { position: absolute; width: 100%; height: 100%; top: 0; left: 0; font-size: 0.5rem; color: #333; font-weight: 800; padding: 5px; text-align: center; }
-        .needle { position: absolute; top: 10%; left: 48%; width: 4px; height: 40%; background: linear-gradient(to bottom, var(--accent), transparent); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); transform-origin: 50% 100%; transition: 2s cubic-bezier(0.19, 1, 0.22, 1); }
+        /* BRÚJULA */
+        .compass-wrap { width: 100px; height: 100px; margin: 0 auto; position: relative; border: 2px solid #111; border-radius: 50%; }
+        .compass-mark { position: absolute; width: 100%; height: 100%; top: 0; left: 0; font-size: 0.55rem; color: #444; font-weight: 800; padding: 5px; text-align: center; }
+        .needle { position: absolute; top: 10%; left: 47%; width: 4px; height: 40%; background: linear-gradient(to bottom, var(--accent), transparent); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); transform-origin: 50% 100%; transition: 2s ease; }
 
-        /* RADAR TOP CENTER */
-        .map-wrapper { width: 100%; height: calc(100vh - 50px); border: 1px solid var(--border); position: relative; }
-        .radar-controls { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 100; background: rgba(0,0,0,0.6); padding: 5px; border-radius: 4px; backdrop-filter: blur(10px); border: 1px solid #222; }
-        .btn-radar { background: transparent; color: #666; border: none; padding: 8px 12px; font-size: 0.55rem; font-weight: 900; cursor: pointer; transition: 0.2s; border-radius: 2px; }
-        .btn-radar.active { color: var(--accent); background: rgba(212,175,55,0.1); }
+        /* RADAR FULL SCREEN + COLUMNA */
+        .map-wrapper { width: 100%; height: calc(100vh - 50px); border: 1px solid var(--border); position: relative; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .radar-controls { position: absolute; top: 100px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
+        .btn-radar { background: rgba(0,0,0,0.85); color: #777; border: 1px solid #222; padding: 12px; font-size: 0.55rem; font-weight: 900; cursor: pointer; transition: 0.3s; backdrop-filter: blur(8px); text-align: center; width: 90px; border-radius: 2px; }
+        .btn-radar.active { color: var(--accent); border-color: var(--accent); background: rgba(212,175,55,0.05); }
 
         .f-grid-20 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
     </style>
@@ -65,13 +69,13 @@
 <main>
     <div id="clima" class="panel active">
         <div class="grid">
-            <div class="card" style="grid-column: span 9;"><span class="c-tit"><i class="ph-bold ph-thermometer"></i>Actual Almería</span><div class="c-val" style="font-size: 4.5rem;" id="w-temp">--°</div><div class="c-sub" id="w-desc">LEYENDO TELEMETRÍA...</div></div>
+            <div class="card" style="grid-column: span 9;"><span class="c-tit"><i class="ph-bold ph-thermometer"></i>Actual Almería</span><div class="c-val" style="font-size: 4.5rem;" id="w-temp">--°</div><div class="c-sub" id="w-desc">SINCRONIZANDO SISTEMAS...</div></div>
             <div class="card" style="grid-column: span 3; text-align: center;"><span class="c-tit">Rumbo Viento</span><div class="compass-wrap"><div class="compass-mark">N</div><div class="needle" id="w-needle"></div></div><div class="c-sub" id="w-win">-- km/h</div></div>
             
-            <div class="card" style="grid-column: span 3;"><span class="c-tit">PM2.5</span><div class="c-val bold" id="aq-pm2">--</div><div class="c-sub" id="aq-pm2-st">CALIDAD</div></div>
-            <div class="card" style="grid-column: span 3;"><span class="c-tit">PM10</span><div class="c-val bold" id="aq-pm10">--</div><div class="c-sub" id="aq-pm10-st">CALIDAD</div></div>
-            <div class="card" style="grid-column: span 3;"><span class="c-tit">NO2</span><div class="c-val bold" id="aq-no2">--</div><div class="c-sub" id="aq-no2-st">CALIDAD</div></div>
-            <div class="card" style="grid-column: span 3;"><span class="c-tit">O3</span><div class="c-val bold" id="aq-o3">--</div><div class="c-sub" id="aq-o3-st">CALIDAD</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">PM2.5</span><div class="c-val bold" id="aq-pm2">--</div><div class="c-sub" id="aq-pm2-st">DATOS REALES</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">PM10</span><div class="c-val bold" id="aq-pm10">--</div><div class="c-sub" id="aq-pm10-st">DATOS REALES</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">NO2</span><div class="c-val bold" id="aq-no2">--</div><div class="c-sub" id="aq-no2-st">DATOS REALES</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">O3</span><div class="c-val bold" id="aq-o3">--</div><div class="c-sub" id="aq-o3-st">DATOS REALES</div></div>
 
             <div class="card" style="grid-column: span 2;"><span class="c-tit">Humedad</span><div class="c-val" style="font-size:1.6rem" id="w-hum">--%</div></div>
             <div class="card" style="grid-column: span 2;"><span class="c-tit">Presión</span><div class="c-val" style="font-size:1.6rem" id="w-pres">--</div></div>
@@ -80,7 +84,7 @@
             <div class="card" style="grid-column: span 2;"><span class="c-tit">Visibilidad</span><div class="c-val" style="font-size:1.6rem" id="w-vis">--</div></div>
 
             <div class="card" style="grid-column: span 6;"><span class="c-tit">Temperatura 24h</span><canvas id="tempChart" style="max-height:160px"></canvas></div>
-            <div class="card" style="grid-column: span 6;"><span class="c-tit">Previsión Lluvia</span><canvas id="rainChart" style="max-height:160px"></canvas></div>
+            <div class="card" style="grid-column: span 6;"><span class="c-tit">Prob. Lluvia</span><canvas id="rainChart" style="max-height:160px"></canvas></div>
         </div>
     </div>
 
@@ -100,8 +104,8 @@
     <div id="energia" class="panel">
         <div class="grid">
             <div class="card" style="grid-column: span 12;"><span class="c-tit">Precios Mercado (€/MWh)</span><canvas id="energyChart" style="max-height:220px"></canvas></div>
-            <div class="card" style="grid-column: span 4; border-left: 4px solid var(--ev-low);"><span class="c-tit">Mínimo Hoy</span><div class="c-val" id="e-min">--</div><div class="c-sub" id="e-min-h">--:--H</div></div>
-            <div class="card" style="grid-column: span 4; border-left: 4px solid var(--ev-peak);"><span class="c-tit">Máximo Hoy</span><div class="c-val" id="e-max">--</div><div class="c-sub" id="e-max-h">--:--H</div></div>
+            <div class="card" style="grid-column: span 4; border-left: 4px solid var(--ev-low);"><span class="c-tit">Mínimo</span><div class="c-val" id="e-min">--</div><div class="c-sub" id="e-min-h">--:--H</div></div>
+            <div class="card" style="grid-column: span 4; border-left: 4px solid var(--ev-peak);"><span class="c-tit">Máximo</span><div class="c-val" id="e-max">--</div><div class="c-sub" id="e-max-h">--:--H</div></div>
             <div class="card" style="grid-column: span 4;"><span class="c-tit">Vs Media</span><div class="c-val" id="e-diff">--%</div><div class="c-sub" id="e-status">ESTADO</div></div>
             <div class="card" style="grid-column: span 12; text-align: center;"><span class="c-tit">Precio Actual</span><div class="c-val" style="color:var(--accent); font-size: 5.5rem;" id="e-now">--</div></div>
         </div>
@@ -142,7 +146,7 @@
     });
 
     async function getW() {
-        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,dewpoint_2m,visibility,precipitation_probability&daily=weathercode&timezone=auto").then(r => r.json());
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,dewpoint_2m,visibility,precipitation_probability&timezone=auto").then(r => r.json());
         const aq = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=36.83&longitude=-2.46&hourly=pm10,pm2_5,nitrogen_dioxide,ozone").then(r => r.json());
         const h = new Date().getHours();
         
@@ -157,8 +161,8 @@
 
         const setAQ = (id, val, l1, l2) => {
             const el = document.getElementById(id); const st = document.getElementById(id+'-st');
-            el.innerText = Math.round(val);
-            if(val < l1) { el.style.color = 'var(--ev-low)'; st.innerText = 'EXCELENTE'; }
+            el.innerText = Math.round(val || 0);
+            if(val < l1) { el.style.color = 'var(--ev-low)'; st.innerText = 'ÓPTIMA'; }
             else if(val < l2) { el.style.color = 'var(--accent)'; st.innerText = 'MODERADA'; }
             else { el.style.color = 'var(--ev-peak)'; st.innerText = 'ALTA'; }
         };
@@ -170,7 +174,7 @@
 
         new Chart(document.getElementById('tempChart'), {
             type: 'line', data: { labels: res.hourly.time.slice(h, h+24).map(t => t.split('T')[1]), datasets: [{ data: res.hourly.temperature_2m.slice(h, h+24), borderColor: '#D4AF37', tension: 0.4, borderWidth: 2, pointRadius: 0 }] },
-            options: { plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { ticks: { color: '#444' } }, y: { ticks: { color: '#444' }, grid: { color: '#111' } } } }
+            options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#444' } }, y: { ticks: { color: '#444' }, grid: { color: '#111' } } } }
         });
 
         new Chart(document.getElementById('rainChart'), {
@@ -190,7 +194,7 @@
         document.getElementById('e-max').innerText = Math.max(...prices).toFixed(4);
         const diff = (((prices[h] - avg) / avg) * 100).toFixed(1);
         document.getElementById('e-diff').innerText = (diff > 0 ? "+" : "") + diff + "%";
-        document.getElementById('e-status').innerText = prices[h] < avg ? "EFICIENCIA ALTA" : "COSTE ELEVADO";
+        document.getElementById('e-status').innerText = prices[h] < avg ? "EFICIENTE" : "ELEVADO";
         document.getElementById('e-status').style.color = prices[h] < avg ? "var(--ev-low)" : "var(--ev-peak)";
 
         new Chart(document.getElementById('energyChart'), {
