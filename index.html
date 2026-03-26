@@ -3,93 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v700 | Atelier Nero</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>HESTIA v800 | Atelier Nero Max</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
             --bg: #000000;
-            --surface: #0A0A0A;
-            --accent: #D4AF37; /* Bronce/Oro Kill Bill */
-            --border: #1A1A1A;
-            --text: #E0E0E0;
-            --text-dim: #555555;
+            --surface: #080808;
+            --accent: #D4AF37; 
+            --border: #151515;
+            --text: #FFFFFF;
+            --text-dim: #666666;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column; min-height: 100vh;
         }
 
-        /* HEADER / LOGO */
+        /* NAVEGACIÓN SUPERIOR (LIMPIA) */
         header {
-            padding: 20px; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border); background: var(--bg);
+            padding: 25px; display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
         }
-        .logo-box { display: flex; align-items: center; gap: 12px; }
-        .llama { color: var(--accent); font-size: 1.8rem; }
-        .logo-text { font-weight: 800; letter-spacing: 2px; font-size: 1.1rem; text-transform: uppercase; }
+        .logo-box { display: flex; align-items: center; gap: 15px; }
+        .llama { color: var(--accent); font-size: 2rem; transform: rotate(-10deg); }
+        .logo-text { font-weight: 800; letter-spacing: 4px; font-size: 0.9rem; text-transform: uppercase; color: var(--accent); }
 
-        /* NAVEGACIÓN INFERIOR (ESTILO APP) */
-        nav {
-            position: fixed; bottom: 0; width: 100%; background: #050505;
-            display: flex; justify-content: space-around; padding: 15px 0;
-            border-top: 1px solid var(--border); z-index: 100;
-        }
-        .nav-item { color: var(--text-dim); font-size: 1.6rem; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: var(--accent); }
+        nav { display: flex; gap: 30px; }
+        .nav-item { color: var(--text-dim); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; padding-bottom: 5px; border-bottom: 2px solid transparent; }
+        .nav-item.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 
-        /* CONTENIDO PRINCIPAL */
-        main { flex: 1; overflow-y: auto; padding: 20px 20px 100px 20px; }
-        .panel { display: none; }
+        main { flex: 1; padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .panel { display: none; animation: fadeIn 0.5s ease-out; }
         .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GRID TÉCNICO CLIMA */
-        .weather-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .w-item { background: var(--surface); padding: 20px; display: flex; flex-direction: column; gap: 5px; }
-        .w-item.full { grid-column: span 2; }
-        .label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; font-weight: 600; }
-        .value { font-size: 2rem; font-weight: 700; color: #fff; }
-        .sub-value { font-size: 0.8rem; color: var(--accent); }
+        /* REJILLA DE DATOS COMPLETA */
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 25px; transition: 0.3s; }
+        .card:hover { border-color: #252525; }
+        
+        .label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px; display: block; }
+        .value { font-size: 2.8rem; font-weight: 200; letter-spacing: -2px; }
+        .unit { font-size: 1rem; color: var(--text-dim); margin-left: 5px; font-weight: 400; }
+        
+        /* CLIMA ESPECÍFICO */
+        .wind-box { display: flex; align-items: center; gap: 20px; }
+        .compass { width: 80px; height: 80px; border: 1px solid var(--border); border-radius: 50%; position: relative; }
+        .needle { position: absolute; top: 10%; left: 49%; width: 2px; height: 40%; background: var(--accent); transform-origin: 50% 100%; transition: 1s; }
+        
+        /* ENERGÍA ESPECÍFICA */
+        .energy-hero { grid-column: 1 / -1; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .chart-container { height: 250px; display: flex; align-items: flex-end; gap: 4px; padding-top: 40px; }
+        .e-bar { flex: 1; background: #111; border-radius: 2px; position: relative; transition: 0.3s; }
+        .e-bar:hover { background: var(--accent); }
+        .e-bar.active { background: var(--accent); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        .e-bar::after { content: attr(data-time); position: absolute; bottom: -20px; font-size: 0.5rem; color: var(--text-dim); left: 50%; transform: translateX(-50%); }
 
-        /* BRÚJULA MINIMAL */
-        .compass-wrap { display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .compass { width: 100px; height: 100px; border: 1px solid var(--border); border-radius: 50%; position: relative; }
-        .needle { 
-            position: absolute; top: 10%; left: 49%; width: 2px; height: 40%; 
-            background: var(--accent); border-radius: 2px; transform-origin: 50% 100%; transition: 1s;
-        }
+        /* APP / BT STYLE */
+        .bt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .bt-btn { background: var(--surface); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; cursor: pointer; }
+        .bt-btn.on { border-color: var(--accent); }
+        .bt-btn .status { font-size: 0.7rem; font-weight: 800; color: var(--text-dim); }
+        .bt-btn.on .status { color: var(--accent); }
 
-        /* ELECTRICIDAD MINIMAL */
-        .elec-card { background: var(--surface); border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .elec-line { display: flex; align-items: flex-end; gap: 3px; height: 60px; margin-top: 15px; }
-        .e-bar { flex: 1; background: #1a1a1a; border-radius: 1px; }
-        .e-bar.active { background: var(--accent); }
-
-        /* RELÉS (ESTILO APP TÁCTIL) */
-        .rele-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .rele-btn { 
-            background: var(--surface); border: 1px solid var(--border); padding: 20px; 
-            border-radius: 12px; display: flex; align-items: center; justify-content: space-between;
-        }
-        .rele-btn.on { border-color: var(--accent); }
-        .switch { width: 40px; height: 20px; background: #222; border-radius: 10px; position: relative; }
-        .rele-btn.on .switch { background: var(--accent); }
-        .dot { width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.2s; }
-        .rele-btn.on .dot { left: 22px; }
-
-        /* FUEL REGISTRY TABLE */
-        .fuel-list { display: flex; flex-direction: column; gap: 10px; }
-        .fuel-item { background: var(--surface); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
-        .f-price { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
-
-        @media (min-width: 768px) {
-            .weather-grid { grid-template-columns: repeat(4, 1fr); }
-            .rele-grid { grid-template-columns: repeat(3, 1fr); }
-            nav { width: 90px; height: 100vh; flex-direction: column; left: 0; bottom: auto; top: 0; }
-            main { margin-left: 90px; padding: 40px; }
-            header { margin-left: 90px; }
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; text-align: center; }
+            nav { gap: 15px; }
+            .energy-hero { grid-template-columns: 1fr; }
+            .value { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -100,71 +86,95 @@
         <i class="ph-fill ph-fire llama"></i>
         <span class="logo-text">Atelier Nero</span>
     </div>
-    <div id="connection" style="font-size: 0.6rem; color: #444;">BT DISCONNECTED</div>
+    <nav>
+        <div class="nav-item active" onclick="tab('clima', this)">Clima</div>
+        <div class="nav-item" onclick="tab('energia', this)">Energía</div>
+        <div class="nav-item" onclick="tab('fuel', this)">Fuel</div>
+        <div class="nav-item" onclick="tab('reles', this)">Domótica</div>
+    </nav>
 </header>
 
 <main>
-    <div id="panel-clima" class="panel active">
-        <div class="weather-grid">
-            <div class="w-item full" style="text-align: center;">
-                <span class="label">Temperatura Exterior</span>
-                <div class="value" id="cur-temp" style="font-size: 4rem;">--°</div>
-                <div class="sub-value" id="cur-desc">ALMERÍA</div>
-            </div>
-            <div class="w-item"><span class="label">Humedad</span><div class="value" id="cur-hum">--%</div></div>
-            <div class="w-item"><span class="label">UV Index</span><div class="value" id="cur-uv">--</div></div>
-            <div class="w-item"><span class="label">Presión</span><div class="value" id="cur-pres" style="font-size: 1.2rem;">-- hPa</div></div>
-            <div class="w-item"><span class="label">Lluvia</span><div class="value" id="cur-rain">--%</div></div>
-            <div class="w-item full">
-                <span class="label" style="display: block; text-align: center;">Dirección Viento</span>
-                <div class="compass-wrap">
-                    <div class="compass"><div class="needle" id="needle"></div></div>
+    <div id="clima" class="panel active">
+        <div class="data-grid">
+            <div class="card" style="grid-column: span 2;">
+                <span class="label">Temperatura Real / Almería</span>
+                <div style="display: flex; align-items: baseline; gap: 20px;">
+                    <div class="value" id="w-temp">--<span class="unit">°C</span></div>
+                    <div style="color: var(--accent); font-weight: 600;" id="w-desc">--</div>
                 </div>
-                <div id="cur-wind" style="text-align: center; font-weight: 700; color: var(--accent);">-- km/h</div>
             </div>
+            <div class="card"><span class="label">Sensación Térmica</span><div class="value" id="w-app">--<span class="unit">°C</span></div></div>
+            <div class="card"><span class="label">Humedad</span><div class="value" id="w-hum">--<span class="unit">%</span></div></div>
+            <div class="card"><span class="label">Índice UV</span><div class="value" id="w-uv">--</div></div>
+            <div class="card"><span class="label">Precipitación</span><div class="value" id="w-rain">--<span class="unit">%</span></div></div>
+            <div class="card"><span class="label">Visibilidad</span><div class="value" id="w-vis">--<span class="unit">km</span></div></div>
+            <div class="card"><span class="label">Punto de Rocío</span><div class="value" id="w-dew">--<span class="unit">°C</span></div></div>
+            <div class="card" style="grid-column: span 2;">
+                <span class="label">Dinámica de Viento</span>
+                <div class="wind-box">
+                    <div class="compass"><div class="needle" id="w-needle"></div></div>
+                    <div>
+                        <div class="value" id="w-wind">--<span class="unit">km/h</span></div>
+                        <div class="label" id="w-dir" style="margin:0">Cargando orientación...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card"><span class="label">Presión Atm.</span><div class="value" id="w-pres" style="font-size: 1.8rem;">--<span class="unit">hPa</span></div></div>
         </div>
     </div>
 
-    <div id="panel-elec" class="panel">
-        <div class="elec-card">
-            <span class="label">Precio PVPC Actual</span>
-            <div class="value" id="e-now" style="color: var(--accent);">-- €/kWh</div>
-            <div class="elec-line" id="e-line"></div>
+    <div id="energia" class="panel">
+        <div class="energy-hero">
+            <div class="card">
+                <span class="label">Mercado Eléctrico (PVPC)</span>
+                <div class="chart-container" id="e-chart"></div>
+            </div>
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <span class="label">Precio Actual</span>
+                    <div class="value" id="e-now" style="color: var(--accent);">--<span class="unit">€/kWh</span></div>
+                </div>
+                <div style="border-top: 1px solid var(--border); padding-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span class="label">Mínimo Diario</span>
+                        <span id="e-min" style="color: #4CAF50; font-weight: 700;">--</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span class="label">Máximo Diario</span>
+                        <span id="e-max" style="color: #FF5252; font-weight: 700;">--</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="elec-card"><span class="label">Mínimo</span><div class="value" id="e-min" style="font-size: 1.2rem;">--</div></div>
-            <div class="elec-card"><span class="label">Máximo</span><div class="value" id="e-max" style="font-size: 1.2rem;">--</div></div>
+        <div class="data-grid">
+            <div class="card"><span class="label">Estado Red</span><div class="value" style="font-size: 1.5rem;" id="e-status">Analizando...</div></div>
+            <div class="card"><span class="label">Variación Media</span><div class="value" style="font-size: 1.5rem;" id="e-diff">--%</div></div>
         </div>
     </div>
 
-    <div id="panel-fuel" class="panel">
-        <div class="fuel-list" id="f-list"></div>
+    <div id="fuel" class="panel">
+        <div class="data-grid" id="f-container"></div>
     </div>
 
-    <div id="panel-reles" class="panel">
-        <div class="rele-grid">
-            <div class="rele-btn" onclick="this.classList.toggle('on')">
-                <span>Iluminación Salón</span>
-                <div class="switch"><div class="dot"></div></div>
+    <div id="reles" class="panel">
+        <span class="label" style="margin-bottom: 20px;">Control de Dispositivos (Bluetooth Ready)</span>
+        <div class="bt-grid">
+            <div class="bt-btn" onclick="this.classList.toggle('on')">
+                <i class="ph-bold ph-lightbulb" style="font-size: 2rem;"></i>
+                <div><p style="font-weight: 700;">Luz Principal</p><p class="status">DISPOSITIVO 01</p></div>
             </div>
-            <div class="rele-btn" onclick="this.classList.toggle('on')">
-                <span>Climatización</span>
-                <div class="switch"><div class="dot"></div></div>
+            <div class="bt-btn" onclick="this.classList.toggle('on')">
+                <i class="ph-bold ph-fan" style="font-size: 2rem;"></i>
+                <div><p style="font-weight: 700;">Ventilación</p><p class="status">DISPOSITIVO 02</p></div>
             </div>
-            <div class="rele-btn" onclick="this.classList.toggle('on')">
-                <span>Carga EV</span>
-                <div class="switch"><div class="dot"></div></div>
+            <div class="bt-btn" onclick="this.classList.toggle('on')">
+                <i class="ph-bold ph-plug" style="font-size: 2rem;"></i>
+                <div><p style="font-weight: 700;">Termo Eléctrico</p><p class="status">DISPOSITIVO 03</p></div>
             </div>
         </div>
     </div>
 </main>
-
-<nav>
-    <i class="ph-fill ph-cloud-sun nav-item active" onclick="tab('panel-clima', this)"></i>
-    <i class="ph-fill ph-lightning nav-item" onclick="tab('panel-elec', this)"></i>
-    <i class="ph-fill ph-gas-pump nav-item" onclick="tab('panel-fuel', this)"></i>
-    <i class="ph-fill ph-bluetooth nav-item" onclick="tab('panel-reles', this)"></i>
-</nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -179,51 +189,66 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // GAS (FIREBASE)
+    // FUEL
     onSnapshot(doc(db, "market", "fuel"), (snap) => {
         const data = snap.data();
         if (data && data.stations) {
             const sorted = data.stations
                 .filter(s => s['Precio Gasolina 95 E5'])
                 .sort((a,b) => parseFloat(a['Precio Gasolina 95 E5'].replace(',','.')) - parseFloat(b['Precio Gasolina 95 E5'].replace(',','.')))
-                .slice(0, 8);
+                .slice(0, 10);
             
-            document.getElementById('f-list').innerHTML = sorted.map(s => `
-                <div class="fuel-item">
-                    <div><b>${s['Rótulo']}</b><br><small style="color:#444">${s['Dirección'].substring(0,30)}</small></div>
-                    <div class="f-price">${s['Precio Gasolina 95 E5']}€</div>
+            document.getElementById('f-container').innerHTML = sorted.map(s => `
+                <div class="card">
+                    <span class="label">${s['Rótulo']}</span>
+                    <div class="value" style="font-size: 1.8rem; color: var(--accent);">${s['Precio Gasolina 95 E5']}<span class="unit">€</span></div>
+                    <p style="font-size: 0.6rem; color: #444; margin-top: 10px;">${s['Dirección']}</p>
                 </div>
             `).join('');
         }
     });
 
-    // CLIMA API
+    // CLIMA
     async function getW() {
-        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,surface_pressure,precipitation_probability&timezone=auto").then(r => r.json());
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=relativehumidity_2m,uv_index,surface_pressure,apparent_temperature,dewpoint_2m,visibility,precipitation_probability&timezone=auto").then(r => r.json());
         const h = new Date().getHours();
-        document.getElementById('cur-temp').firstChild.textContent = Math.round(res.current_weather.temperature) + "°";
-        document.getElementById('cur-hum').innerText = res.hourly.relativehumidity_2m[h] + "%";
-        document.getElementById('cur-uv').innerText = res.hourly.uv_index[h];
-        document.getElementById('cur-pres').innerText = Math.round(res.hourly.surface_pressure[h]) + " hPa";
-        document.getElementById('cur-rain').innerText = res.hourly.precipitation_probability[h] + "%";
-        document.getElementById('cur-wind').innerText = res.current_weather.windspeed + " km/h";
-        document.getElementById('needle').style.transform = `rotate(${res.current_weather.winddirection}deg)`;
+        document.getElementById('w-temp').firstChild.textContent = Math.round(res.current_weather.temperature);
+        document.getElementById('w-app').firstChild.textContent = Math.round(res.hourly.apparent_temperature[h]);
+        document.getElementById('w-hum').firstChild.textContent = res.hourly.relativehumidity_2m[h];
+        document.getElementById('w-uv').firstChild.textContent = res.hourly.uv_index[h];
+        document.getElementById('w-rain').firstChild.textContent = res.hourly.precipitation_probability[h];
+        document.getElementById('w-vis').firstChild.textContent = (res.hourly.visibility[h] / 1000).toFixed(1);
+        document.getElementById('w-dew').firstChild.textContent = Math.round(res.hourly.dewpoint_2m[h]);
+        document.getElementById('w-pres').firstChild.textContent = Math.round(res.hourly.surface_pressure[h]);
+        document.getElementById('w-wind').firstChild.textContent = res.current_weather.windspeed;
+        document.getElementById('w-needle').style.transform = `rotate(${res.current_weather.winddirection}deg)`;
+        
+        const dir = ['N','NE','E','SE','S','SW','W','NW'][Math.round(res.current_weather.winddirection / 45) % 8];
+        document.getElementById('w-dir').innerText = "PROCEDENCIA: " + dir;
+        
+        const codes = { 0: "Despejado", 1: "Ligeramente Nuboso", 3: "Cubierto", 61: "Lluvia" };
+        document.getElementById('w-desc').innerText = codes[res.current_weather.weathercode] || "Despejado";
     }
 
-    // ENERGÍA PVPC
+    // ENERGÍA
     async function getE() {
         const hoy = new Date().toISOString().split('T')[0];
         const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`).then(r => r.json());
         const prices = res.included[0].attributes.values.map(v => v.value / 1000);
-        const nowH = new Date().getHours();
-        
-        document.getElementById('e-now').firstChild.textContent = prices[nowH].toFixed(4) + " €/kWh";
-        document.getElementById('e-min').innerText = Math.min(...prices).toFixed(4);
-        document.getElementById('e-max').innerText = Math.max(...prices).toFixed(4);
+        const h = new Date().getHours();
+        const current = prices[h];
+        const avg = prices.reduce((a,b)=>a+b)/24;
+
+        document.getElementById('e-now').firstChild.textContent = current.toFixed(4);
+        document.getElementById('e-min').innerText = Math.min(...prices).toFixed(4) + " €";
+        document.getElementById('e-max').innerText = Math.max(...prices).toFixed(4) + " €";
+        document.getElementById('e-status').innerText = current < avg ? "PRECIO VALLE" : "PRECIO PUNTA";
+        document.getElementById('e-status').style.color = current < avg ? "#4CAF50" : "#FF5252";
+        document.getElementById('e-diff').firstChild.textContent = (((current-avg)/avg)*100).toFixed(1);
 
         const max = Math.max(...prices);
-        document.getElementById('e-line').innerHTML = prices.map((p, i) => `
-            <div class="e-bar ${i === nowH ? 'active' : ''}" style="height:${(p/max)*100}%"></div>
+        document.getElementById('e-chart').innerHTML = prices.map((p, i) => `
+            <div class="e-bar ${i === h ? 'active' : ''}" style="height:${(p/max)*100}%" data-time="${i}h"></div>
         `).join('');
     }
 
