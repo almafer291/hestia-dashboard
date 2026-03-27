@@ -1,0 +1,15 @@
+{
+  "name": "Hestia Atelier",
+  "short_name": "Hestia",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#D4AF37",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/792/792113.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
