@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA ATELIER | v3900 INTERACTIVO</title>
+    <title>HESTIA ATELIER | v4000 MASTER</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,9 +22,9 @@
         /* NAVEGACIÓN LATERAL */
         aside { width: 220px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 30px 15px; }
         .brand { text-align: center; margin-bottom: 40px; }
-        /* FIX DE LA LLAMA: Filtro para invertir el color negro a blanco y darle brillo */
-        .llama-icon { width: 60px; height: 60px; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; filter: invert(1) brightness(1.5); }
-        .hestia-txt { font-weight: 600; font-size: 0.8rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; }
+        /* LA LLAMA ORIGINAL RESTAURADA: Usando tu icono Phosphor nativo, con algo de sombra dorada */
+        .hestia-fire { font-size: 3.5rem; color: var(--accent); display: block; margin-bottom: 5px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
+        .hestia-txt { font-weight: 600; font-size: 0.8rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; display: block; }
         nav { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; color: var(--text-dim); padding: 12px; border-radius: 6px; cursor: pointer; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
         .nav-item.active { color: var(--accent); background: rgba(212, 175, 55, 0.08); }
@@ -59,7 +59,7 @@
 
 <aside>
     <div class="brand">
-        <img src="https://cdn-icons-png.flaticon.com/512/792/792113.png" class="llama-icon" referrerpolicy="no-referrer" alt="Hestia">
+        <i class="ph-fill ph-fire hestia-fire"></i>
         <span class="hestia-txt">Hestia</span>
     </div>
     <nav>
@@ -162,10 +162,9 @@
         document.getElementById(id).classList.add('active'); btn.classList.add('active');
     };
 
-    // --- CLIMA Y AIRE (Datos expandidos) ---
+    // --- CLIMA Y AIRE ---
     async function getW() {
         try {
-            // Añadidos apparent_temperature y windgusts_10m a la URL original
             const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,dewpoint_2m,direct_radiation,visibility,cloudcover,apparent_temperature,windgusts_10m&daily=sunrise,sunset&timezone=auto";
             const aqUrl = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=36.83&longitude=-2.46&hourly=pm10,pm2_5,nitrogen_dioxide,ozone";
             const [res, aq] = await Promise.all([fetch(url).then(r=>r.json()), fetch(aqUrl).then(r=>r.json())]);
@@ -180,7 +179,6 @@
             document.getElementById('w-vis').innerText = (res.hourly.visibility[h]/1000).toFixed(1);
             document.getElementById('w-cloud').innerText = res.hourly.cloudcover[h];
             
-            // Inyección de nuevos datos
             document.getElementById('w-feels').innerText = Math.round(res.hourly.apparent_temperature[h]) + "°";
             document.getElementById('w-gusts').innerText = Math.round(res.hourly.windgusts_10m[h]);
 
@@ -229,7 +227,7 @@
         } catch (e) { console.error(e); }
     }
 
-    // --- LUNA Y MAREAS (Interactividad añadida) ---
+    // --- LUNA Y MAREAS INTERACTIVAS ---
     function updateCelestial() {
         const lp = 2551443; const now = new Date();
         const phase = ((now.getTime() - new Date(1970, 0, 7, 20, 35, 0).getTime()) / 1000) % lp;
@@ -244,7 +242,6 @@
 
         const tideData = Array.from({length: 24}, (_, i) => Math.sin((i + now.getHours()) / 12.4 * 2 * Math.PI));
         
-        // Gráfico de Mareas con interacción y tooltips
         new Chart(document.getElementById('tideChart'), {
             type: 'line', 
             data: { 
