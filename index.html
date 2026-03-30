@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA ATELIER | v3800</title>
+    <title>HESTIA ATELIER | v3900 INTERACTIVO</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,7 +22,8 @@
         /* NAVEGACIÓN LATERAL */
         aside { width: 220px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 30px 15px; }
         .brand { text-align: center; margin-bottom: 40px; }
-        .llama-icon { width: 60px; height: 60px; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+        /* FIX DE LA LLAMA: Filtro para invertir el color negro a blanco y darle brillo */
+        .llama-icon { width: 60px; height: 60px; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; filter: invert(1) brightness(1.5); }
         .hestia-txt { font-weight: 600; font-size: 0.8rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; }
         nav { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; color: var(--text-dim); padding: 12px; border-radius: 6px; cursor: pointer; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
@@ -39,7 +40,7 @@
         .card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 4px; }
         .c-tit { font-size: 0.55rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-weight: 800; margin-bottom: 12px; display: block; }
         .c-val { font-size: 2.6rem; font-weight: 100; color: #fff; line-height: 1; }
-        .val-bold { font-weight: 900 !important; color: #fff; } /* Trazo ancho para números */
+        .val-bold { font-weight: 900 !important; color: #fff; }
         .c-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 8px; font-weight: 700; text-transform: uppercase; }
 
         /* BRÚJULA */
@@ -58,7 +59,7 @@
 
 <aside>
     <div class="brand">
-        <img src="https://cdn-icons-png.flaticon.com/512/792/792113.png" class="llama-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/792/792113.png" class="llama-icon" referrerpolicy="no-referrer" alt="Hestia">
         <span class="hestia-txt">Hestia</span>
     </div>
     <nav>
@@ -78,7 +79,7 @@
                 <div class="c-sub" id="w-desc">SINCRONIZANDO DATOS...</div>
             </div>
             <div class="card" style="grid-column: span 4; text-align: center;">
-                <span class="c-tit">Viento</span>
+                <span class="c-tit">Viento Actual</span>
                 <div class="compass"><div class="needle" id="w-needle"></div></div>
                 <div class="c-sub" id="w-win">-- km/h</div>
             </div>
@@ -93,8 +94,10 @@
             <div class="card" style="grid-column: span 3;"><span class="c-tit">UV Index</span><div class="c-val" id="w-uv">--</div><div class="c-sub" id="w-uv-st">--</div></div>
             <div class="card" style="grid-column: span 3;"><span class="c-tit">Punto Rocío</span><div class="c-val" id="w-dew">--°</div></div>
             
-            <div class="card" style="grid-column: span 6;"><span class="c-tit">Visibilidad</span><div class="c-val" id="w-vis">--</div><div class="c-sub">Kilómetros</div></div>
-            <div class="card" style="grid-column: span 6;"><span class="c-tit">Nubosidad</span><div class="c-val" id="w-cloud">--%</div><div class="c-sub">Cobertura cielos</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Sens. Térmica</span><div class="c-val" id="w-feels">--°</div><div class="c-sub">RealFeel</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Racha Máx</span><div class="c-val" id="w-gusts">--</div><div class="c-sub">km/h</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Visibilidad</span><div class="c-val" id="w-vis">--</div><div class="c-sub">Kilómetros</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Nubosidad</span><div class="c-val" id="w-cloud">--%</div><div class="c-sub">Cobertura</div></div>
         </div>
     </div>
 
@@ -120,9 +123,11 @@
                     <div class="c-val" id="w-solar">--</div><div class="c-sub">W/m²</div>
                 </div>
             </div>
-            <div class="card" style="grid-column: span 12;">
-                <span class="c-tit">Previsión Mareas (24h)</span>
-                <canvas id="tideChart" style="max-height:160px;"></canvas>
+            <div class="card" style="grid-column: span 12; position: relative; height: 220px;">
+                <span class="c-tit">Gráfico Interactivo de Mareas (Desliza para explorar)</span>
+                <div style="position: absolute; width: 95%; height: 75%; bottom: 10px;">
+                    <canvas id="tideChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -157,10 +162,11 @@
         document.getElementById(id).classList.add('active'); btn.classList.add('active');
     };
 
-    // --- CLIMA Y AIRE ---
+    // --- CLIMA Y AIRE (Datos expandidos) ---
     async function getW() {
         try {
-            const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,dewpoint_2m,direct_radiation,visibility,cloudcover&daily=sunrise,sunset&timezone=auto";
+            // Añadidos apparent_temperature y windgusts_10m a la URL original
+            const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,dewpoint_2m,direct_radiation,visibility,cloudcover,apparent_temperature,windgusts_10m&daily=sunrise,sunset&timezone=auto";
             const aqUrl = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=36.83&longitude=-2.46&hourly=pm10,pm2_5,nitrogen_dioxide,ozone";
             const [res, aq] = await Promise.all([fetch(url).then(r=>r.json()), fetch(aqUrl).then(r=>r.json())]);
             const h = new Date().getHours();
@@ -173,6 +179,11 @@
             document.getElementById('w-dew').innerText = Math.round(res.hourly.dewpoint_2m[h]) + "°";
             document.getElementById('w-vis').innerText = (res.hourly.visibility[h]/1000).toFixed(1);
             document.getElementById('w-cloud').innerText = res.hourly.cloudcover[h];
+            
+            // Inyección de nuevos datos
+            document.getElementById('w-feels').innerText = Math.round(res.hourly.apparent_temperature[h]) + "°";
+            document.getElementById('w-gusts').innerText = Math.round(res.hourly.windgusts_10m[h]);
+
             document.getElementById('w-needle').style.transform = `translate(-50%, -100%) rotate(${res.current_weather.winddirection}deg)`;
             document.getElementById('w-win').innerText = res.current_weather.windspeed + " km/h";
             document.getElementById('w-desc').innerText = "CONEXIÓN ESTABLE";
@@ -218,7 +229,7 @@
         } catch (e) { console.error(e); }
     }
 
-    // --- LUNA Y MAREAS ---
+    // --- LUNA Y MAREAS (Interactividad añadida) ---
     function updateCelestial() {
         const lp = 2551443; const now = new Date();
         const phase = ((now.getTime() - new Date(1970, 0, 7, 20, 35, 0).getTime()) / 1000) % lp;
@@ -229,16 +240,54 @@
         
         const names = ["LUNA NUEVA", "CUARTO CRECIENTE", "LUNA LLENA", "CUARTO MENGUANTE"];
         document.getElementById('moon-name').innerText = names[Math.floor(frac * 4)];
-        document.getElementById('moon-pc').innerText = Math.round(Math.abs(0.5 - frac) * 200) + "%";
+        document.getElementById('moon-pc').innerText = Math.round(Math.abs(0.5 - frac) * 200);
 
         const tideData = Array.from({length: 24}, (_, i) => Math.sin((i + now.getHours()) / 12.4 * 2 * Math.PI));
+        
+        // Gráfico de Mareas con interacción y tooltips
         new Chart(document.getElementById('tideChart'), {
             type: 'line', 
             data: { 
-                labels: Array.from({length: 24}, (_, i) => (now.getHours() + i) % 24 + "h"),
-                datasets: [{ data: tideData, borderColor: '#0077be', backgroundColor: 'rgba(0,119,190,0.1)', fill: true, tension: 0.4, pointRadius: 0 }]
+                labels: Array.from({length: 24}, (_, i) => (now.getHours() + i) % 24 + ":00"),
+                datasets: [{ 
+                    label: 'Nivel del mar (m)',
+                    data: tideData, 
+                    borderColor: '#0077be', 
+                    backgroundColor: 'rgba(0,119,190,0.2)', 
+                    fill: true, 
+                    tension: 0.4, 
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0077be',
+                    pointHoverRadius: 8
+                }]
             },
-            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { ticks: { color: '#444' } } } }
+            options: { 
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: '#D4AF37',
+                        bodyFont: { size: 14, weight: 'bold' },
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                let status = context.parsed.y > 0 ? ' (Subiendo)' : ' (Bajando)';
+                                return 'Nivel: ' + context.parsed.y.toFixed(2) + ' m' + status;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    y: { display: false, min: -1.5, max: 1.5 }, 
+                    x: { ticks: { color: '#444' }, grid: { display: false } } 
+                } 
+            }
         });
     }
 
@@ -256,6 +305,7 @@
         }
     });
 
+    // Iniciar
     getW(); getE(); updateCelestial();
     setInterval(() => { getW(); getE(); }, 300000);
 </script>
