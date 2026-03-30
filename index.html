@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA ATELIER | v2900 CONTROL</title>
+    <title>HESTIA ATELIER | v2650 SOLAR</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,7 +15,6 @@
             --border: #151515; --text: #FFF; --text-dim: #444;
             --silver: #E5E5E5;
             --ev-low: #2D5A27; --ev-mid: #8B732A; --ev-high: #944D25; --ev-peak: #8B2A2A;
-            --bt-blue: #007AFF;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
@@ -55,7 +54,6 @@
         .btn-radar { background: rgba(0,0,0,0.85); color: #777; border: 1px solid #222; padding: 12px; font-size: 0.55rem; font-weight: 900; cursor: pointer; transition: 0.3s; backdrop-filter: blur(8px); text-align: center; border-radius: 2px; text-transform: uppercase; letter-spacing: 1px; }
         .btn-radar:hover { border-color: #555; color: #FFF; }
         .btn-radar.active { color: var(--accent); border-color: var(--accent); background: rgba(212,175,55,0.05); }
-        .btn-bt { color: var(--bt-blue); border-color: var(--bt-blue); }
         
         .f-grid-20 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
     </style>
@@ -69,7 +67,6 @@
         <div class="nav-item" onclick="tab('radar', this)"><i class="ph-duotone ph-broadcast"></i><span>Live Radar</span></div>
         <div class="nav-item" onclick="tab('energia', this)"><i class="ph-duotone ph-lightning"></i><span>Energy</span></div>
         <div class="nav-item" onclick="tab('fuel', this)"><i class="ph-duotone ph-gas-pump"></i><span>Market 20</span></div>
-        <div class="nav-item" style="margin-top: 20px;" onclick="tab('domotica', this)"><i class="ph-duotone ph-cpu"></i><span>Domótica</span></div>
     </nav>
 </aside>
 
@@ -84,10 +81,11 @@
             <div class="card" style="grid-column: span 3;"><span class="c-tit">NO2</span><div class="c-val bold" id="aq-no2">--</div><div class="c-sub" id="aq-no2-st">DATOS REALES</div></div>
             <div class="card" style="grid-column: span 3;"><span class="c-tit">O3</span><div class="c-val bold" id="aq-o3">--</div><div class="c-sub" id="aq-o3-st">DATOS REALES</div></div>
 
-            <div class="card" style="grid-column: span 3;"><span class="c-tit"><i class="ph-duotone ph-sun"></i>Amanecer</span><div class="c-val" style="font-size:2rem" id="w-sunrise">--:--</div></div>
-            <div class="card" style="grid-column: span 3;"><span class="c-tit"><i class="ph-duotone ph-moon"></i>Anochecer</span><div class="c-val" style="font-size:2rem" id="w-sunset">--:--</div></div>
-            <div class="card" style="grid-column: span 3;"><span class="c-tit"><i class="ph-duotone ph-clock"></i>Horas de Sol</span><div class="c-val" style="font-size:2rem" id="w-sunhours">--h</div></div>
-            <div class="card" style="grid-column: span 3;"><span class="c-tit"><i class="ph-duotone ph-sparkle"></i>Radiación</span><div class="c-val" style="font-size:2rem" id="w-solar">--</div><div class="c-sub">W/m²</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit"><i class="ph-duotone ph-sun-horizon"></i>Amanecer</span><div class="c-val" style="font-size:2rem" id="w-sunrise">--:--</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit"><i class="ph-duotone ph-moon-stars"></i>Anochecer</span><div class="c-val" style="font-size:2rem" id="w-sunset">--:--</div></div>
+            <div class="card" style="grid-column: span 2;"><span class="c-tit"><i class="ph-duotone ph-clock"></i>Luz Neta</span><div class="c-val" style="font-size:2rem" id="w-sunhours">--h</div></div>
+            <div class="card" style="grid-column: span 2;"><span class="c-tit"><i class="ph-duotone ph-sparkle"></i>Radiación</span><div class="c-val" style="font-size:2rem" id="w-solar">--</div><div class="c-sub">W/m²</div></div>
+            <div class="card" style="grid-column: span 2;"><span class="c-tit"><i class="ph-duotone ph-moon"></i>Fase Lunar</span><div class="c-val" style="font-size:1.2rem; margin-top: 10px; font-weight: 600;" id="w-moon">--</div></div>
 
             <div class="card" style="grid-column: span 2;"><span class="c-tit">Humedad</span><div class="c-val" style="font-size:1.6rem" id="w-hum">--%</div></div>
             <div class="card" style="grid-column: span 2;"><span class="c-tit">Presión</span><div class="c-val" style="font-size:1.6rem" id="w-pres">--</div></div>
@@ -125,39 +123,9 @@
 
     <div id="fuel" class="panel"><div class="f-grid-20" id="f-grid"></div></div>
 
-    <div id="domotica" class="panel">
-        <div class="grid">
-            <div class="card" style="grid-column: span 12; border-bottom: 2px solid var(--border);">
-                <span class="c-tit"><i class="ph-duotone ph-battery-charging"></i>Estado del Dispositivo Host</span>
-                <div style="display: flex; gap: 40px; margin-top: 15px;">
-                    <div><span class="c-sub">Batería</span><div class="c-val" style="font-size: 2rem;" id="sys-bat">--%</div></div>
-                    <div><span class="c-sub">Conectividad</span><div class="c-val" style="font-size: 2rem; color: var(--ev-low);" id="sys-net">ONLINE</div></div>
-                </div>
-            </div>
-
-            <div class="card" style="grid-column: span 12; text-align: center;">
-                <span class="c-tit" style="justify-content: center;"><i class="ph-duotone ph-bluetooth"></i>Enlace de Hardware Local</span>
-                <div id="bt-status" class="c-val" style="font-size: 1.5rem; color: var(--text-dim); margin: 15px 0;">DESCONECTADO</div>
-                <button id="btn-connect" class="btn-radar btn-bt" style="width: 250px; display: inline-block;">
-                    BUSCAR DISPOSITIVO
-                </button>
-            </div>
-            
-            <div class="card" style="grid-column: span 6;">
-                <span class="c-tit">Relé 01 - Principal</span>
-                <button onclick="sendAction('RELAY1_TOGGLE')" class="btn-radar" style="width: 100%; margin-top: 10px;">CONMUTAR R1</button>
-            </div>
-            <div class="card" style="grid-column: span 6;">
-                <span class="c-tit">Relé 02 - Auxiliar</span>
-                <button onclick="sendAction('RELAY2_TOGGLE')" class="btn-radar" style="width: 100%; margin-top: 10px;">CONMUTAR R2</button>
-            </div>
-        </div>
-    </div>
-
 </main>
 
 <script type="module">
-    // Mantenemos tus importaciones de Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -165,14 +133,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Registro de Service Worker para asegurar PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
-    // Funciones de navegación y radar
     window.setLayer = (lyr, btn) => {
-        document.querySelectorAll('.btn-radar:not(.btn-bt)').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.btn-radar').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('windy-frame').src = `https://embed.windy.com/embed2.html?lat=36.83&lon=-2.46&zoom=9&overlay=${lyr}&product=ecmwf&metricWind=km%2Fh&metricTemp=%C2%B0C`;
     };
@@ -182,15 +146,6 @@
         document.getElementById(id).classList.add('active'); btn.classList.add('active');
     };
 
-    // LECTURA DE BATERÍA DEL DISPOSITIVO
-    if ('getBattery' in navigator) {
-        navigator.getBattery().then(function(battery) {
-            const updateBat = () => { document.getElementById('sys-bat').innerText = Math.round(battery.level * 100) + "%"; };
-            updateBat(); battery.addEventListener('levelchange', updateBat);
-        });
-    }
-
-    // FIREBASE FUEL
     onSnapshot(doc(db, "market", "fuel"), (snap) => {
         const data = snap.data();
         if (data?.stations) {
@@ -208,14 +163,27 @@
         }
     });
 
-    // OPEN-METEO AMPLIADO (Sol y Radiación)
+    // CÁLCULO DE FASE LUNAR
+    const calcMoon = () => {
+        const lp = 2551443; 
+        const phase = ((new Date().getTime() - new Date(1970, 0, 7, 20, 35, 0).getTime()) / 1000) % lp;
+        const frac = phase / lp; 
+        if (frac < 0.03 || frac > 0.97) return "NUEVA";
+        if (frac < 0.22) return "CRECIENTE";
+        if (frac < 0.28) return "C. CREC.";
+        if (frac < 0.47) return "G. CREC.";
+        if (frac < 0.53) return "LLENA";
+        if (frac < 0.72) return "G. MENG.";
+        if (frac < 0.78) return "C. MENG.";
+        return "MENGUANTE";
+    };
+
     async function getW() {
         const url = "https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,dewpoint_2m,visibility,precipitation_probability,direct_radiation&daily=sunrise,sunset,sunshine_duration&timezone=auto";
         const res = await fetch(url).then(r => r.json());
         const aq = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=36.83&longitude=-2.46&hourly=pm10,pm2_5,nitrogen_dioxide,ozone").then(r => r.json());
         const h = new Date().getHours();
         
-        // Datos Básicos
         document.getElementById('w-temp').innerText = Math.round(res.current_weather.temperature) + "°";
         document.getElementById('w-hum').innerText = res.hourly.relativehumidity_2m[h] + "%";
         document.getElementById('w-pres').innerText = Math.round(res.hourly.surface_pressure[h]) + " hPa";
@@ -225,14 +193,14 @@
         document.getElementById('w-needle').style.transform = `rotate(${res.current_weather.winddirection}deg)`;
         document.getElementById('w-win').innerText = res.current_weather.windspeed + " km/h";
 
-        // NUEVOS DATOS SOLARES
+        // INTEGRACIÓN SOLAR Y LUNAR
         const formatTime = (iso) => new Date(iso).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         document.getElementById('w-sunrise').innerText = formatTime(res.daily.sunrise[0]);
         document.getElementById('w-sunset').innerText = formatTime(res.daily.sunset[0]);
         document.getElementById('w-sunhours').innerText = (res.daily.sunshine_duration[0] / 3600).toFixed(1) + "h";
         document.getElementById('w-solar').innerText = res.hourly.direct_radiation[h];
+        document.getElementById('w-moon').innerText = calcMoon();
 
-        // Calidad del Aire
         const setAQ = (id, val, l1, l2) => {
             const el = document.getElementById(id); const st = document.getElementById(id+'-st');
             el.innerText = Math.round(val || 0);
@@ -246,7 +214,6 @@
         setAQ('aq-no2', aq.hourly.nitrogen_dioxide[h], 40, 100);
         setAQ('aq-o3', aq.hourly.ozone[h], 60, 120);
 
-        // Gráficos
         new Chart(document.getElementById('tempChart'), {
             type: 'line', data: { labels: res.hourly.time.slice(h, h+24).map(t => t.split('T')[1]), datasets: [{ data: res.hourly.temperature_2m.slice(h, h+24), borderColor: '#D4AF37', tension: 0.4, borderWidth: 2, pointRadius: 0 }] },
             options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#444' } }, y: { ticks: { color: '#444' }, grid: { color: '#111' } } } }
@@ -258,7 +225,6 @@
         });
     }
 
-    // ENERGÍA
     async function getE() {
         const hoy = new Date().toISOString().split('T')[0];
         const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${hoy}T00:00&end_date=${hoy}T23:59&time_trunc=hour`).then(r => r.json());
@@ -278,39 +244,6 @@
             options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#111' } } } }
         });
     }
-
-    // LOGICA BLUETOOTH (Preparación)
-    let btDevice, btCharacteristic;
-    
-    document.getElementById('btn-connect').addEventListener('click', async () => {
-        try {
-            console.log('Buscando dispositivos Bluetooth...');
-            // Buscamos dispositivos genéricos para que veas cómo abre la ventana el navegador
-            btDevice = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb'] // UUID típico de módulos HC-05 / ESP32
-            });
-            
-            document.getElementById('bt-status').innerText = `CONECTADO A: ${btDevice.name || 'Dispositivo'}`;
-            document.getElementById('bt-status').style.color = 'var(--accent)';
-            
-            // Aquí iría la conexión real al servidor GAT del dispositivo
-            // const server = await btDevice.gatt.connect();
-            // ...
-        } catch(e) {
-            console.error(e);
-            document.getElementById('bt-status').innerText = "VINCULACIÓN CANCELADA";
-        }
-    });
-
-    window.sendAction = (command) => {
-        if(!btDevice) {
-            alert("Primero debes vincular el dispositivo Bluetooth.");
-            return;
-        }
-        console.log(`Enviando orden al relé: ${command}`);
-        // Aquí programaremos la escritura de la característica GAT cuando tengas el ESP32
-    };
 
     getW(); getE();
 </script>
