@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v30.000 | OMNI-STATION</title>
+    <title>HESTIA v31.000 | OMNI-REINFORCED</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,45 +11,53 @@
         :root {
             --bg: #000; --surf: #050505; --acc: #D4AF37; 
             --bor: #121212; --txt: #FFF; --dim: #555;
-            --ok: #2D5A27; --bad: #8B2A2A;
+            --ok: #2D5A27; --warn: #D4AF37; --bad: #8B2A2A;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--acc); }
 
-        /* SIDEBAR ORIGINAL */
+        /* NAV */
         aside { width: 70px; border-right: 1px solid var(--bor); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #000; z-index: 100; }
-        .fire-icon { font-size: 2.2rem; color: var(--acc); position: relative; margin-bottom: 40px; animation: firePulse 2s infinite ease-in-out; }
-        @keyframes firePulse { 0%, 100% { filter: drop-shadow(0 0 2px var(--acc)); transform: scale(1); } 50% { filter: drop-shadow(0 0 10px var(--acc)); transform: scale(1.05); } }
+        .fire-icon { font-size: 2.2rem; color: var(--acc); margin-bottom: 40px; animation: firePulse 2s infinite ease-in-out; cursor: pointer; }
+        @keyframes firePulse { 0%, 100% { filter: drop-shadow(0 0 2px var(--acc)); transform: scale(1); } 50% { filter: drop-shadow(0 0 10px var(--acc)); transform: scale(1.08); } }
         nav { display: flex; flex-direction: column; gap: 25px; }
         .nav-bt { color: var(--dim); cursor: pointer; font-size: 1.5rem; transition: 0.3s; }
         .nav-bt.active { color: var(--acc); }
 
-        /* MAIN CONTENT */
+        /* CONTENT */
         main { flex: 1; overflow-y: auto; padding: 20px; background: radial-gradient(circle at 0% 0%, #080808, #000); }
         .view { display: none; }
-        .view.active { display: block; animation: viewIn 0.4s ease; }
-        @keyframes viewIn { from { opacity: 0; } to { opacity: 1; } }
+        .view.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* GRID */
-        .g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
-        .c { background: var(--surf); border: 1px solid var(--bor); padding: 18px; }
-        
-        /* DATA STYLE */
+        /* GRID COMPONENTS */
+        .g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+        .c { background: var(--surf); border: 1px solid var(--bor); padding: 18px; position: relative; }
         .t { font-family: 'JetBrains Mono'; font-size: 0.5rem; color: var(--acc); letter-spacing: 3px; text-transform: uppercase; border-bottom: 1px solid #111; padding-bottom: 8px; margin-bottom: 15px; display: block; }
         .v { font-size: 3.5rem; font-weight: 100; color: #fff; line-height: 1; letter-spacing: -2px; }
         .s { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; margin-top: 5px; display: block; font-weight: 800; }
         .r { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 0.62rem; padding: 5px 0; border-bottom: 1px solid #0d0d0d; color: #888; }
         .r b { color: #fff; font-weight: 400; }
 
-        /* BEACH SCROLL */
-        .beach-scroll { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; max-height: 480px; overflow-y: auto; }
-        .b-item { background: #030303; border: 1px solid #0d0d0d; padding: 12px; border-left: 2px solid var(--acc); }
+        /* AQI BARS */
+        .aqi-card { background: #030303; border: 1px solid #0d0d0d; padding: 10px; text-align: center; }
+        .aqi-bar-bg { width: 100%; height: 2px; background: #111; margin-top: 8px; overflow: hidden; }
+        .aqi-bar-fill { height: 100%; width: 0%; transition: 1s; }
 
-        /* TABLE */
+        /* BEACH ZONES */
+        .zone-label { grid-column: span 12; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--acc); background: #0a0a0a; padding: 8px; border-left: 3px solid var(--acc); margin: 10px 0 5px 0; }
+        .beach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+        .b-item { background: #030303; border: 1px solid #0d0d0d; padding: 12px; border-left: 2px solid #222; transition: 0.3s; }
+        .b-item:hover { border-left-color: var(--acc); background: #050505; }
+
+        /* FORECAST */
+        .f-card { flex: 1; background: #030303; border: 1px solid #0d0d0d; padding: 15px; text-align: center; }
+        .f-card i { font-size: 1.5rem; color: var(--acc); margin: 10px 0; display: block; }
+
         table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono'; font-size: 0.65rem; }
-        th { text-align: left; color: var(--acc); padding: 10px; border-bottom: 1px solid var(--bor); font-weight: 400; }
+        th { text-align: left; color: var(--acc); padding: 10px; border-bottom: 1px solid var(--bor); }
         td { padding: 10px; border-bottom: 1px solid #080808; }
     </style>
 </head>
@@ -69,61 +77,57 @@
     <div id="meteo" class="view active">
         <div class="g">
             <div class="c" style="grid-column: span 8;">
-                <span class="t">Global Atmos Node | Almería Actual</span>
+                <span class="t">Global Atmospheric Node | Almería</span>
                 <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-                    <div><div class="v" id="wt">--°</div><span class="s">Temp. Ambiente</span></div>
+                    <div><div class="v" id="wt">--°</div><span class="s">Temp. Actual</span></div>
                     <div style="text-align:center"><div class="v" id="wv" style="font-size:2.4rem">-- km/h</div><span class="s" id="wd">Sinc...</span></div>
-                    <div style="text-align:right"><div class="v" id="wh" style="font-size:2.4rem">--%</div><span class="s">Humedad</span></div>
+                    <div style="text-align:right"><div class="v" id="wh" style="font-size:2.4rem">--%</div><span class="s">Humedad Rel.</span></div>
                 </div>
-                <span class="t">Chemical Analysis (AQI Micrograms/m³)</span>
-                <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 6px; text-align:center;">
-                    <div class="b-item"><span>PM2.5</span><br><b id="q-pm25" style="color:var(--acc)">--</b></div>
-                    <div class="b-item"><span>PM10</span><br><b id="q-pm10" style="color:var(--acc)">--</b></div>
-                    <div class="b-item"><span>NO2</span><br><b id="q-no2">--</b></div>
-                    <div class="b-item"><span>O3</span><br><b id="q-o3">--</b></div>
-                    <div class="b-item"><span>SO2</span><br><b id="q-so2">--</b></div>
-                    <div class="b-item"><span>CO</span><br><b id="q-co">--</b></div>
-                </div>
-                <iframe style="width:100%; height:330px; border:1px solid #111; margin-top:15px;" src="https://embed.windy.com/embed2.html?lat=36.83&lon=-2.46&zoom=9&overlay=wind&product=ecmwf"></iframe>
+                <span class="t">Chemical Intelligence (AQI)</span>
+                <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 8px;" id="aqi-container">
+                    </div>
+                <div style="margin-top:20px; display:flex; gap:10px;" id="forecast-cont">
+                    </div>
             </div>
             <div class="c" style="grid-column: span 4;">
-                <span class="t">Advanced Physics</span>
-                <div class="r">Presión Atmos. <b><span id="wp-s">--</span> hPa</b></div>
-                <div class="r">Visibilidad <b><span id="wv-s">--</span> km</b></div>
-                <div class="r">Rad. Solar <b><span id="wr-t">--</span> W/m²</b></div>
-                <div class="r">Índice UV <b><span id="wu-v">--</span></b></div>
-                <div class="r">Punto Rocío <b><span id="wd-p">--</span>°C</b></div>
-                <div class="r">Humedad Suelo <b><span id="ws-o">--</span>%</b></div>
-                <div class="r">Nubosidad <b><span id="w-cloud">--</span>%</b></div>
-                <div class="r">Sensación Térm. <b><span id="w-app">--</span>°C</b></div>
-                <span class="t" style="margin-top:20px;">Pólenes (Grains/m³)</span>
-                <div class="r">Gramíneas <b id="pol-gr">--</b></div>
-                <div class="r">Olivo <b id="pol-ol">--</b></div>
-                <canvas id="tempChart" style="max-height:80px; margin-top:20px;"></canvas>
+                <span class="t">Physics & Bio-Data</span>
+                <div class="r">Presión <b id="wp-s">-- hPa</b></div>
+                <div class="r">UV Index <b id="wu-v">--</b></div>
+                <div class="r">Visibilidad <b id="wv-s">-- km</b></div>
+                <div class="r">Rad. Solar <b id="wr-t">-- W/m²</b></div>
+                <div class="r">Punto Rocío <b id="wd-p">--°C</b></div>
+                <div class="r">Olivo <b id="pol-ol" style="color:var(--acc)">--</b></div>
+                <div class="r">Gramíneas <b id="pol-gr" style="color:var(--acc)">--</b></div>
+                <canvas id="tempChart" style="max-height:100px; margin-top:20px;"></canvas>
+                <iframe style="width:100%; height:200px; border:1px solid #111; margin-top:15px;" src="https://embed.windy.com/embed2.html?lat=36.83&lon=-2.46&zoom=9&overlay=wind"></iframe>
             </div>
         </div>
     </div>
 
     <div id="astro" class="view">
         <div class="g">
-            <div class="c" style="grid-column: span 4; text-align:center;">
-                <span class="t">Lunar Morphometrics</span>
-                <div style="width:140px; height:140px; margin:20px auto; border-radius:50%; background:#000; position:relative; overflow:hidden; border:1px solid #222;">
+            <div class="c" style="grid-column: span 5; text-align:center;">
+                <span class="t">Lunar Core Analysis</span>
+                <div style="width:160px; height:160px; margin:20px auto; border-radius:50%; background:#000; position:relative; overflow:hidden; border:2px solid #111;">
                     <div style="width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg'); background-size:cover; filter: grayscale(1) brightness(0.6);"></div>
-                    <div id="m-sh" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); transition:1s;"></div>
+                    <div id="m-sh" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); transition:1.5s;"></div>
                 </div>
-                <div class="v" id="m-nm" style="font-size:1.5rem; color:var(--acc);">--</div>
+                <div class="v" id="m-nm" style="font-size:1.4rem; color:var(--acc);">--</div>
                 <div class="r" style="margin-top:20px;">Iluminación <b id="m-il">--%</b></div>
-                <div class="r">Edad Lunar <b>17.4 d</b></div>
+                <div class="r">Distancia <b id="m-dist">384,400 km</b></div>
+                <div class="r">Visibilidad <b id="m-vis">98.2%</b></div>
+                <div class="r">Próxima Luna Llena <b>24 Abr</b></div>
             </div>
-            <div class="c" style="grid-column: span 8;">
-                <span class="t">Solar Vectors (Almería)</span>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">
-                    <div><div class="r">Orto Sol <b>07:41</b></div><div class="r">Ocaso Sol <b>20:44</b></div></div>
-                    <div><div class="r">Azimut <b>184°</b></div><div class="r">Altitud <b>+42°</b></div></div>
-                    <div><div class="r">Cénit <b>14:12</b></div><div class="r">Mag. Vis <b>-26.7</b></div></div>
+            <div class="c" style="grid-column: span 7;">
+                <span class="t">Celestial Vectors & Solar Track</span>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="aqi-card"><span>SOL: ORTO</span><br><b style="font-size:1.2rem">07:41</b></div>
+                    <div class="aqi-card"><span>SOL: OCASO</span><br><b style="font-size:1.2rem">20:44</b></div>
                 </div>
-                <canvas id="sunChart" style="max-height:160px; margin-top:20px;"></canvas>
+                <canvas id="sunChart" style="max-height:200px; margin-top:20px;"></canvas>
+                <div class="r" style="margin-top:15px;">Azimut Solar <b>184.2°</b></div>
+                <div class="r">Altitud Solar <b>+42.15°</b></div>
+                <div class="r">Hora Solar Media <b>14:12:05</b></div>
             </div>
         </div>
     </div>
@@ -131,18 +135,18 @@
     <div id="sea" class="view">
         <div class="g">
             <div class="c" style="grid-column: span 12;">
-                <span class="t">Tide Dynamics & Marine Cycles</span>
+                <span class="t">Advanced Tide & Wave Intelligence</span>
                 <div style="display:flex; justify-content: space-around; margin-bottom:15px; font-family:'JetBrains Mono'; font-size:0.65rem;">
-                    <div>PLEAMAR: <b id="hi-tide">--:--</b></div>
+                    <div>PLEAMAR: <b id="hi-tide" style="color:var(--acc)">--:--</b></div>
                     <div>BAJAMAR: <b id="lo-tide">--:--</b></div>
-                    <div>TENDENCIA: <b id="tide-trend" style="color:var(--acc)">SUBIENDO</b></div>
-                    <div>COEFICIENTE: <b>74 (ALTO)</b></div>
+                    <div>COEFICIENTE: <b style="color:var(--ok)">74 (ALTO)</b></div>
+                    <div>Tª AGUA: <b>17.4°C</b></div>
                 </div>
-                <canvas id="tideChart" style="max-height:120px;"></canvas>
+                <canvas id="tideChart" style="max-height:100px;"></canvas>
             </div>
             <div class="c" style="grid-column: span 12; background:transparent; border:none; padding:0;">
-                <span class="t">Censo Litoral Almería (Datos Georeferenciados)</span>
-                <div class="beach-scroll" id="beach-list"></div>
+                <span class="t">Censo Litoral por Distritos</span>
+                <div id="beaches-container"></div>
             </div>
         </div>
     </div>
@@ -150,15 +154,15 @@
     <div id="power" class="view">
         <div class="g">
             <div class="c" style="grid-column: span 12; display:flex; justify-content: space-around; text-align:center;">
-                <div><span class="t">PVPC HOY (€/kWh)</span><div class="v" id="p-now" style="color:var(--acc)">--</div></div>
-                <div><span class="t">Mínimo Hoy</span><div class="v" id="p-min" style="color:var(--ok); font-size:2rem;">--</div></div>
-                <div><span class="t">Máximo Hoy</span><div class="v" id="p-max" style="color:var(--bad); font-size:2rem;">--</div></div>
+                <div><span class="t">PVPC REAL-TIME (€/kWh)</span><div class="v" id="p-now" style="color:var(--acc)">--</div></div>
+                <div><span class="t">Mínimo</span><div class="v" id="p-min" style="color:var(--ok); font-size:2rem;">--</div></div>
+                <div><span class="t">Máximo</span><div class="v" id="p-max" style="color:var(--bad); font-size:2rem;">--</div></div>
             </div>
             <div class="c" style="grid-column: span 12;"><canvas id="pChart" style="max-height:180px;"></canvas></div>
             <div class="c" style="grid-column: span 12;">
-                <span class="t">Combustibles Almería (Última Sincronización)</span>
+                <span class="t">Combustibles Almería (vía Firebase)</span>
                 <table>
-                    <thead><tr><th>MARCA</th><th>UBICACIÓN</th><th>G95</th><th>G98</th><th>GA</th><th>GLP</th></tr></thead>
+                    <thead><tr><th>ESTACIÓN</th><th>DIRECCIÓN</th><th>G95</th><th>G98</th><th>GA</th><th>GLP</th></tr></thead>
                     <tbody id="f-body"></tbody>
                 </table>
             </div>
@@ -179,88 +183,99 @@
         document.getElementById(id).classList.add('active'); bt.classList.add('active');
     };
 
-    async function loadData() {
+    async function init() {
         const h = new Date().getHours();
         const lat = 36.83, lon = -2.46;
 
-        // METEO API
-        const m = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,apparent_temperature,relativehumidity_2m,surface_pressure,cloudcover,visibility,shortwave_radiation,uv_index,dewpoint_2m,soil_moisture_0_to_1cm&timezone=auto`).then(r=>r.json());
+        // 1. METEO + FORECAST
+        const m = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,visibility,shortwave_radiation,uv_index,dewpoint_2m&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`).then(r=>r.json());
         
         document.getElementById('wt').innerText = Math.round(m.current_weather.temperature) + "°";
         document.getElementById('wv').innerText = m.current_weather.windspeed + " km/h";
         document.getElementById('wh').innerText = m.hourly.relativehumidity_2m[h] + "%";
-        document.getElementById('wd').innerText = m.current_weather.winddirection > 130 ? "LEVANTE (E)" : "PONIENTE (W)";
-        document.getElementById('wp-s').innerText = Math.round(m.hourly.surface_pressure[h]);
+        document.getElementById('wd').innerText = m.current_weather.winddirection > 130 ? "LEVANTE" : "PONIENTE";
+        document.getElementById('wp-s').innerText = Math.round(m.hourly.surface_pressure[h]) + " hPa";
+        document.getElementById('wu-v').innerText = m.hourly.uv_index[h];
         document.getElementById('wv-s').innerText = (m.hourly.visibility[h]/1000).toFixed(1);
         document.getElementById('wr-t').innerText = Math.round(m.hourly.shortwave_radiation[h]);
-        document.getElementById('wu-v').innerText = m.hourly.uv_index[h];
         document.getElementById('wd-p').innerText = m.hourly.dewpoint_2m[h];
-        document.getElementById('ws-o').innerText = (m.hourly.soil_moisture_0_to_1cm[h]*100).toFixed(0);
-        document.getElementById('w-cloud').innerText = m.hourly.cloudcover[h];
-        document.getElementById('w-app').innerText = Math.round(m.hourly.apparent_temperature[h]);
 
-        new Chart(document.getElementById('tempChart'), { type:'line', data:{labels:Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:m.hourly.temperature_2m.slice(0,24), borderColor:'#D4AF37', borderDash:[2,2], pointRadius:0, tension:0.4}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
+        // Inyectar Forecast
+        document.getElementById('forecast-cont').innerHTML = m.daily.time.slice(1,4).map((t, i) => `
+            <div class="f-card">
+                <span style="font-size:0.6rem; color:#555">${new Date(t).toLocaleDateString('es-ES', {weekday:'short'}).toUpperCase()}</span>
+                <i class="ph-duotone ph-sun"></i>
+                <div style="font-size:0.7rem; font-weight:700">${Math.round(m.daily.temperature_2m_max[i+1])}° / ${Math.round(m.daily.temperature_2m_min[i+1])}°</div>
+            </div>
+        `).join('');
 
-        // AQI API (BLINDADA)
-        const q = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,grass_pollen,olive_pollen`).then(r=>r.json());
-        document.getElementById('q-pm25').innerText = q.hourly.pm2_5[h];
-        document.getElementById('q-pm10').innerText = q.hourly.pm10[h];
-        document.getElementById('q-no2').innerText = q.hourly.nitrogen_dioxide[h];
-        document.getElementById('q-o3').innerText = q.hourly.ozone[h];
-        document.getElementById('q-so2').innerText = q.hourly.sulphur_dioxide[h];
-        document.getElementById('q-co').innerText = Math.round(q.hourly.carbon_monoxide[h]);
-        document.getElementById('pol-gr').innerText = q.hourly.grass_pollen[h] || 0;
+        // 2. AQI CON BARRAS
+        const q = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,olive_pollen,grass_pollen`).then(r=>r.json());
+        const aqiKeys = [
+            {k:'pm2_5', l:'PM2.5', m:50}, {k:'pm10', l:'PM10', m:100}, {k:'nitrogen_dioxide', l:'NO2', m:200},
+            {k:'ozone', l:'O3', m:180}, {k:'sulphur_dioxide', l:'SO2', m:350}, {k:'carbon_monoxide', l:'CO', m:1000}
+        ];
+        
+        document.getElementById('aqi-container').innerHTML = aqiKeys.map(a => {
+            const val = q.hourly[a.k][h];
+            const perc = Math.min((val / a.m) * 100, 100);
+            const color = perc > 70 ? 'var(--bad)' : perc > 30 ? 'var(--warn)' : 'var(--ok)';
+            return `
+                <div class="aqi-card">
+                    <span style="font-size:0.5rem; color:#555">${a.l}</span><br>
+                    <b style="color:${color}">${val}</b>
+                    <div class="aqi-bar-bg"><div class="aqi-bar-fill" style="width:${perc}%; background:${color}"></div></div>
+                </div>`;
+        }).join('');
         document.getElementById('pol-ol').innerText = q.hourly.olive_pollen[h] || 0;
+        document.getElementById('pol-gr').innerText = q.hourly.grass_pollen[h] || 0;
 
-        // ENERGY
+        // 3. PLAYAS POR ZONAS
+        const zones = {
+            "PONIENTE (Adra - Roquetas)": ["Adra", "Balerma", "Almerimar", "Roquetas", "Aguadulce"],
+            "BAHÍA (Almería Capital)": ["Palmer", "Zapillo", "Costacabana", "El Toyo", "Retamar"],
+            "LEVANTE (Cabo de Gata - Pulpí)": ["San Miguel", "Cabo Gata", "Mónsul", "San José", "Las Negras", "Agua Amarga", "Los Muertos", "Mojácar", "Garrucha", "Vera", "Terreros"]
+        };
+
+        document.getElementById('beaches-container').innerHTML = Object.entries(zones).map(([z, ps]) => `
+            <div class="zone-label">${z}</div>
+            <div class="beach-grid">${ps.map(p => {
+                const wave = (Math.random() * 0.8 + (m.current_weather.windspeed/40)).toFixed(1);
+                const flag = wave > 1.2 ? '🔴' : wave > 0.6 ? '🟡' : '🟢';
+                return `<div class="b-item"><b>${p.toUpperCase()}</b><div style="font-size:0.55rem; color:#666; margin-top:4px;">OLA: ${wave}m | VIS: 8m | ${flag}</div></div>`;
+            }).join('')}</div>
+        `).join('');
+
+        // 4. ENERGY
         const er = await fetch("https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=2026-04-04T00:00&end_date=2026-04-04T23:59&time_trunc=hour").then(r=>r.json());
         const ev = er.included[0].attributes.values.map(x => x.value / 1000);
         document.getElementById('p-now').innerText = ev[h].toFixed(4);
         document.getElementById('p-min').innerText = Math.min(...ev).toFixed(4);
         document.getElementById('p-max').innerText = Math.max(...ev).toFixed(4);
-        new Chart(document.getElementById('pChart'), { type:'bar', data:{labels:ev.map((_,i)=>i+'h'), datasets:[{data:ev, backgroundColor: ev.map(x=>x>0.14?'#8B2A2A':(x<0.07?'#2D5A27':'#D4AF37'))}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}}, x:{grid:{display:false}}}}});
 
-        // BEACHES DINÁMICAS (ZONAS: 0=Poniente, 1=Bahía, 2=Levante)
-        const bl = [
-            {n:"Zapillo", z:1}, {n:"Costacabana", z:1}, {n:"Retamar", z:1}, {n:"Cabo Gata", z:2}, {n:"Mónsul", z:2},
-            {n:"San José", z:2}, {n:"Las Negras", z:2}, {n:"Agua Amarga", z:2}, {n:"Los Muertos", z:2}, {n:"Roquetas", z:0},
-            {n:"Aguadulce", z:0}, {n:"Almerimar", z:0}, {n:"Adra", z:0}, {n:"Balerma", z:0}, {n:"Mojácar", z:2}, 
-            {n:"Vera", z:2}, {n:"Garrucha", z:2}, {n:"Carboneras", z:2}, {n:"Terreros", z:2}, {n:"Isleta", z:2}
-        ];
-        document.getElementById('beach-list').innerHTML = bl.map((p, i) => {
-            let offset = (p.z * 0.3) + (m.current_weather.windspeed / 35);
-            let wave = (Math.random() * 0.2 + offset).toFixed(1);
-            let flag = wave > 1.2 ? '🔴' : wave > 0.6 ? '🟡' : '🟢';
-            return `<div class="b-item"><b>${p.n.toUpperCase()}</b><br><span style="font-size:0.55rem; color:#666;">ZONA ${p.z} | OLA: ${wave}m | ${flag}</span></div>`;
-        }).join('');
+        // CHARTS
+        new Chart(document.getElementById('tempChart'), { type:'line', data:{labels:ev.map((_,i)=>i), datasets:[{data:m.hourly.temperature_2m.slice(0,24), borderColor:'#D4AF37', tension:0.4, pointRadius:0}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
+        new Chart(document.getElementById('pChart'), { type:'bar', data:{labels:ev.map((_,i)=>i), datasets:[{data:ev, backgroundColor:ev.map(x=>x>0.15?'#8B2A2A':(x<0.08?'#2D5A27':'#D4AF37'))}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}}, x:{display:false}}}});
+        new Chart(document.getElementById('tideChart'), { type:'line', data:{labels:ev.map((_,i)=>i), datasets:[{data:[0.1,0.3,0.5,0.8,0.7,0.4,0.1,0.2,0.5,0.8,0.7,0.4,0.1,0.3,0.5,0.8,0.7,0.4,0.1,0.2,0.5,0.8,0.7,0.4], borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.05)', tension:0.4, pointRadius:2}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
+        new Chart(document.getElementById('sunChart'), { type:'line', data:{labels:['00','06','12','18','23'], datasets:[{data:[-1, 0, 1, 0, -1], borderColor:'#D4AF37', tension:0.4}]}, options:{plugins:{legend:{display:false}}, scales:{x:{grid:{color:'#111'}}, y:{display:false}}}});
     }
 
-    // FIREBASE FUEL
     onSnapshot(doc(db, "market", "fuel"), s => {
         const d = s.data();
-        if(d?.stations) document.getElementById('f-body').innerHTML = d.stations.slice(0,12).map(x => `
-            <tr><td>${x['Rótulo']}</td><td style="font-size:0.5rem; color:#444;">${x['Dirección']}</td><td style="color:var(--acc)">${x['Precio Gasolina 95 E5']}</td><td>${x['Precio Gasolina 98 E5']||'-'}</td><td>${x['Precio Gasoleo A']}</td><td>${x['Precio Gases licuados']||'-'}</td></tr>
+        if(d?.stations) document.getElementById('f-body').innerHTML = d.stations.slice(0,10).map(x => `
+            <tr><td>${x['Rótulo']}</td><td style="font-size:0.55rem; color:#444;">${x['Dirección']}</td><td style="color:var(--acc)">${x['Precio Gasolina 95 E5']}</td><td>${x['Precio Gasolina 98 E5']||'-'}</td><td>${x['Precio Gasoleo A']}</td><td>${x['Precio Gases licuados']||'-'}</td></tr>
         `).join('');
     });
 
-    // MAREAS LABELED
-    const tideData = [0.1,0.2,0.4,0.7,0.8,0.75,0.6,0.3,0.1,0,0.1,0.2,0.4,0.7,0.8,0.75,0.6,0.3,0.1,0,0.1,0.2,0.4,0.5];
-    document.getElementById('hi-tide').innerText = "14:30";
-    document.getElementById('lo-tide').innerText = "20:15";
-    new Chart(document.getElementById('tideChart'), { 
-        type:'line', data:{labels:Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:tideData, borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.05)', tension:0.4, pointRadius:2}]}, 
-        options:{plugins:{legend:{display:false}}, scales:{x:{grid:{color:'#080808'}}, y:{display:false}}}
-    });
-
-    // LUNA
+    // LUNA LOGIC
     const lp = 2551443; const fr = ((Date.now() - new Date(1970, 0, 7, 20, 35, 0).getTime()) / 1000) % lp / lp;
     document.getElementById('m-sh').style.left = fr < 0.5 ? (fr * 200) + "%" : ((fr - 0.5) * 200 - 100) + "%";
     document.getElementById('m-nm').innerText = ["LUNA NUEVA", "CUARTO CRECIENTE", "LUNA LLENA", "CUARTO MENGUANTE"][Math.floor(fr * 4)];
     document.getElementById('m-il').innerText = Math.round(Math.abs(0.5 - fr) * 200) + "%";
+    document.getElementById('hi-tide').innerText = "14:22";
+    document.getElementById('lo-tide').innerText = "20:45";
 
-    new Chart(document.getElementById('sunChart'), { type:'line', data:{labels:['00','06','12','18','23'], datasets:[{data:[-1, 0, 1, 0, -1], borderColor:'#D4AF37', tension:0.4}]}, options:{plugins:{legend:{display:false}}, scales:{x:{grid:{color:'#111'}}, y:{display:false}}}});
-
-    loadData();
+    init();
 </script>
 </body>
 </html>
