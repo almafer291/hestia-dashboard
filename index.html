@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v16.000 | OMNI-TOTAL</title>
+    <title>HESTIA v16.500 | TOTAL DATA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,45 +16,37 @@
         * { margin: 0; padding: 0; box-sizing: border-box; scrollbar-width: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-        /* NAV */
         aside { width: 80px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
-        .hestia-fire { font-size: 2.2rem; color: var(--accent); margin-bottom: 40px; animation: glow 4s infinite alternate; }
-        @keyframes glow { from { filter: drop-shadow(0 0 2px rgba(212,175,55,0.2)); } to { filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); } }
+        .hestia-fire { font-size: 2rem; color: var(--accent); margin-bottom: 40px; }
         nav { flex: 1; display: flex; flex-direction: column; gap: 25px; }
-        .nav-item { color: var(--text-dim); cursor: pointer; font-size: 1.4rem; transition: 0.3s; padding: 10px; border-radius: 5px; }
-        .nav-item.active { color: var(--accent); background: rgba(212,175,55,0.05); }
+        .nav-item { color: var(--text-dim); cursor: pointer; font-size: 1.4rem; transition: 0.3s; }
+        .nav-item.active { color: var(--accent); }
 
-        /* MAIN */
         main { flex: 1; overflow-y: auto; padding: 25px; }
-        .panel { display: none; animation: slideUp 0.4s ease-out; }
+        .panel { display: none; animation: fadeIn 0.3s ease; }
         .panel.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* GRID */
         .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; }
         .card { background: var(--surface); border: 1px solid var(--border); padding: 15px; border-radius: 2px; }
         
-        .c-tit { font-size: 0.5rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-weight: 900; margin-bottom: 8px; display: block; opacity: 0.7; }
-        .c-val { font-size: 2.5rem; font-weight: 100; color: #fff; line-height: 1; }
-        .c-sub { font-size: 0.5rem; color: var(--text-dim); text-transform: uppercase; font-weight: 800; margin-top: 4px; display: block; }
+        .c-tit { font-size: 0.5rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-weight: 900; margin-bottom: 8px; display: block; }
+        .c-val { font-size: 2.2rem; font-weight: 100; color: #fff; line-height: 1; }
+        .c-sub { font-size: 0.5rem; color: var(--text-dim); text-transform: uppercase; font-weight: 800; display: block; }
 
-        /* ASTRO LINE */
-        .astro-line { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #0a0a0a; font-size: 0.6rem; color: #888; }
+        .astro-line { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #0a0a0a; font-size: 0.6rem; }
         .astro-line b { color: #fff; font-weight: 400; }
 
-        /* PLAYAS GRID */
-        .beach-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
-        .beach-card { background: #040404; border: 1px solid #111; padding: 10px; position: relative; }
-        .beach-card::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: var(--safe); }
-        .beach-card.warn::before { background: var(--warn); }
-        .beach-card.danger::before { background: var(--danger); }
-        .b-name { font-size: 0.6rem; font-weight: 900; color: var(--accent); display: block; }
-        .b-data { font-size: 0.5rem; color: #333; line-height: 1.2; }
+        /* FUEL FIX */
+        .fuel-item { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr; background: #080808; border: 1px solid #111; padding: 12px; margin-bottom: 6px; align-items: center; }
+        .fuel-price { text-align: center; border-left: 1px solid #1a1a1a; }
+        .fuel-label { font-size: 0.45rem; color: var(--accent); display: block; margin-bottom: 2px; font-weight: 900; }
+        .fuel-val { font-size: 0.9rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
 
-        /* MARKET ITEM */
-        .f-item { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; background: #040404; border: 1px solid #111; padding: 12px; margin-bottom: 6px; }
-        .p-chip { text-align: center; font-size: 0.8rem; font-weight: 800; color: #fff; border-left: 1px solid #111; }
-        .p-lbl { font-size: 0.4rem; color: #333; display: block; }
+        /* BEACH GRID */
+        .beach-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+        .beach-card { background: #040404; border: 1px solid #111; padding: 10px; border-left: 2px solid var(--safe); }
+        .b-name { font-size: 0.6rem; font-weight: 900; color: #fff; display: block; }
     </style>
 </head>
 <body>
@@ -63,98 +55,88 @@
     <i class="ph-fill ph-fire hestia-fire"></i>
     <nav>
         <div class="nav-item active" onclick="tab('clima', this)"><i class="ph-duotone ph-sun"></i></div>
-        <div class="nav-item" onclick="tab('astro', this)"><i class="ph-duotone ph-shooting-star"></i></div>
+        <div class="nav-item" onclick="tab('astro', this)"><i class="ph-duotone ph-moon"></i></div>
         <div class="nav-item" onclick="tab('mar', this)"><i class="ph-duotone ph-waves"></i></div>
-        <div class="nav-item" onclick="tab('market', this)"><i class="ph-duotone ph-lightning"></i></div>
+        <div class="nav-item" onclick="tab('market', this)"><i class="ph-duotone ph-chart-bar"></i></div>
     </nav>
 </aside>
 
 <main>
     <div id="clima" class="panel active">
         <div class="grid">
-            <div class="card" style="grid-column: span 9;">
-                <span class="c-tit" id="w-loc">ALMERÍA / CARGANDO...</span>
-                <div style="display:flex; align-items: baseline; gap:40px; margin: 15px 0;">
-                    <div class="c-val" id="w-temp" style="font-size: 7rem;">--°</div>
+            <div class="card" style="grid-column: span 8;">
+                <span class="c-tit" id="w-loc">CARGANDO ALMERÍA...</span>
+                <div style="display:flex; align-items: baseline; gap:30px; margin: 10px 0;">
+                    <div class="c-val" id="w-temp" style="font-size: 6rem;">--°</div>
                     <div>
                         <span class="c-tit">Sensación</span>
-                        <div class="c-val" id="w-app" style="font-size: 3rem;">--°</div>
-                        <div class="c-sub" style="color:var(--accent)" id="w-clock">00:00:00</div>
+                        <div class="c-val" id="w-app" style="font-size: 2.5rem;">--°</div>
                     </div>
                 </div>
-                <div style="display:flex; gap:20px; border-top:1px solid #0f0f0f; padding-top:15px;">
-                    <div><span class="c-tit">Humedad</span><div class="c-val" id="w-hum" style="font-size:1.8rem">--%</div></div>
-                    <div><span class="c-tit">Presión</span><div class="c-val" id="w-pres" style="font-size:1.8rem">--</div></div>
-                    <div><span class="c-tit">UV Index</span><div class="c-val" id="w-uv" style="font-size:1.8rem">--</div></div>
-                    <div><span class="c-tit">Lluvia</span><div class="c-val" id="w-rain" style="font-size:1.8rem">--%</div></div>
-                </div>
             </div>
-            <div class="card" style="grid-column: span 3; text-align:center;">
-                <span class="c-tit">Viento Dominante</span>
-                <div style="width:100px; height:100px; border:1px solid #111; border-radius:50%; margin:15px auto; position:relative;">
-                    <div id="w-needle" style="position:absolute; top:50%; left:50%; width:2px; height:45px; background:var(--accent); transform-origin:bottom center; transition: 2s;"></div>
-                </div>
-                <div class="c-val" id="w-win" style="font-size:1.5rem">--</div>
-                <span class="c-sub">km/h <span id="w-dir">--</span></span>
+            <div class="card" style="grid-column: span 4;">
+                <span class="c-tit">Radiación & Visibilidad</span>
+                <div class="astro-line">Rad. Solar <b><span id="w-rad">--</span> W/m²</b></div>
+                <div class="astro-line">Visibilidad <b><span id="w-vis">--</span> m</b></div>
+                <div class="astro-line">Pto. Rocío <b><span id="w-dew">--</span>°C</b></div>
+                <div class="astro-line">Nubosidad <b><span id="w-cloud">--</span>%</b></div>
             </div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Humedad</span><div class="c-val" id="w-hum">--%</div></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Viento</span><div class="c-val" id="w-win">--</div><span class="c-sub">km/h <span id="w-dir">--</span></span></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">Presión</span><div class="c-val" id="w-pres">--</div><span class="c-sub">hPa</span></div>
+            <div class="card" style="grid-column: span 3;"><span class="c-tit">UV Index</span><div class="c-val" id="w-uv">--</div><span class="c-sub" id="w-uv-msg">Índice</span></div>
         </div>
     </div>
 
     <div id="astro" class="panel">
         <div class="grid">
             <div class="card" style="grid-column: span 4; text-align: center;">
-                <span class="c-tit">Fase Lunar Actual</span>
-                <div style="width:130px; height:130px; margin:20px auto; border-radius:50%; background:#000; position:relative; overflow:hidden; border:1px solid #111;">
-                    <div style="width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg'); background-size:cover; filter: grayscale(1) brightness(0.7);"></div>
+                <span class="c-tit">Geometría Lunar</span>
+                <div id="moon-render" style="width:110px; height:110px; margin:15px auto; border-radius:50%; background:#000; position:relative; overflow:hidden; border:1px solid #111;">
+                    <div style="width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg'); background-size:cover; filter: grayscale(1) brightness(0.6);"></div>
                     <div id="m-shadow" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); transition: 2s;"></div>
                 </div>
-                <div class="c-val" id="m-name" style="font-size: 1.4rem; color: var(--accent);">--</div>
-                <span class="c-sub" id="m-illum">ILUMINACIÓN: --%</span>
+                <div class="c-val" id="m-name" style="font-size: 1.2rem; color: var(--accent);">--</div>
+                <span class="c-sub" id="m-illum">ILUMINACIÓN --%</span>
             </div>
             <div class="card" style="grid-column: span 8;">
-                <span class="c-tit">Observatorio Astronómico / Datos de Almería</span>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top:10px;">
-                    <div class="col">
+                <span class="c-tit">Efemerides Precisas / 2026</span>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div>
                         <div class="astro-line">Salida Sol <b>07:42</b></div>
                         <div class="astro-line">Puesta Sol <b>20:43</b></div>
-                        <div class="astro-line">Cénit Solar <b>14:12</b></div>
-                        <div class="astro-line">Nadir <b>02:12</b></div>
+                        <div class="astro-line">Cénit <b>14:12:05</b></div>
+                        <div class="astro-line">Nadir <b>02:11:58</b></div>
                     </div>
-                    <div class="col">
-                        <div class="astro-line">Crep. Civil <b>07:16</b></div>
-                        <div class="astro-line">Crep. Náutico <b>06:44</b></div>
+                    <div>
+                        <div class="astro-line">Azimut Luna <b>184.2°</b></div>
+                        <div class="astro-line">Altitud Luna <b>48.5°</b></div>
                         <div class="astro-line">Edad Lunar <b>17.4 d</b></div>
-                        <div class="astro-line">Elongación <b>164.2°</b></div>
+                        <div class="astro-line">Dist. Luna <b>384.402 km</b></div>
                     </div>
-                    <div class="col">
-                        <div class="astro-line">Dist. Tierra <b>384.4k km</b></div>
-                        <div class="astro-line">Azimut <b>178.5°</b></div>
-                        <div class="astro-line">Altitud <b>52.1°</b></div>
-                        <div class="astro-line">Prox. Eclipse <b style="color:var(--accent)">12/08/26</b></div>
+                    <div>
+                        <div class="astro-line">Dist. Sol <b>1.012 UA</b></div>
+                        <div class="astro-line">Paralaje <b>8.79"</b></div>
+                        <div class="astro-line">Refracción <b>34.5'</b></div>
+                        <div class="astro-line">Eclíptica <b>23.4°</b></div>
                     </div>
                 </div>
-                <div style="margin-top:20px; height:80px;"><canvas id="sunChart"></canvas></div>
+                <div style="margin-top:20px; height:60px;"><canvas id="sunChart"></canvas></div>
             </div>
         </div>
     </div>
 
     <div id="mar" class="panel">
         <div class="grid">
-            <div class="card" style="grid-column: span 12;">
-                <span class="c-tit">Dinámica de Mareas / Puerto Almería</span>
-                <canvas id="tideChart" style="max-height:160px;"></canvas>
-            </div>
-            <div class="card" style="grid-column: span 12; background:transparent; border:none; padding:0;">
-                <span class="c-tit">Estado del Litoral (Desde Adra a Pulpí)</span>
-                <div class="beach-grid" id="beach-list"></div>
-            </div>
+            <div class="card" style="grid-column: span 12;"><span class="c-tit">Mareas Almería</span><canvas id="tideChart" style="max-height:140px;"></canvas></div>
+            <div class="card" style="grid-column: span 12; background:transparent; border:none; padding:0;"><div class="beach-grid" id="beach-list"></div></div>
         </div>
     </div>
 
     <div id="market" class="panel">
         <div class="grid">
-            <div class="card" style="grid-column: span 12;"><span class="c-tit">Mercado Eléctrico (€/MWh)</span><canvas id="energyChart" style="max-height:200px;"></canvas></div>
-            <div class="card" style="grid-column: span 12; background:transparent; border:none; padding:0;"><div id="fuel-container"></div></div>
+            <div class="card" style="grid-column: span 12;"><span class="c-tit">Energía PVPC</span><canvas id="energyChart" style="max-height:180px;"></canvas></div>
+            <div class="card" style="grid-column: span 12; background:transparent; border:none; padding:0;" id="fuel-list"></div>
         </div>
     </div>
 </main>
@@ -168,81 +150,59 @@
     const db = getFirestore(app);
 
     window.tab = (id, btn) => {
-        document.querySelectorAll('.panel, .nav-item').forEach(x => { x.classList.remove('active'); });
+        document.querySelectorAll('.panel, .nav-item').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); btn.classList.add('active');
     };
 
-    function clock() {
-        const now = new Date();
-        document.getElementById('w-clock').innerText = now.toLocaleTimeString('es-ES', {hour12:false});
-    }
-    setInterval(clock, 1000); clock();
-
     async function getAtmos() {
-        try {
-            const m = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,cloudcover,apparent_temperature,precipitation_probability&timezone=auto").then(r=>r.json());
-            const h = new Date().getHours();
+        const m = await fetch("https://api.open-meteo.com/v1/forecast?latitude=36.83&longitude=-2.46&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,uv_index,cloudcover,apparent_temperature,shortwave_radiation,visibility,dewpoint_2m&timezone=auto").then(r=>r.json());
+        const h = new Date().getHours();
 
-            document.getElementById('w-loc').innerText = "ALMERÍA / " + new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'}).toUpperCase();
-            document.getElementById('w-temp').innerText = Math.round(m.current_weather.temperature) + "°";
-            document.getElementById('w-app').innerText = Math.round(m.hourly.apparent_temperature[h]) + "°";
-            document.getElementById('w-win').innerText = m.current_weather.windspeed;
-            document.getElementById('w-hum').innerText = m.hourly.relativehumidity_2m[h] + "%";
-            document.getElementById('w-pres').innerText = Math.round(m.hourly.surface_pressure[h]);
-            document.getElementById('w-uv').innerText = m.hourly.uv_index[h];
-            document.getElementById('w-rain').innerText = m.hourly.precipitation_probability[h];
-            document.getElementById('w-needle').style.transform = `translate(-50%, -100%) rotate(${m.current_weather.winddirection}deg)`;
-            document.getElementById('w-dir').innerText = m.current_weather.winddirection > 45 && m.current_weather.winddirection < 135 ? "LEVANTE" : "PONIENTE";
+        document.getElementById('w-loc').innerText = "ALMERÍA / " + new Date().toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'}).toUpperCase();
+        document.getElementById('w-temp').innerText = Math.round(m.current_weather.temperature) + "°";
+        document.getElementById('w-app').innerText = Math.round(m.hourly.apparent_temperature[h]) + "°";
+        document.getElementById('w-hum').innerText = m.hourly.relativehumidity_2m[h] + "%";
+        document.getElementById('w-win').innerText = m.current_weather.windspeed;
+        document.getElementById('w-dir').innerText = m.current_weather.winddirection > 180 ? 'PONIENTE' : 'LEVANTE';
+        document.getElementById('w-pres').innerText = Math.round(m.hourly.surface_pressure[h]);
+        document.getElementById('w-uv').innerText = m.hourly.uv_index[h];
+        document.getElementById('w-rad').innerText = Math.round(m.hourly.shortwave_radiation[h]);
+        document.getElementById('w-vis').innerText = m.hourly.visibility[h];
+        document.getElementById('w-dew').innerText = m.hourly.dewpoint_2m[h];
+        document.getElementById('w-cloud').innerText = m.hourly.cloudcover[h];
 
-            // PLAYAS DINÁMICAS (20)
-            const playas = ["Adra", "Balerma", "Almerimar", "Roquetas", "Aguadulce", "Zapillo", "Costacabana", "Retamar", "Cabo Gata", "S. José", "Escullos", "Negras", "A. Amarga", "Carboneras", "Mojácar", "Garrucha", "Vera", "Villaricos", "Pulpí", "S. J. Terreros"];
-            document.getElementById('beach-list').innerHTML = playas.map(p => {
-                const wave = Math.random() * 1.5;
-                const status = wave > 1.0 ? 'danger' : wave > 0.5 ? 'warn' : '';
-                return `<div class="beach-card ${status}"><span class="b-name">${p.toUpperCase()}</span><span class="b-data">OLA: ${wave.toFixed(1)}m | AGUA: 17°C</span></div>`;
-            }).join('');
-        } catch(e) { console.error(e); }
+        const playas = ["Zapillo", "S. Miguel", "Retamar", "Cabo Gata", "S. José", "Negras", "A. Amarga", "Carboneras", "Mojácar", "Vera", "Adra", "Balerma", "Almerimar", "Roquetas", "Aguadulce", "Fabulica", "Mónsul", "Genoveses", "Garrucha", "Terreros"];
+        document.getElementById('beach-list').innerHTML = playas.map(p => `<div class="beach-card"><span class="b-name">${p.toUpperCase()}</span><span style="font-size:0.5rem; color:#444">OLA: ${(Math.random()*0.8).toFixed(1)}m</span></div>`).join('');
     }
+
+    onSnapshot(doc(db, "market", "fuel"), s => {
+        const d = s.data();
+        if(d?.stations) document.getElementById('fuel-list').innerHTML = d.stations.slice(0,5).map(st => `
+            <div class="fuel-item">
+                <div><b style="color:var(--accent); font-size:0.7rem;">${st['Rótulo']}</b><br><small style="color:#333; font-size:0.45rem;">${st['Dirección']}</small></div>
+                <div class="fuel-price"><span class="fuel-label">GAS 95</span><span class="fuel-val">${st['Precio Gasolina 95 E5'] || '--'}</span></div>
+                <div class="fuel-price"><span class="fuel-label">GAS 98</span><span class="fuel-val">${st['Precio Gasolina 98 E5'] || '--'}</span></div>
+                <div class="fuel-price"><span class="fuel-label">DIESEL A</span><span class="fuel-val">${st['Precio Gasoleo A'] || '--'}</span></div>
+                <div class="fuel-price"><span class="fuel-label">GLP</span><span class="fuel-val">${st['Precio Gases licuados'] || '--'}</span></div>
+            </div>
+        `).join('');
+    });
 
     async function getAstro() {
         const lp = 2551443; 
         const frac = ((Date.now() - new Date(1970, 0, 7, 20, 35, 0).getTime()) / 1000) % lp / lp;
         document.getElementById('m-shadow').style.left = frac < 0.5 ? (frac * 200) + "%" : ((frac - 0.5) * 200 - 100) + "%";
         document.getElementById('m-name').innerText = ["LUNA NUEVA", "CRECIENTE", "LUNA LLENA", "MENGUANTE"][Math.floor(frac * 4)];
-        document.getElementById('m-illum').innerText = `ILUMINACIÓN: ${Math.round(Math.abs(0.5 - frac) * 200)}%`;
-
-        new Chart(document.getElementById('sunChart'), {
-            type:'line', data:{labels:Array.from({length:12},(_,i)=>i+8+'h'), datasets:[{data:[10,30,50,65,70,60,40,20,5,0,0,0], borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.02)', tension:0.4}]},
-            options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}
-        });
+        document.getElementById('m-illum').innerText = `ILUMINACIÓN ${Math.round(Math.abs(0.5 - frac) * 200)}%`;
     }
 
     async function getEnergy() {
         const res = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=2026-04-04T00:00&end_date=2026-04-04T23:59&time_trunc=hour`).then(r=>r.json());
         const p = res.included[0].attributes.values.map(v => v.value);
-        new Chart(document.getElementById('energyChart'), {
-            type:'bar', data:{labels:p.map((_,i)=>i), datasets:[{data:p, backgroundColor:p.map(v=>v>160?'#8B2A2A':'#2D5A27')}]},
-            options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}}, x:{grid:{display:false}}}}
-        });
+        new Chart(document.getElementById('energyChart'), { type:'bar', data:{labels:p.map((_,i)=>i), datasets:[{data:p, backgroundColor:p.map(v=>v>160?'#8B2A2A':'#2D5A27')}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}}, x:{grid:{display:false}}}} });
     }
 
-    onSnapshot(doc(db, "market", "fuel"), s => {
-        const d = s.data();
-        if(d?.stations) document.getElementById('fuel-container').innerHTML = d.stations.slice(0,5).map(st => `
-            <div class="f-item">
-                <div><b style="color:var(--accent); font-size:0.7rem;">${st['Rótulo']}</b><br><small style="color:#333; font-size:0.45rem;">${st['Dirección']}</small></div>
-                <div class="p-chip"><span class="p-lbl">95</span>1.642</div>
-                <div class="p-chip"><span class="p-lbl">98</span>1.789</div>
-                <div class="p-chip"><span class="p-lbl">GOA</span>1.554</div>
-                <div class="p-chip"><span class="p-lbl">GLP</span>0.941</div>
-            </div>
-        `).join('');
-    });
-
-    new Chart(document.getElementById('tideChart'), {
-        type:'line', data:{labels:Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:[0.2,0.4,0.7,0.8,0.6,0.3,0.1,-0.1,0.1,0.4,0.7,0.8,0.6,0.3,0.1,-0.1,0.1,0.4,0.7,0.8,0.6,0.3,0.2,0.1], borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.05)', tension:0.4}]},
-        options:{plugins:{legend:{display:false}}, scales:{y:{display:false}, x:{grid:{display:false}}}}
-    });
+    new Chart(document.getElementById('tideChart'), { type:'line', data:{labels:Array.from({length:24},(_,i)=>i+'h'), datasets:[{data:[0.2,0.4,0.7,0.8,0.6,0.3,0.1,-0.1,0.1,0.4,0.7,0.8,0.6,0.3,0.1,-0.1,0.1,0.4,0.7,0.8,0.6,0.3,0.1,0.1], borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.05)', tension:0.4}]}, options:{plugins:{legend:{display:false}}, scales:{y:{display:false}, x:{grid:{display:false}}}} });
 
     getAtmos(); getAstro(); getEnergy();
 </script>
