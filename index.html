@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v35.0 | TOTAL RESTORATION</title>
+    <title>HESTIA v37.0 | REAL-TIME CORE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,100 +12,89 @@
             --bg: #000; --surf: #050505; --acc: #D4AF37; 
             --bor: #121212; --txt: #FFF; --dim: #555;
             --ok: #2D5A27; --warn: #D4AF37; --bad: #8B2A2A;
+            --fire: #FF4500;
         }
-        * { margin:0; padding:0; box-sizing:border-box; outline: none; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-        /* SIDEBAR & LLAMA PULSATING */
+        /* SIDEBAR */
         aside { width: 75px; border-right: 1px solid var(--bor); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #000; z-index: 100; }
-        .llama-trigger { 
-            font-size: 2.2rem; 
-            margin-bottom: 45px; 
-            cursor: pointer;
-            animation: llamaPulse 2s infinite ease-in-out;
-            display: inline-block;
-            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.3));
+        .llama-fire { 
+            font-size: 2.2rem; margin-bottom: 40px; cursor: pointer;
+            color: var(--fire);
+            animation: firePulse 1.2s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 8px var(--fire));
         }
-        @keyframes llamaPulse {
-            0% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 2px var(--acc)); }
-            50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px var(--acc)); }
-            100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 2px var(--acc)); }
+        @keyframes firePulse {
+            0% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 5px var(--fire)); }
+            100% { transform: scale(1.15); filter: brightness(1.6) drop-shadow(0 0 22px var(--fire)); }
         }
 
-        nav { display: flex; flex-direction: column; gap: 30px; }
-        .nav-bt { color: var(--dim); cursor: pointer; font-size: 1.7rem; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .nav-bt:hover { color: #fff; }
-        .nav-bt.active { color: var(--acc); transform: translateX(3px); }
+        nav { display: flex; flex-direction: column; gap: 28px; }
+        .nav-bt { color: var(--dim); cursor: pointer; font-size: 1.6rem; transition: 0.3s; }
+        .nav-bt.active { color: var(--acc); transform: scale(1.1); }
 
-        /* MAIN CONTENT */
-        main { flex: 1; overflow-y: auto; padding: 25px; background: radial-gradient(circle at top right, #080808 0%, #000 100%); }
+        /* MAIN */
+        main { flex: 1; overflow-y: auto; padding: 20px; background: #000; }
         .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.8s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { display: block; animation: viewIn 0.4s ease-out; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GRID SYSTEM */
-        .g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
-        .c { background: var(--surf); border: 1px solid var(--bor); padding: 20px; position: relative; overflow: hidden; }
-        .c::after { content: ''; position: absolute; top:0; left:0; width:100%; height:1px; background: linear-gradient(90deg, transparent, var(--bor), transparent); }
-
-        /* TEXT STYLES */
-        .t { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--acc); letter-spacing: 3px; text-transform: uppercase; border-bottom: 1px solid #111; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; }
-        .v { font-size: 4.2rem; font-weight: 100; color: #fff; line-height: 0.9; letter-spacing: -4px; font-family: 'Inter'; }
-        .s { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; margin-top: 8px; display: block; font-weight: 800; letter-spacing: 1px; }
+        .g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+        .c { background: var(--surf); border: 1px solid var(--bor); padding: 18px; position: relative; }
+        .t { font-family: 'JetBrains Mono'; font-size: 0.55rem; color: var(--acc); letter-spacing: 3px; text-transform: uppercase; border-bottom: 1px solid #111; padding-bottom: 8px; margin-bottom: 15px; display: block; }
         
-        .r { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 0.68rem; padding: 10px 0; border-bottom: 1px solid #0d0d0d; color: #999; }
-        .r b { color: #eee; font-weight: 400; }
-        .r:last-child { border: none; }
+        .v { font-size: 3.8rem; font-weight: 100; color: #fff; line-height: 1; letter-spacing: -3px; }
+        .s { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; margin-top: 5px; display: block; font-weight: 800; }
+        
+        .r { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 0.65rem; padding: 7px 0; border-bottom: 1px solid #0d0d0d; color: #888; }
+        .r b { color: #fff; font-weight: 400; }
 
-        /* BEACH CARDS */
-        .zone-label { grid-column: span 12; font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--acc); background: #0a0a0a; padding: 12px; border-left: 3px solid var(--acc); margin-top: 20px; display: flex; justify-content: space-between; }
-        .beach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; }
-        .b-item { background: #030303; border: 1px solid #0d0d0d; padding: 15px; transition: 0.3s; }
-        .b-item:hover { border-color: #222; background: #050505; }
-        .b-stats { font-size: 0.6rem; color: #666; margin-top: 8px; font-family: 'JetBrains Mono'; display: flex; gap: 10px; }
+        /* TABLAS */
+        .scroll-box { max-height: 450px; overflow-y: auto; border: 1px solid #111; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono'; font-size: 0.6rem; }
+        th { text-align: left; color: var(--acc); padding: 10px; border-bottom: 1px solid var(--bor); position: sticky; top: 0; background: #050505; }
+        td { padding: 10px; border-bottom: 1px solid #080808; color: #ccc; }
+        .price-up { color: var(--bad); }
+        .price-down { color: var(--ok); }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: var(--acc); }
+        .tag-live { font-size: 0.5rem; background: var(--fire); color: #fff; padding: 2px 4px; border-radius: 2px; vertical-align: middle; margin-left: 10px; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="llama-trigger">🦙</div>
+    <div class="llama-fire"><i class="ph-fill ph-fire"></i></div>
     <nav>
         <div class="nav-bt active" onclick="sh('meteo', this)"><i class="ph-duotone ph-broadcast"></i></div>
         <div class="nav-bt" onclick="sh('sea', this)"><i class="ph-duotone ph-waves"></i></div>
-        <div class="nav-bt" onclick="sh('astro', this)"><i class="ph-duotone ph-moon-stars"></i></div>
+        <div class="nav-bt" onclick="sh('astro', this)"><i class="ph-duotone ph-moon"></i></div>
+        <div class="nav-bt" onclick="sh('power', this)"><i class="ph-duotone ph-lightning"></i></div>
     </nav>
 </aside>
 
 <main>
     <div id="meteo" class="view active">
         <div class="g">
-            <div class="c" style="grid-column: span 8;">
-                <span class="t">Atmospheric Intelligence Node <span>LIVE</span></span>
-                <div style="display:flex; justify-content: space-between; align-items: flex-end; margin: 20px 0 40px 0;">
-                    <div><div class="v" id="temp">--°</div><span class="s">Temperatura Exterior</span></div>
-                    <div style="text-align:center"><div class="v" id="wind" style="font-size:2.5rem">-- km/h</div><span class="s" id="wind_dir">Sincronizando...</span></div>
-                    <div style="text-align:right"><div class="v" id="hum" style="font-size:2.5rem">--%</div><span class="s">Humedad</span></div>
+            <div class="c" style="grid-column: span 9;">
+                <span class="t">Global Atmospheric Node | Almería <span class="tag-live">LIVE</span></span>
+                <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+                    <div><div class="v" id="wt">--°</div><span class="s">Temperatura</span></div>
+                    <div style="text-align:center"><div class="v" id="wv" style="font-size:2.4rem">-- km/h</div><span class="s" id="wd">Sincronizando...</span></div>
+                    <div style="text-align:right"><div class="v" id="wh" style="font-size:2.4rem">--%</div><span class="s">Humedad</span></div>
                 </div>
-                
-                <span class="t">Air Quality Index & Pollutants</span>
-                <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px;" id="aqi_container">
-                    </div>
+                <span class="t">Air Quality Intelligence</span>
+                <div id="aqi_cont" style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px;"></div>
             </div>
-
-            <div class="c" style="grid-column: span 4;">
-                <span class="t">Thermodynamic Analysis</span>
-                <div class="r">Sensación Térmica <b id="app_temp">--</b></div>
-                <div class="r">Presión Atmosférica <b id="pres">--</b></div>
-                <div class="r">Visibilidad <b id="vis">--</b></div>
-                <div class="r">Punto de Rocío <b id="dew">--</b></div>
-                <div class="r">Nubosidad Total <b id="clouds">--</b></div>
-                <div class="r">Radiación Solar <b id="rad">--</b></div>
-                <div class="r">Índice UV Máximo <b id="uv" style="color:var(--acc)">--</b></div>
-                <div class="r">Isoterma 0°C <b id="iso">--</b></div>
+            <div class="c" style="grid-column: span 3;">
+                <span class="t">Thermodynamics</span>
+                <div class="r">Sensación <b id="w_app">--</b></div>
+                <div class="r">Presión <b id="w_pres">--</b></div>
+                <div class="r">Visibilidad <b id="w_vis">--</b></div>
+                <div class="r">Isoterma 0° <b id="w_iso">--</b></div>
+                <div class="r">Nubosidad <b id="w_clouds">--</b></div>
+                <div class="r">UV Máx <b id="w_uv" style="color:var(--acc)">--</b></div>
                 <canvas id="tempChart" style="max-height:100px; margin-top:20px;"></canvas>
             </div>
         </div>
@@ -114,12 +103,11 @@
     <div id="sea" class="view">
         <div class="g">
             <div class="c" style="grid-column: span 12;">
-                <span class="t">Global Marine Dynamics | Almería Coast</span>
-                <div style="display:flex; justify-content: space-around; margin-bottom: 20px; font-family: 'JetBrains Mono'; font-size: 0.7rem;">
-                    <div>ALTURA OLA: <b id="m_wave_h" style="color:var(--acc)">-- m</b></div>
-                    <div>PERIODO: <b id="m_wave_p">-- s</b></div>
-                    <div>TEMP. AGUA: <b style="color:var(--acc)">16.4°C</b></div>
-                    <div>ESTADO: <b id="m_status">ANALIZANDO</b></div>
+                <span class="t">Marine Dynamics | Coastal Sensors <span class="tag-live">LIVE</span></span>
+                <div style="display:flex; justify-content: space-around; margin-bottom: 15px; font-family: 'JetBrains Mono';">
+                    <div>ALTURA OLA: <b id="sea_h" style="color:var(--acc)">-- m</b></div>
+                    <div>PERIODO: <b id="sea_p">-- s</b></div>
+                    <div>DIRECCIÓN: <b id="sea_d">--</b></div>
                 </div>
                 <div id="beaches_master"></div>
             </div>
@@ -129,33 +117,51 @@
     <div id="astro" class="view">
         <div class="g">
             <div class="c" style="grid-column: span 5; text-align: center;">
-                <span class="t">Lunar Core Analysis</span>
-                <div style="width:180px; height:180px; margin:30px auto; border-radius:50%; background:#080808; position:relative; overflow:hidden; border:1px solid #111; box-shadow: 0 0 40px rgba(255,255,255,0.02);">
-                    <div id="moon_visual" style="width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg'); background-size:cover; filter: grayscale(1) brightness(0.7);"></div>
-                    <div id="moon_shadow" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); transition: 2s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                <span class="t">Lunar Satellite Track</span>
+                <div style="width:160px; height:160px; margin:20px auto; border-radius:50%; background:#080808; position:relative; overflow:hidden; border:1px solid #111;">
+                    <div style="width:100%; height:100%; background:url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg'); background-size:cover; filter: grayscale(1) brightness(0.6);"></div>
+                    <div id="m_shadow" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.94); transition:2s;"></div>
                 </div>
-                <div class="v" id="m_phase_name" style="font-size:1.6rem; color:var(--acc); letter-spacing:2px;">--</div>
-                <div class="s" id="m_illum">ILUMINACIÓN: --%</div>
-                <div style="margin-top:25px;">
-                    <div class="r">Salida Luna <b id="m_rise">--:--</b></div>
-                    <div class="r">Puesta Luna <b id="m_set">--:--</b></div>
-                    <div class="r">Edad Lunar <b id="m_age">-- días</b></div>
-                </div>
+                <div class="v" id="m_name" style="font-size:1.4rem; color:var(--acc);">--</div>
+                <div class="r" style="margin-top:20px;">Iluminación <b id="m_il">--%</b></div>
+                <div class="r">Edad Lunar <b id="m_age">-- días</b></div>
             </div>
             <div class="c" style="grid-column: span 7;">
-                <span class="t">Solar Track & Deep Space</span>
-                <canvas id="sunChart" style="max-height:180px; margin-bottom:20px;"></canvas>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <span class="t">Solar Cycle & Celestial Positioning</span>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:15px;">
                     <div>
-                        <div class="r">Amanecer <b id="s_rise" style="color:var(--acc)">--:--</b></div>
-                        <div class="r">Zenit Solar <b id="s_noon">--:--</b></div>
+                        <div class="r">Amanecer <b id="s_rise">--:--</b></div>
                         <div class="r">Atardecer <b id="s_set" style="color:var(--warn)">--:--</b></div>
                     </div>
                     <div>
-                        <div class="r">Duración Día <b id="s_dur">-- h</b></div>
-                        <div class="r">Día Juliano <b id="s_julian">--</b></div>
-                        <div class="r">Refracción Atm. <b>Estándar</b></div>
+                        <div class="r">Zenit <b id="s_noon">--:--</b></div>
+                        <div class="r">Día Juliano <b id="s_jul">--</b></div>
                     </div>
+                </div>
+                <canvas id="sunChart" style="max-height:180px; margin-top:20px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="power" class="view">
+        <div class="g">
+            <div class="c" style="grid-column: span 4;">
+                <span class="t">PVPC Luz Hoy (€/kWh)</span>
+                <div class="v" id="p_now" style="color:var(--acc)">--</div>
+                <div class="r" style="margin-top:15px;">Mínimo <b id="p_min" style="color:var(--ok)">--</b></div>
+                <div class="r">Máximo <b id="p_max" style="color:var(--bad)">--</b></div>
+            </div>
+            <div class="c" style="grid-column: span 8;">
+                <span class="t">Precios Reales Carburantes Almería <span class="tag-live">LIVE MITYC</span></span>
+                <div class="scroll-box">
+                    <table>
+                        <thead>
+                            <tr><th>RÓTULO</th><th>MUNICIPIO</th><th>G95</th><th>GA</th><th>G+</th></tr>
+                        </thead>
+                        <tbody id="fuel_body">
+                            <tr><td colspan="5" style="text-align:center; padding:40px;">Conectando con Geoportal Gasolineras...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -171,124 +177,84 @@
         bt.classList.add('active');
     }
 
-    const getWindDir = (d) => {
-        const sectors = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
-        return sectors[Math.round(d / 45) % 8];
-    };
+    const getDir = (d) => ["N","NE","E","SE","S","SO","O","NO"][Math.round(d/45)%8];
 
     async function init() {
-        try {
-            // 1. CLIMA & ASTRO (Open-Meteo)
-            const wR = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,shortwave_radiation&hourly=temperature_2m,freezinglevel_height,dewpoint_2m&daily=sunrise,sunset,uv_index_max,daylight_duration&timezone=auto`);
-            const w = await wR.json();
-            const h = new Date().getHours();
-
-            document.getElementById('temp').innerText = Math.round(w.current.temperature_2m) + "°";
-            document.getElementById('hum').innerText = w.current.relative_humidity_2m + "%";
-            document.getElementById('wind').innerText = Math.round(w.current.wind_speed_10m) + " km/h";
-            document.getElementById('wind_dir').innerText = "RUMBO " + getWindDir(w.current.wind_direction_10m);
-            
-            document.getElementById('app_temp').innerText = w.current.apparent_temperature + "°C";
-            document.getElementById('pres').innerText = w.current.surface_pressure + " hPa";
-            document.getElementById('vis').innerText = (w.current.visibility / 1000).toFixed(1) + " km";
-            document.getElementById('dew').innerText = w.hourly.dewpoint_2m[h] + "°C";
-            document.getElementById('clouds').innerText = w.current.cloud_cover + "%";
-            document.getElementById('rad').innerText = Math.round(w.current.shortwave_radiation) + " W/m²";
-            document.getElementById('uv').innerText = w.daily.uv_index_max[0];
-            document.getElementById('iso').innerText = Math.round(w.hourly.freezinglevel_height[h]) + " m";
-
-            // 2. CALIDAD AIRE
-            const aR = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=european_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone`);
-            const a = await aR.json();
-            const pols = [
-                {l:'AQI', v:a.current.european_aqi, m:100}, {l:'PM2.5', v:a.current.pm2_5, m:50},
-                {l:'PM10', v:a.current.pm10, m:100}, {l:'NO2', v:a.current.nitrogen_dioxide, m:200},
-                {l:'O3', v:a.current.ozone, m:180}, {l:'CO', v:a.current.carbon_monoxide, m:1000}
-            ];
-            document.getElementById('aqi_container').innerHTML = pols.map(p => {
-                const perc = Math.min((p.v/p.m)*100, 100);
-                return `<div style="background:#080808; padding:12px; border:1px solid #111; text-align:center;">
-                    <span style="font-size:0.5rem; color:#555">${p.l}</span><br>
-                    <b style="color:var(--acc); font-family:'JetBrains Mono'">${Math.round(p.v)}</b>
-                    <div style="height:2px; background:#111; margin-top:8px;"><div style="width:${perc}%; height:100%; background:var(--acc)"></div></div>
-                </div>`;
-            }).join('');
-
-            // 3. MARINE DATA
-            const mR = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_period,wave_direction`);
-            const m = await mR.json();
-            const wh = m.hourly.wave_height[h] || 0.4;
-            const wp = m.hourly.wave_period[h] || 4.2;
-
-            document.getElementById('m_wave_h').innerText = wh.toFixed(1) + " m";
-            document.getElementById('m_wave_p').innerText = wp.toFixed(1) + " s";
-            document.getElementById('m_status').innerText = wh > 1 ? "AVISO: MODERADO" : "OPERATIVO";
-
-            renderBeaches(wh, wp, w.current.wind_direction_10m);
-
-            // 4. ASTRO DATA
-            document.getElementById('s_rise').innerText = w.daily.sunrise[0].split('T')[1];
-            document.getElementById('s_set').innerText = w.daily.sunset[0].split('T')[1];
-            document.getElementById('s_dur').innerText = (w.daily.daylight_duration[0]/3600).toFixed(1);
-            document.getElementById('s_julian').innerText = (Date.now() / 86400000 + 2440587.5).toFixed(2);
-
-            updateMoon();
-
-            // CHART
-            new Chart(document.getElementById('tempChart'), {
-                type: 'line',
-                data: { labels: Array(24).fill(''), datasets: [{ data: w.hourly.temperature_2m.slice(0,24), borderColor: '#D4AF37', tension: 0.4, pointRadius: 0 }] },
-                options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
-            });
-
-        } catch (err) {
-            console.log("Error de sincronización:", err);
-        }
-    }
-
-    function renderBeaches(wh, wp, wd) {
-        const zones = {
-            "PONIENTE (ADRA - ROQUETAS)": ["Adra", "Balerma", "Almerimar", "Playa Serena", "Aguadulce"],
-            "BAHÍA (CAPITAL)": ["El Palmer", "Las Olas", "Zapillo", "Costacabana", "Retamar"],
-            "LEVANTE (CABO - MOJÁCAR)": ["Cabo de Gata", "Mónsul", "San José", "Las Negras", "Mojácar", "Garrucha"]
-        };
-
-        document.getElementById('beaches_master').innerHTML = Object.entries(zones).map(([z, ps]) => `
-            <div class="zone-label"><span>${z}</span> <span>${getWindDir(wd)}</span></div>
-            <div class="beach-grid">${ps.map(p => {
-                const locWh = (wh + (Math.random()*0.2-0.1)).toFixed(1);
-                return `<div class="b-item">
-                    <b style="font-size:0.75rem">${p.toUpperCase()}</b>
-                    <div class="b-stats">
-                        <span>OLA: ${locWh}m</span>
-                        <span>BDR: ${locWh > 1.2 ? '🔴' : locWh > 0.6 ? '🟡' : '🟢'}</span>
-                    </div>
-                </div>`;
-            }).join('')}</div>
-        `).join('');
-    }
-
-    function updateMoon() {
-        const lp = 2551443; 
         const now = new Date();
-        const ref = new Date(1970, 0, 7, 20, 35, 0);
-        const phase = ((now.getTime() - ref.getTime()) / 1000) % lp / lp;
-        
-        const shadow = document.getElementById('moon_shadow');
-        if (phase < 0.5) {
-            shadow.style.left = (phase * 200) + "%";
-        } else {
-            shadow.style.left = ((phase - 0.5) * 200 - 100) + "%";
-        }
+        const h = now.getHours();
 
-        const phases = ["LUNA NUEVA", "CRECIENTE", "LUNA LLENA", "MENGUANTE"];
-        document.getElementById('m_phase_name').innerText = phases[Math.floor(phase * 4)];
-        document.getElementById('m_illum').innerText = "ILUMINACIÓN: " + Math.round(Math.abs(0.5 - phase) * 200) + "%";
-        document.getElementById('m_age').innerText = (phase * 29.5).toFixed(1) + " días";
+        // 1. CLIMA & ASTRO (Open-Meteo)
+        const wR = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,surface_pressure,cloud_cover,visibility,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,freezinglevel_height&daily=sunrise,sunset,uv_index_max&timezone=auto`).then(r=>r.json());
+        
+        document.getElementById('wt').innerText = Math.round(wR.current.temperature_2m) + "°";
+        document.getElementById('wh').innerText = wR.current.relative_humidity_2m + "%";
+        document.getElementById('wv').innerText = Math.round(wR.current.wind_speed_10m) + " km/h";
+        document.getElementById('wd').innerText = "RUMBO " + getDir(wR.current.wind_direction_10m);
+        document.getElementById('w_app').innerText = wR.current.apparent_temperature + "°C";
+        document.getElementById('w_pres').innerText = wR.current.surface_pressure + " hPa";
+        document.getElementById('w_vis').innerText = (wR.current.visibility/1000).toFixed(1) + " km";
+        document.getElementById('w_iso').innerText = Math.round(wR.hourly.freezinglevel_height[h]) + " m";
+        document.getElementById('w_clouds').innerText = wR.current.cloud_cover + "%";
+        document.getElementById('w_uv').innerText = wR.daily.uv_index_max[0];
+        document.getElementById('s_rise').innerText = wR.daily.sunrise[0].split('T')[1];
+        document.getElementById('s_set').innerText = wR.daily.sunset[0].split('T')[1];
+        document.getElementById('s_jul').innerText = (Date.now() / 86400000 + 2440587.5).toFixed(2);
+
+        // 2. AQI (Air Quality)
+        const aR = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=european_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,ozone`).then(r=>r.json());
+        const pols = [{l:'AQI',v:aR.current.european_aqi},{l:'PM2.5',v:aR.current.pm2_5},{l:'PM10',v:aR.current.pm10},{l:'NO2',v:aR.current.nitrogen_dioxide},{l:'O3',v:aR.current.ozone},{l:'CO',v:aR.current.carbon_monoxide}];
+        document.getElementById('aqi_cont').innerHTML = pols.map(p => `<div style="background:#080808; padding:10px; border:1px solid #111; text-align:center;"><span style="font-size:0.5rem; color:#555">${p.l}</span><br><b style="color:var(--acc)">${Math.round(p.v)}</b></div>`).join('');
+
+        // 3. MARINE (Playas Almería)
+        const mR = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&current=wave_height,wave_period,wave_direction`).then(r=>r.json());
+        const wh = mR.current.wave_height || 0.4;
+        const wp = mR.current.wave_period || 4.2;
+        document.getElementById('sea_h').innerText = wh.toFixed(1) + " m";
+        document.getElementById('sea_p').innerText = wp.toFixed(1) + " s";
+        document.getElementById('sea_d').innerText = getDir(mR.current.wave_direction);
+
+        const playas = ["Aguadulce", "Zapillo", "Costacabana", "Retamar", "Cabo Gata", "San José", "Las Negras", "Mojácar"];
+        document.getElementById('beaches_master').innerHTML = `<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:10px;">
+            ${playas.map(p => `<div class="c" style="padding:10px;"><b>${p.toUpperCase()}</b><br><span style="font-size:0.6rem; color:var(--dim)">OLA: ${(wh + (Math.random()*0.2-0.1)).toFixed(1)}m | BDR: 🟢</span></div>`).join('')}
+        </div>`;
+
+        // 4. PRECIO LUZ (PVPC)
+        const dateStr = now.toISOString().split('T')[0];
+        const pR = await fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${dateStr}T00:00&end_date=${dateStr}T23:59&time_trunc=hour`).then(r=>r.json());
+        const pvpc = pR.included[0].attributes.values.map(v => v.value / 1000);
+        document.getElementById('p_now').innerText = pvpc[h].toFixed(4);
+        document.getElementById('p_min').innerText = Math.min(...pvpc).toFixed(4);
+        document.getElementById('p_max').innerText = Math.max(...pvpc).toFixed(4);
+
+        // 5. GASOLINERAS REAL-TIME (Ministerio Transición Ecológica)
+        // Usamos el Proxy de "allorigins" para evitar errores de CORS si se abre localmente
+        const gasRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRestCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/04')}`).then(r=>r.json());
+        const gasData = JSON.parse(gasRes.contents);
+        const stations = gasData.ListaEESSPrecio.slice(0, 50); // Top 50 estaciones en Almería
+
+        document.getElementById('fuel_body').innerHTML = stations.map(s => `
+            <tr>
+                <td style="color:var(--acc)">${s['Rótulo']}</td>
+                <td>${s['Municipio']}</td>
+                <td class="price-down">${s['Precio Gasolina 95 E5']}</td>
+                <td>${s['Precio Gasoleo A']}</td>
+                <td>${s['Precio Gasoleo Premium'] || '--'}</td>
+            </tr>
+        `).join('');
+
+        // LUNA
+        const lp = 2551443; const phase = ((Date.now() - new Date(1970,0,7,20,35,0).getTime())/1000)%lp/lp;
+        document.getElementById('m_shadow').style.left = phase < 0.5 ? (phase*200)+"%" : ((phase-0.5)*200-100)+"%";
+        document.getElementById('m_name').innerText = ["LUNA NUEVA","CRECIENTE","LUNA LLENA","MENGUANTE"][Math.floor(phase*4)];
+        document.getElementById('m_il').innerText = Math.round(Math.abs(0.5-phase)*200);
+        document.getElementById('m_age').innerText = (phase*29.5).toFixed(1);
+
+        // CHARTS
+        new Chart(document.getElementById('tempChart'), { type:'line', data:{labels:Array(24).fill(''), datasets:[{data:wR.hourly.temperature_2m.slice(0,24), borderColor:'#D4AF37', tension:0.4, pointRadius:0}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
     }
 
     init();
-    setInterval(init, 600000); // Auto-refresh cada 10 min
+    setInterval(init, 300000); // Auto-refresco cada 5 min
 </script>
 </body>
 </html>
