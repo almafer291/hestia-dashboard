@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v33.000 | OMNI-SHIELD ULTRA-DATA</title>
+    <title>HESTIA v33.000 | OMNI-SHIELD ULTRA-SAFE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,9 +15,8 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--acc); }
-
+        
+        /* Layout */
         aside { width: 70px; border-right: 1px solid var(--bor); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #000; z-index: 100; }
         .fire-icon { font-size: 2.2rem; color: var(--acc); margin-bottom: 40px; animation: firePulse 2s infinite ease-in-out; }
         @keyframes firePulse { 0%, 100% { filter: drop-shadow(0 0 2px var(--acc)); transform: scale(1); } 50% { filter: drop-shadow(0 0 15px var(--acc)); transform: scale(1.1); } }
@@ -30,25 +29,27 @@
         .view.active { display: block; animation: viewIn 0.6s ease; }
         @keyframes viewIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Componentes */
         .g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
-        .c { background: var(--surf); border: 1px solid var(--bor); padding: 18px; }
+        .c { background: var(--surf); border: 1px solid var(--bor); padding: 18px; position: relative; }
         .t { font-family: 'JetBrains Mono'; font-size: 0.55rem; color: var(--acc); letter-spacing: 3px; text-transform: uppercase; border-bottom: 1px solid #111; padding-bottom: 8px; margin-bottom: 15px; display: block; }
         .v { font-size: 3.8rem; font-weight: 100; color: #fff; line-height: 1; letter-spacing: -3px; }
         .s { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; margin-top: 5px; display: block; font-weight: 800; }
+        
         .r { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 0.65rem; padding: 6px 0; border-bottom: 1px solid #0d0d0d; color: #888; }
         .r b { color: #fff; font-weight: 400; }
 
-        .aqi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 10px; }
-        .aqi-card { background: #030303; border: 1px solid #0d0d0d; padding: 12px; text-align: center; }
+        .aqi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+        .aqi-card { background: #020202; border: 1px solid #0d0d0d; padding: 12px; text-align: center; }
         .aqi-bar-bg { width: 100%; height: 2px; background: #111; margin-top: 8px; }
-        .aqi-bar-fill { height: 100%; transition: 1.5s; }
+        .aqi-bar-fill { height: 100%; transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .f-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-top: 20px; }
-        .f-item { min-width: 100px; background: #030303; border: 1px solid #0d0d0d; padding: 15px; text-align: center; flex: 1; }
+        .f-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-top: 15px; }
+        .f-item { min-width: 90px; background: #030303; border: 1px solid #0d0d0d; padding: 12px; text-align: center; flex: 1; }
         
-        .gas-table-cont { max-height: 300px; overflow-y: auto; border: 1px solid #111; margin-top: 10px; }
+        .gas-table-cont { max-height: 400px; overflow-y: auto; border: 1px solid #111; }
         table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono'; font-size: 0.6rem; }
-        th { text-align: left; color: var(--acc); padding: 10px; border-bottom: 1px solid var(--bor); position: sticky; top: 0; background: #050505; }
+        th { text-align: left; color: var(--acc); padding: 12px; border-bottom: 1px solid var(--bor); position: sticky; top: 0; background: #050505; z-index: 10; }
         td { padding: 10px; border-bottom: 1px solid #080808; }
     </style>
 </head>
@@ -65,43 +66,42 @@
 <main>
     <div id="meteo" class="view active">
         <div class="g">
-            <div class="c" style="grid-column: span 12; display: flex; justify-content: space-between; align-items: center;">
-                <span class="t" style="border:0; margin:0;">System Status: <b id="sys-status" style="color:var(--ok)">ONLINE</b></span>
-                <span class="t" style="border:0; margin:0;">Last Sync: <b id="sys-last">--:--:--</b></span>
+            <div class="c" style="grid-column: span 12; display: flex; justify-content: space-between;">
+                <span class="t" style="border:0">Hestia System v33.000</span>
+                <span class="t" style="border:0">Sync: <b id="sys-last" style="color:#fff">--:--</b></span>
             </div>
 
             <div class="c" style="grid-column: span 8;">
-                <span class="t">Atmospheric Core | Almería</span>
+                <span class="t">Atmospheric Core</span>
                 <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-                    <div><div class="v" id="wt">--°</div><span class="s">Temperatura Exterior</span></div>
-                    <div style="text-align:center"><div class="v" id="wv" style="font-size:2.4rem">-- km/h</div><span class="s" id="wd">--</span></div>
-                    <div style="text-align:right"><div class="v" id="wh" style="font-size:2.4rem">--%</div><span class="s">Humedad</span></div>
+                    <div><div class="v" id="wt">--°</div><span class="s">Temperatura</span></div>
+                    <div style="text-align:center"><div class="v" id="wv" style="font-size:2.2rem">--</div><span class="s" id="wd">Sincronizando...</span></div>
+                    <div style="text-align:right"><div class="v" id="wh" style="font-size:2.2rem">--%</div><span class="s">Humedad</span></div>
                 </div>
                 
-                <span class="t">Air Quality Index (Full Spectrum)</span>
+                <span class="t">Air Quality Spectrum</span>
                 <div class="aqi-grid" id="aqi-cont"></div>
 
-                <span class="t" style="margin-top:25px;">7-Day Evolution</span>
+                <span class="t" style="margin-top:25px;">7-Day Forecast Prevision</span>
                 <div class="f-row" id="forecast-cont"></div>
             </div>
 
             <div class="c" style="grid-column: span 4;">
-                <span class="t">Physical Telemetry</span>
+                <span class="t">Telemetry Data</span>
                 <div class="r">Ráfagas <b id="w-gust">--</b></div>
                 <div class="r">Prob. Lluvia <b id="w-prec">--</b></div>
-                <div class="r">Nivel UV <b id="w-uv" style="color:var(--acc)">--</b></div>
                 <div class="r">Presión <b id="w-pres">--</b></div>
                 <div class="r">Visibilidad <b id="w-vis">--</b></div>
+                <div class="r">Índice UV <b id="w-uv" style="color:var(--acc)">--</b></div>
                 <div class="r">Nubosidad <b id="w-cloud">--</b></div>
-                <div class="r">Tª Suelo (0cm) <b id="w-soil">--</b></div>
+                <div class="r">Tª Suelo <b id="w-soil">--</b></div>
 
-                <span class="t" style="margin-top:20px;">Bio-Pólenes (Nivel)</span>
+                <span class="t" style="margin-top:20px;">Bio-Hazard (Pólenes)</span>
                 <div class="r">Olivo <b id="p-ol">--</b></div>
                 <div class="r">Gramíneas <b id="p-gr">--</b></div>
                 <div class="r">Artemisia <b id="p-ar">--</b></div>
-                <div class="r">Ambrosía <b id="p-am">--</b></div>
                 
-                <canvas id="tempChart" style="max-height:100px; margin-top:20px;"></canvas>
+                <canvas id="tempChart" style="max-height:80px; margin-top:20px;"></canvas>
             </div>
         </div>
     </div>
@@ -109,27 +109,24 @@
     <div id="power" class="view">
         <div class="g">
             <div class="c" style="grid-column: span 4;">
-                <span class="t">Energy Price (€/MWh)</span>
-                <div class="v" id="p-now" style="color:var(--acc); font-size:2.8rem;">--</div>
-                <span class="s">PVPC Tiempo Real</span>
+                <span class="t">PVPC Actual</span>
+                <div class="v" id="p-now" style="color:var(--acc); font-size:3rem">--</div>
+                <span class="s">€/MWh</span>
             </div>
-            <div class="c" style="grid-column: span 4;">
-                <span class="t">Mínimo Hoy</span>
-                <div class="v" id="p-min" style="color:var(--ok); font-size:2.8rem;">--</div>
-            </div>
-            <div class="c" style="grid-column: span 4;">
-                <span class="t">Máximo Hoy</span>
-                <div class="v" id="p-max" style="color:var(--bad); font-size:2.8rem;">--</div>
+            <div class="c" style="grid-column: span 8;">
+                <span class="t">Rango Diario (Min / Max)</span>
+                <div class="v" id="p-range" style="font-size:2.5rem">-- / --</div>
+                <span class="s">Oscilación del Mercado</span>
             </div>
             <div class="c" style="grid-column: span 12;">
-                <span class="t">Gráfica Horaria PVPC</span>
+                <span class="t">Curva de Carga Energética</span>
                 <canvas id="pChart" style="max-height:160px;"></canvas>
             </div>
             <div class="c" style="grid-column: span 12;">
-                <span class="t">Fuel Network | Almería Stations</span>
+                <span class="t">Fuel Network Almería</span>
                 <div class="gas-table-cont">
                     <table>
-                        <thead><tr><th>ESTACIÓN</th><th>UBICACIÓN</th><th>G95</th><th>G98</th><th>GA</th><th>GLP</th></tr></thead>
+                        <thead><tr><th>ESTACIÓN</th><th>UBICACIÓN</th><th>G95</th><th>G98</th><th>GA</th></tr></thead>
                         <tbody id="f-body"></tbody>
                     </table>
                 </div>
@@ -142,122 +139,125 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const config = { 
+    const fb = { 
         apiKey: "AIzaSyAhKc7R97_ph2VQOq-uLMXFv-Wnyy0srXw", 
         projectId: "hestia-31da3", 
         appId: "1:577704397868:web:e83026e730640a0bc1d589" 
     };
-    const app = initializeApp(config);
+    const app = initializeApp(fb);
     const db = getFirestore(app);
 
     const LAT = 36.83, LON = -2.46;
 
+    // MOTOR DE SINCRONIZACIÓN (EVITA FALLOS DE API)
     async function sync() {
         const docRef = doc(db, "global", "master_data");
         const snap = await getDoc(docRef);
         const now = Date.now();
 
-        // Actualizamos cada 30 min o si no hay datos
-        if (!snap.exists() || (now - snap.data().lastUpdate > 1800000)) {
-            document.getElementById('sys-status').innerText = "SYNCING...";
+        if (!snap.exists() || (now - (snap.data()?.lastUpdate || 0) > 1800000)) {
+            console.log("🔄 Sincronizando APIs...");
             try {
                 const [m, q, er] = await Promise.all([
                     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,visibility,cloudcover,windgusts_10m,precipitation_probability,soil_temperature_0cm&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto`).then(r=>r.json()),
-                    fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,olive_pollen,grass_pollen,mugwort_pollen,ragweed_pollen`).then(r=>r.json()),
-                    fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${new Date().toISOString().split('T')[0]}T00:00&end_date=${new Date().toISOString().split('T')[0]}T23:59&time_trunc=hour`).then(r=>r.json())
+                    fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,olive_pollen,grass_pollen,mugwort_pollen`).then(r=>r.json()),
+                    fetch(`https://apidatos.ree.es/es/datos/markets/precios-mercados-tiempo-real?start_date=${new Date().toISOString().split('T')[0]}T00:00&end_date=${new Date().toISOString().split('T')[0]}T23:59&time_trunc=hour`).then(r=>r.json())
                 ]);
 
-                const ev = er.included[0].attributes.values.map(x => x.value); // En MWh para mejor visualización
+                const ev = er?.included?.[0]?.attributes?.values?.map(x => x.value) || new Array(24).fill(0);
 
-                await setDoc(docRef, { meteo: m, air: q, power: { ev, min: Math.min(...ev), max: Math.max(...ev) }, lastUpdate: now });
-                document.getElementById('sys-status').innerText = "ONLINE";
-            } catch (e) { 
-                console.error(e); 
-                document.getElementById('sys-status').innerText = "ERROR";
-            }
+                await setDoc(docRef, {
+                    meteo: m, air: q,
+                    power: { ev, min: Math.min(...ev), max: Math.max(...ev) },
+                    lastUpdate: now
+                }, { merge: true });
+            } catch (e) { console.error("Sync Error:", e); }
         }
     }
 
+    // RENDERIZADO PROTEGIDO (OPCIONAL CHAINING EN TODO)
     function render(data) {
+        if (!data) return;
         const h = new Date().getHours();
-        const { meteo, air, power, lastUpdate } = data;
-
-        document.getElementById('sys-last').innerText = new Date(lastUpdate).toLocaleTimeString();
+        
+        // Reloj de sincronización
+        if (data.lastUpdate) document.getElementById('sys-last').innerText = new Date(data.lastUpdate).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
         // Meteo
-        document.getElementById('wt').innerText = Math.round(meteo.current_weather.temperature) + "°";
-        document.getElementById('wv').innerText = Math.round(meteo.current_weather.windspeed) + " km/h";
-        document.getElementById('wh').innerText = meteo.hourly.relativehumidity_2m[h] + "%";
-        document.getElementById('wd').innerText = meteo.current_weather.winddirection > 130 ? "LEVANTE" : "PONIENTE";
+        document.getElementById('wt').innerText = Math.round(data.meteo?.current_weather?.temperature || 0) + "°";
+        document.getElementById('wv').innerText = Math.round(data.meteo?.current_weather?.windspeed || 0) + " km/h";
+        document.getElementById('wh').innerText = (data.meteo?.hourly?.relativehumidity_2m?.[h] || 0) + "%";
+        document.getElementById('wd').innerText = (data.meteo?.current_weather?.winddirection > 130) ? "LEVANTE" : "PONIENTE";
         
-        // Physics
-        document.getElementById('w-gust').innerText = meteo.hourly.windgusts_10m[h] + " km/h";
-        document.getElementById('w-prec').innerText = meteo.hourly.precipitation_probability[h] + "%";
-        document.getElementById('w-uv').innerText = meteo.daily.uv_index_max[0];
-        document.getElementById('w-pres').innerText = Math.round(meteo.hourly.surface_pressure[h]) + " hPa";
-        document.getElementById('w-vis').innerText = (meteo.hourly.visibility[h]/1000).toFixed(1) + " km";
-        document.getElementById('w-cloud').innerText = meteo.hourly.cloudcover[h] + "%";
-        document.getElementById('w-soil').innerText = meteo.hourly.soil_temperature_0cm[h] + "°C";
+        // Telemetría
+        document.getElementById('w-gust').innerText = (data.meteo?.hourly?.windgusts_10m?.[h] || 0) + " km/h";
+        document.getElementById('w-prec').innerText = (data.meteo?.hourly?.precipitation_probability?.[h] || 0) + "%";
+        document.getElementById('w-pres').innerText = Math.round(data.meteo?.hourly?.surface_pressure?.[h] || 0) + " hPa";
+        document.getElementById('w-vis').innerText = ((data.meteo?.hourly?.visibility?.[h] || 0)/1000).toFixed(1) + " km";
+        document.getElementById('w-uv').innerText = data.meteo?.daily?.uv_index_max?.[0] || 0;
+        document.getElementById('w-cloud').innerText = (data.meteo?.hourly?.cloudcover?.[h] || 0) + "%";
+        document.getElementById('w-soil').innerText = Math.round(data.meteo?.hourly?.soil_temperature_0cm?.[h] || 0) + "°";
 
         // Pólenes
-        document.getElementById('p-ol').innerText = air.hourly.olive_pollen[h] || 0;
-        document.getElementById('p-gr').innerText = air.hourly.grass_pollen[h] || 0;
-        document.getElementById('p-ar').innerText = air.hourly.mugwort_pollen[h] || 0;
-        document.getElementById('p-am').innerText = air.hourly.ragweed_pollen[h] || 0;
+        document.getElementById('p-ol').innerText = data.air?.hourly?.olive_pollen?.[h] || 0;
+        document.getElementById('p-gr').innerText = data.air?.hourly?.grass_pollen?.[h] || 0;
+        document.getElementById('p-ar').innerText = data.air?.hourly?.mugwort_pollen?.[h] || 0;
 
-        // AQI Spectrum
+        // AQI
         const pols = [
-            {k:'pm2_5',l:'PM2.5',m:25}, {k:'pm10',l:'PM10',m:50}, 
-            {k:'nitrogen_dioxide',l:'NO2',m:100}, {k:'ozone',l:'O3',m:120},
-            {k:'sulphur_dioxide',l:'SO2',m:200}, {k:'carbon_monoxide',l:'CO',m:1000}
+            {k:'pm2_5',l:'PM2.5',m:25}, {k:'pm10',l:'PM10',m:50}, {k:'nitrogen_dioxide',l:'NO2',m:100}, 
+            {k:'ozone',l:'O3',m:120}, {k:'sulphur_dioxide',l:'SO2',m:200}, {k:'carbon_monoxide',l:'CO',m:1000}
         ];
         document.getElementById('aqi-cont').innerHTML = pols.map(p => {
-            const v = air.hourly[p.k][h];
+            const v = data.air?.hourly?.[p.k]?.[h] || 0;
             const pct = Math.min((v/p.m)*100, 100);
             const c = pct > 80 ? 'var(--bad)' : pct > 40 ? 'var(--warn)' : 'var(--ok)';
             return `<div class="aqi-card"><span style="font-size:0.5rem; color:#555">${p.l}</span><br><b style="color:${c}">${v}</b><div class="aqi-bar-bg"><div class="aqi-bar-fill" style="width:${pct}%; background:${c}"></div></div></div>`;
         }).join('');
 
         // Forecast
-        document.getElementById('forecast-cont').innerHTML = meteo.daily.time.map((t, i) => `
-            <div class="f-item">
-                <div style="font-size:0.5rem; color:#555">${new Date(t).toLocaleDateString('es',{weekday:'short'}).toUpperCase()}</div>
-                <div style="font-size:1rem; font-weight:700; margin:5px 0;">${Math.round(meteo.daily.temperature_2m_max[i])}°</div>
-                <div style="font-size:0.6rem; color:var(--dim)">${Math.round(meteo.daily.temperature_2m_min[i])}°</div>
-            </div>
-        `).join('');
+        if (data.meteo?.daily?.time) {
+            document.getElementById('forecast-cont').innerHTML = data.meteo.daily.time.map((t, i) => `
+                <div class="f-item">
+                    <div style="font-size:0.5rem; color:#555">${new Date(t).toLocaleDateString('es',{weekday:'short'}).toUpperCase()}</div>
+                    <div style="font-size:0.9rem; font-weight:700; margin-top:5px;">${Math.round(data.meteo.daily.temperature_2m_max[i])}°</div>
+                    <div style="font-size:0.6rem; color:var(--dim)">${Math.round(data.meteo.daily.temperature_2m_min[i])}°</div>
+                </div>
+            `).join('');
+        }
 
         // Power
-        document.getElementById('p-now').innerText = power.ev[h].toFixed(2);
-        document.getElementById('p-min').innerText = power.min.toFixed(2);
-        document.getElementById('p-max').innerText = power.max.toFixed(2);
+        document.getElementById('p-now').innerText = (data.power?.ev?.[h] || 0).toFixed(2);
+        document.getElementById('p-range').innerText = `${(data.power?.min || 0).toFixed(2)} / ${(data.power?.max || 0).toFixed(2)}`;
 
-        renderCharts(meteo.hourly.temperature_2m.slice(0,24), power.ev);
+        renderCharts(data.meteo?.hourly?.temperature_2m?.slice(0,24), data.power?.ev);
     }
 
     let charts = {};
     function renderCharts(t, p) {
+        if (!t || !p) return;
         if(charts.t) charts.t.destroy(); if(charts.p) charts.p.destroy();
         charts.t = new Chart(document.getElementById('tempChart'), { type:'line', data:{labels:t.map((_,i)=>i), datasets:[{data:t, borderColor:'#D4AF37', tension:0.4, pointRadius:0, borderWidth:1}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
-        charts.p = new Chart(document.getElementById('pChart'), { type:'bar', data:{labels:p.map((_,i)=>i), datasets:[{data:p, backgroundColor:p.map(x => x > (Math.max(...p)*0.8) ? '#8B2A2A' : (x < (Math.min(...p)*1.2) ? '#2D5A27' : '#D4AF37'))}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}, ticks:{color:'#555'}}, x:{display:false}}}});
+        charts.p = new Chart(document.getElementById('pChart'), { type:'bar', data:{labels:p.map((_,i)=>i), datasets:[{data:p, backgroundColor:p.map(x => x > (Math.max(...p)*0.8) ? '#8B2A2A' : (x < (Math.min(...p)*1.2) ? '#2D5A27' : '#D4AF37'))}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}, ticks:{color:'#555', font:{size:8}}}, x:{display:false}}}});
     }
 
-    // --- SNAPSHOTS ---
+    // SNAPSHOTS REALTIME
     onSnapshot(doc(db, "global", "master_data"), (s) => s.exists() && render(s.data()));
+    
     onSnapshot(doc(db, "market", "fuel"), (s) => {
         const d = s.data();
-        if(d?.stations) document.getElementById('f-body').innerHTML = d.stations.slice(0,50).map(x => `
+        if(d?.stations) document.getElementById('f-body').innerHTML = d.stations.slice(0,40).map(x => `
             <tr>
                 <td>${x['Rótulo']}</td>
-                <td style="color:#444; font-size:0.5rem;">${x['Dirección']}</td>
+                <td style="color:#555; font-size:0.5rem">${x['Dirección']}</td>
                 <td style="color:var(--acc)">${x['Precio Gasolina 95 E5'] || '-'}</td>
                 <td>${x['Precio Gasolina 98 E5'] || '-'}</td>
                 <td>${x['Precio Gasoleo A'] || '-'}</td>
-                <td>${x['Precio Gases licuados'] || '-'}</td>
             </tr>
         `).join('');
     });
 
+    // Navegación
     window.sh = (id, bt) => {
         document.querySelectorAll('.view, .nav-bt').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active'); bt.classList.add('active');
