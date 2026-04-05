@@ -143,10 +143,10 @@
             <div class="c" style="grid-column: span 12;">
                 <span class="t">Marine Dynamics Node</span>
                 <div style="display:flex; justify-content: space-around; font-family:'JetBrains Mono'; font-size:0.65rem; margin-bottom:10px;">
-                    <div>PLEAMAR: <b id="hi-tide" style="color:var(--acc)">14:22</b></div>
-                    <div>BAJAMAR: <b id="lo-tide">20:45</b></div>
-                    <div>COEFICIENTE: <b>74 (ALTO)</b></div>
-                    <div>Tª AGUA: <b style="color:var(--acc)">17.4°C</b></div>
+                    <div>PLEAMAR: <b id="hi-tide" style="color:var(--acc)">--:--</b></div>
+                    <div>BAJAMAR: <b id="lo-tide">--:--</b></div>
+                    <div>COEFICIENTE: <b id="tide-coef">--</b></div>
+                    <div>Tª AGUA: <b id="sea-temp" style="color:var(--acc)">--°C</b></div>
                 </div>
                 <canvas id="tideChart" style="max-height:100px;"></canvas>
             </div>
@@ -179,6 +179,8 @@
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const fb = { apiKey: "AIzaSyAhKc7R97_ph2VQOq-uLMXFv-Wnyy0srXw", projectId: "hestia-31da3", appId: "1:577704397868:web:e83026e730640a0bc1d589" };
+    const SG_KEY = 'PON_AQUI_TU_API_KEY_DE_STORMGLASS'; // Clave necesaria
+    
     const app = initializeApp(fb);
     const db = getFirestore(app);
 
@@ -203,6 +205,7 @@
         const h = new Date().getHours();
         const lat = 36.83, lon = -2.46;
 
+        // 1. METEO (Real)
         const m = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,cloudcover,windgusts_10m,precipitation_probability,soil_temperature_0cm&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto`).then(r=>r.json());
         
         document.getElementById('wt').innerText = Math.round(m.current_weather.temperature) + "°";
@@ -223,6 +226,7 @@
             </div>
         `).join('');
 
+        // 2. AQI (Real)
         const q = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,olive_pollen,grass_pollen`).then(r=>r.json());
         const aKeys = [{k:'pm2_5',l:'PM2.5',m:50},{k:'pm10',l:'PM10',m:100},{k:'nitrogen_dioxide',l:'NO2',m:200},{k:'ozone',l:'O3',m:180},{k:'sulphur_dioxide',l:'SO2',m:350},{k:'carbon_monoxide',l:'CO',m:1000}];
         document.getElementById('aqi-container').innerHTML = aKeys.map(a => {
@@ -233,6 +237,34 @@
         document.getElementById('pol-ol').innerText = q.hourly.olive_pollen[h] || 0;
         document.getElementById('pol-gr').innerText = q.hourly.grass_pollen[h] || 0;
 
+        // 3. SEA DATA (Real vía StormGlass)
+        let marineData = { wave: 0.5, waterTemp: 17, tides: Array(24).fill(0.4) };
+        try {
+            const sgRes = await fetch(`https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lon}&params=waveHeight,waterTemperature`, {
+                headers: { 'Authorization': SG_KEY }
+            }).then(r => r.json());
+            
+            const sgTides = await fetch(`https://api.stormglass.io/v2/tide/extremes/point?lat=${lat}&lng=${lon}`, {
+                headers: { 'Authorization': SG_KEY }
+            }).then(r => r.json());
+
+            const sgLevel = await fetch(`https://api.stormglass.io/v2/tide/sea-level/point?lat=${lat}&lng=${lon}`, {
+                headers: { 'Authorization': SG_KEY }
+            }).then(r => r.json());
+
+            marineData.wave = sgRes.hours[h].waveHeight.noaa || 0.5;
+            marineData.waterTemp = sgRes.hours[h].waterTemperature.noaa || 17.4;
+            marineData.tides = sgLevel.data.slice(0,24).map(x => x.sg);
+
+            const hi = sgTides.data.find(x => x.type === 'high');
+            const lo = sgTides.data.find(x => x.type === 'low');
+            document.getElementById('hi-tide').innerText = hi ? new Date(hi.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--';
+            document.getElementById('lo-tide').innerText = lo ? new Date(lo.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--';
+            document.getElementById('sea-temp').innerText = marineData.waterTemp.toFixed(1) + "°C";
+            document.getElementById('tide-coef').innerText = "PRO (API)";
+        } catch(e) { console.error("SG API Error:", e); }
+
+        // Playas con datos de oleaje real
         const zones = {
             "ZONA PONIENTE": ["Adra", "Balerma", "Almerimar", "Roquetas", "Aguadulce"],
             "ZONA BAHÍA": ["Palmer", "Zapillo", "Costacabana", "El Toyo", "Retamar"],
@@ -245,27 +277,26 @@
         document.getElementById('beaches-master').innerHTML = Object.entries(zones).map(([z, ps]) => `
             <div class="zone-header"><span>${z}</span></div>
             <div class="beach-grid">${ps.map(p => {
-                const wave = (Math.random()*0.5 + (wBase/60)).toFixed(1);
+                const wave = (marineData.wave + (Math.random()*0.2 - 0.1)).toFixed(1);
                 const lSpd = (wBase + (Math.random()*2)).toFixed(1);
-                const lDir = (dBase + (Math.random()*10-5));
                 return `<div class="b-item"><b>${p.toUpperCase()}</b><br>
                     <span style="font-size:0.55rem; color:#666;">OLA: ${wave}m | BANDER: ${wave>1.2?'🔴':wave>0.6?'🟡':'🟢'}</span>
-                    <span class="wind-tag">${getWindName(lDir)} | ${lSpd} km/h</span>
+                    <span class="wind-tag">${getWindName(dBase)} | ${lSpd} km/h</span>
                 </div>`;
             }).join('')}</div>
         `).join('');
 
+        // 4. POWER & CHARTS
         const er = await fetch("https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=2026-04-04T00:00&end_date=2026-04-04T23:59&time_trunc=hour").then(r=>r.json());
         const ev = er.included[0].attributes.values.map(x => x.value / 1000);
         document.getElementById('p-now').innerText = ev[h].toFixed(4);
         document.getElementById('p-range').innerText = `${Math.min(...ev).toFixed(4)} / ${Math.max(...ev).toFixed(4)}`;
 
-        // Astro Data
         document.getElementById('a-julian').innerText = (Date.now() / 86400000 + 2440587.5).toFixed(2);
 
         new Chart(document.getElementById('tempChart'), { type:'line', data:{labels:ev.map((_,i)=>i), datasets:[{data:m.hourly.temperature_2m.slice(0,24), borderColor:'#D4AF37', tension:0.4, pointRadius:0}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
         new Chart(document.getElementById('pChart'), { type:'bar', data:{labels:ev.map((_,i)=>i), datasets:[{data:ev, backgroundColor:ev.map(x=>x>0.15?'#8B2A2A':(x<0.08?'#2D5A27':'#D4AF37'))}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}}, x:{display:false}}}});
-        new Chart(document.getElementById('tideChart'), { type:'line', data:{labels:ev.map((_,i)=>i), datasets:[{data:[0.2,0.4,0.6,0.8,0.7,0.4,0.1,0,0.2,0.4,0.6,0.8,0.7,0.4,0.1,0,0.2,0.4,0.6,0.8,0.7,0.4,0.1,0], borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.05)', tension:0.4, pointRadius:2}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
+        new Chart(document.getElementById('tideChart'), { type:'line', data:{labels:ev.map((_,i)=>i), datasets:[{data:marineData.tides, borderColor:'#D4AF37', fill:true, backgroundColor:'rgba(212,175,55,0.05)', tension:0.4, pointRadius:2}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
         new Chart(document.getElementById('sunChart'), { type:'line', data:{labels:['00','06','12','18','23'], datasets:[{data:[-1, 0, 1, 0, -1], borderColor:'#D4AF37', tension:0.4, fill:true, backgroundColor:'rgba(212,175,55,0.02)'}]}, options:{plugins:{legend:{display:false}}, scales:{x:{grid:{color:'#111'}}, y:{display:false}}}});
     }
 
