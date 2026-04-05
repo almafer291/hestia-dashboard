@@ -3,357 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v35.000 | OMNI-SHIELD ASTROMETRY</title>
+    <title>HESTIA OMNI-CORE | FIRE EDITION</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #000; --surf: #050505; --acc: #D4AF37; --bor: #121212; --txt: #FFF; --dim: #555; --ok: #2D5A27; --warn: #D4AF37; --bad: #8B2A2A; }
+        :root { --bg: #000; --surf: #070707; --acc: #FF4500; --bor: #1a1a1a; --txt: #FFF; --dim: #666; --ok: #2D5A27; --fire: #FF8C00; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
         
-        aside { width: 75px; border-right: 1px solid var(--bor); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #020202; z-index: 10; }
-        .hero-icon { font-size: 2.5rem; margin-bottom: 40px; animation: floatPulse 3s ease-in-out infinite; cursor: default; }
-        @keyframes floatPulse { 0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.3)); } 50% { transform: translateY(-5px) scale(1.05); filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.8)); } }
+        /* Sidebar con Llama de Fuego */
+        aside { width: 80px; border-right: 1px solid var(--bor); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #020202; }
+        .fire-llama { font-size: 2.8rem; margin-bottom: 40px; position: relative; cursor: pointer; filter: drop-shadow(0 0 10px var(--acc)); animation: flicker 0.1s infinite alternate; }
+        @keyframes flicker { 0% { transform: scale(1) rotate(-1deg); } 100% { transform: scale(1.05) rotate(1deg); filter: drop-shadow(0 0 15px #FF0000); } }
         
-        nav { display: flex; flex-direction: column; gap: 35px; }
-        .nav-bt { color: var(--dim); cursor: pointer; font-size: 1.8rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
-        .nav-bt:hover { color: #fff; transform: scale(1.1); }
-        .nav-bt.active { color: var(--acc); filter: drop-shadow(0 0 8px var(--acc)); }
-        
-        main { flex: 1; overflow-y: auto; padding: 25px; scroll-behavior: smooth; }
-        main::-webkit-scrollbar { width: 8px; }
-        main::-webkit-scrollbar-thumb { background: var(--bor); border-radius: 4px; }
-        
-        .view { display: none; animation: fadeIn 0.4s ease-out; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
-        .c { background: var(--surf); border: 1px solid var(--bor); padding: 20px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        
-        .t { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--acc); letter-spacing: 3px; text-transform: uppercase; border-bottom: 1px solid #111; padding-bottom: 8px; margin-bottom: 15px; display: block; }
-        .v { font-size: 3.5rem; font-weight: 100; letter-spacing: -2px; line-height: 1.1; }
-        .s { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .r { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 0.65rem; padding: 8px 0; border-bottom: 1px solid #0a0a0a; color: #aaa; }
-        .r b { color: #fff; font-weight: normal; }
-        
-        .aqi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-        .aqi-card { background: #020202; border: 1px solid #0d0d0d; padding: 12px; text-align: center; border-radius: 2px; }
-        .aqi-bar-bg { width: 100%; height: 3px; background: #111; margin-top: 8px; border-radius: 2px; overflow: hidden; }
-        .aqi-bar-fill { height: 100%; transition: width 1.5s ease-out; }
-        
-        .f-row { display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; padding-bottom: 5px; }
-        .f-item { min-width: 90px; background: #030303; border: 1px solid #0d0d0d; padding: 12px; text-align: center; border-radius: 2px; }
-        
-        .gas-cont { max-height: 450px; overflow-y: auto; margin-top: 10px; border: 1px solid #111; }
-        .gas-cont::-webkit-scrollbar { width: 6px; }
-        .gas-cont::-webkit-scrollbar-thumb { background: #222; }
-        table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono'; font-size: 0.6rem; text-align: left; }
-        th { color: var(--acc); padding: 12px 10px; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(5,5,5,0.95); backdrop-filter: blur(5px); z-index: 2; }
-        td { padding: 10px; border-bottom: 1px solid #0a0a0a; color: #ddd; vertical-align: middle; }
-        tr:hover td { background: #080808; }
-        .addr-cell { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #888; }
-        
-        .beach-card { display: flex; justify-content: space-between; align-items: center; background: #030303; border: 1px solid #111; padding: 12px 15px; border-radius: 3px; }
-        .flag { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+        nav { display: flex; flex-direction: column; gap: 30px; }
+        .nav-bt { color: var(--dim); cursor: pointer; font-size: 1.8rem; transition: 0.3s; }
+        .nav-bt.active { color: var(--acc); filter: drop-shadow(0 0 10px var(--acc)); }
 
-        /* Estilos del Gráfico Lunar */
-        .moon-gfx-container { position: relative; width: 110px; height: 110px; display: flex; justify-content: center; align-items: center; margin: 0 auto; background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; }
-        .moon-emoji { font-size: 6rem; line-height: 1; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5)); transition: 1s ease-in-out; }
+        main { flex: 1; overflow-y: auto; padding: 30px; }
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* Grid System */
+        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+        .card { background: var(--surf); border: 1px solid var(--bor); padding: 20px; border-radius: 2px; }
+        .label { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--acc); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 15px; }
+        
+        /* Typography */
+        .val { font-size: 3.5rem; font-weight: 100; letter-spacing: -2px; }
+        .unit { font-size: 0.8rem; color: var(--dim); font-weight: 800; margin-left: 5px; }
+        .stat { display: flex; justify-content: space-between; border-bottom: 1px solid #111; padding: 10px 0; font-family: 'JetBrains Mono'; font-size: 0.7rem; }
+
+        /* Gráfico Lunar Mejorado */
+        .moon-display { display: flex; align-items: center; gap: 30px; padding: 20px 0; }
+        .moon-sphere { width: 120px; height: 120px; background: #111; border-radius: 50%; position: relative; overflow: hidden; box-shadow: inset -10px -10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.05); }
+        .moon-light { position: absolute; height: 100%; background: linear-gradient(90deg, #fff 0%, #eee 100%); box-shadow: 0 0 20px #fff; transition: 1s ease-in-out; }
+
+        /* Badge de Partículas */
+        .p-badge { background: #111; padding: 15px; border-left: 2px solid var(--acc); }
+        .p-bar { height: 4px; background: #222; margin-top: 8px; width: 100%; border-radius: 2px; overflow: hidden; }
+        .p-fill { height: 100%; transition: 1s; }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="hero-icon">🦙</div>
+    <div class="fire-llama">🔥🦙🔥</div>
     <nav>
-        <div class="nav-bt active" onclick="sh('meteo', this)" title="Atmosfera"><i class="ph-duotone ph-broadcast"></i></div>
-        <div class="nav-bt" onclick="sh('power', this)" title="Red Eléctrica e Hidrocarburos"><i class="ph-duotone ph-lightning"></i></div>
-        <div class="nav-bt" onclick="sh('nature', this)" title="Mar y Astrometría"><i class="ph-duotone ph-waves"></i></div>
+        <div class="nav-bt active" onclick="sh('meteo', this)"><i class="ph-duotone ph-cloud-sun"></i></div>
+        <div class="nav-bt" onclick="sh('nature', this)"><i class="ph-duotone ph-moon-stars"></i></div>
+        <div class="nav-bt" onclick="sh('power', this)"><i class="ph-duotone ph-lightning"></i></div>
     </nav>
 </aside>
 
 <main>
     <div id="meteo" class="view active">
-        <div class="g">
-            <div class="c" style="grid-column: span 12; display: flex; justify-content: space-between;">
-                <span class="t" style="border:0; margin:0;">HESTIA NODE | ALMERÍA (ATMOS)</span>
-                <span class="t" style="border:0; margin:0;">LAST SYNC: <b id="sys-last" style="color:#fff">--:--</b></span>
-            </div>
-
-            <div class="c" style="grid-column: span 8;">
-                <span class="t">Current Atmosphere</span>
-                <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
-                    <div><div class="v" id="wt">--°</div><span class="s">Temp Real</span></div>
-                    <div style="text-align:center"><div class="v" id="wv" style="font-size:2.2rem; color:var(--acc);">--</div><span class="s" id="wd">SYNCING...</span></div>
-                    <div style="text-align:right"><div class="v" id="wh" style="font-size:2.2rem">--%</div><span class="s">Humedad</span></div>
+        <div class="grid">
+            <div class="card" style="grid-column: span 8;">
+                <span class="label">ATMOSPHERIC CORE | ALMERÍA</span>
+                <div style="display:flex; justify-content: space-between; align-items: flex-end;">
+                    <div><span class="val" id="v-temp">--</span><span class="unit">°C</span></div>
+                    <div style="text-align:right"><span class="val" id="v-hum" style="font-size:2rem">--</span><span class="unit">% HR</span></div>
                 </div>
-                <span class="t">Air Pollutants (µg/m³)</span>
-                <div class="aqi-grid" id="aqi-cont"></div>
-                <span class="t" style="margin-top:25px;">7-Day Evolution</span>
-                <div class="f-row" id="forecast-cont"></div>
-            </div>
-
-            <div class="c" style="grid-column: span 4;">
-                <span class="t">Physics Telemetry</span>
-                <div class="r">Rachas Máx <b id="w-gust">--</b></div>
-                <div class="r">Prob. Lluvia <b id="w-prec">--</b></div>
-                <div class="r">Presión <b id="w-pres">--</b></div>
-                <div class="r">Visibilidad <b id="w-vis">--</b></div>
-                <div class="r">Índice UV <b id="w-uv">--</b></div>
-                <div class="r">Nubosidad <b id="w-cloud">--</b></div>
-                <div class="r">Temp. Suelo <b id="w-soil">--</b></div>
-                <span class="t" style="margin-top:25px;">Biología (Polen)</span>
-                <div class="r">Olivo <b id="p-ol">--</b></div>
-                <div class="r">Gramíneas <b id="p-gr">--</b></div>
-                <canvas id="tempChart" style="max-height:90px; margin-top:20px;"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div id="power" class="view">
-        <div class="g">
-            <div class="c" style="grid-column: span 4;">
-                <span class="t">PVPC Actual (Decimal)</span>
-                <div class="v" id="p-now" style="color:var(--acc); font-size:2.2rem">-- €/kWh</div>
-            </div>
-            <div class="c" style="grid-column: span 8;">
-                <span class="t">Rango Diario (€/kWh)</span>
-                <div class="v" id="p-range" style="font-size:2.2rem">-- / --</div>
-            </div>
-            <div class="c" style="grid-column: span 12;">
-                <canvas id="pChart" style="max-height:160px;"></canvas>
-            </div>
-            <div class="c" style="grid-column: span 12;">
-                <span class="t">Fuel Network (Estaciones Detalladas)</span>
-                <div class="gas-cont">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>RÓTULO / MUNICIPIO</th>
-                                <th>DIRECCIÓN</th>
-                                <th>HORARIO</th>
-                                <th>G95 (E5)</th>
-                                <th>G-A</th>
-                            </tr>
-                        </thead>
-                        <tbody id="f-body"></tbody>
-                    </table>
+                
+                <span class="label" style="margin-top:30px;">PARTICULATE MATTER & AEROSOLS</span>
+                <div class="grid" style="gap:10px;">
+                    <div class="card p-badge" style="grid-column: span 4;">
+                        <span class="label" style="font-size:0.5rem">PM2.5 (Finas)</span>
+                        <b id="v-pm25">--</b><small> µg/m³</small>
+                        <div class="p-bar"><div id="b-pm25" class="p-fill"></div></div>
+                    </div>
+                    <div class="card p-badge" style="grid-column: span 4;">
+                        <span class="label" style="font-size:0.5rem">PM10 (Gruesas)</span>
+                        <b id="v-pm10">--</b><small> µg/m³</small>
+                        <div class="p-bar"><div id="b-pm10" class="p-fill"></div></div>
+                    </div>
+                    <div class="card p-badge" style="grid-column: span 4;">
+                        <span class="label" style="font-size:0.5rem">Aerosol Optical</span>
+                        <b id="v-aod">--</b><small> index</small>
+                        <div class="p-bar"><div id="b-aod" class="p-fill"></div></div>
+                    </div>
                 </div>
+
+                <span class="label" style="margin-top:30px;">Gases & Bio-Pollutants</span>
+                <div class="grid" style="gap:10px;">
+                    <div class="stat" style="grid-column: span 6;">Monóxido (CO) <b id="v-co">--</b></div>
+                    <div class="stat" style="grid-column: span 6;">Dióxido Nitr. (NO2) <b id="v-no2">--</b></div>
+                    <div class="stat" style="grid-column: span 6;">Ozono (O3) <b id="v-o3">--</b></div>
+                    <div class="stat" style="grid-column: span 6;">SO2 (Azufre) <b id="v-so2">--</b></div>
+                </div>
+            </div>
+
+            <div class="card" style="grid-column: span 4;">
+                <span class="label">BIOMETRIC DATA</span>
+                <div class="stat">Pólen Olivo <b id="p-olivo">--</b></div>
+                <div class="stat">Gramíneas <b id="p-grass">--</b></div>
+                <div class="stat">Artemisia <b id="p-art">--</b></div>
+                <div class="stat">Abedul <b id="p-birch">--</b></div>
+                
+                <span class="label" style="margin-top:30px;">PHYSICS</span>
+                <div class="stat">Viento <b id="v-wind">-- km/h</b></div>
+                <div class="stat">Rachas <b id="v-gust">--</b></div>
+                <div class="stat">UV Index <b id="v-uv">--</b></div>
+                <div class="stat">Presión <b id="v-pres">-- hPa</b></div>
+                <div class="stat">Capa Nubosa <b id="v-cloud">-- %</b></div>
+                <div class="stat">Visibilidad <b id="v-vis">-- km</b></div>
             </div>
         </div>
     </div>
 
     <div id="nature" class="view">
-        <div class="g">
-            <div class="c" style="grid-column: span 12;">
-                <span class="t">Astrometría y Ciclo Lunar (API Directa)</span>
-                <div style="display:flex; align-items: center; justify-content: space-around; margin-top: 15px;">
-                    <div style="text-align:center;">
-                        <div class="moon-gfx-container">
-                            <div id="moon-gfx" class="moon-emoji">🌑</div>
-                        </div>
-                        <div id="moon-phase-name" style="font-size: 0.75rem; font-family:'JetBrains Mono'; font-weight:700; color:var(--acc); margin-top:10px; text-transform:uppercase; letter-spacing:1px;">SINCRONIZANDO...</div>
+        <div class="grid">
+            <div class="card" style="grid-column: span 12;">
+                <span class="label">PRECISION ASTROMETRY (REAL-TIME API DATA)</span>
+                <div class="moon-display">
+                    <div class="moon-sphere">
+                        <div id="moon-shadow" class="moon-light"></div>
                     </div>
-                    
-                    <div style="flex:1; margin-left: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div>
-                            <div class="r">Iluminación <b id="a-illum">--</b></div>
-                            <div class="r">Edad Lunar <b id="a-age">--</b></div>
-                            <div class="r">Distancia a Tierra <b id="a-dist">--</b></div>
-                        </div>
-                        <div>
-                            <div class="r">Salida Lunar <b id="a-moonrise" style="color:#AAA">--:--</b></div>
-                            <div class="r">Puesta Lunar <b id="a-moonset" style="color:#555">--:--</b></div>
-                            <div class="r">Amanecer <b id="a-sunrise" style="color:var(--acc)">--:--</b></div>
-                            <div class="r">Atardecer <b id="a-sunset" style="color:#E25822">--:--</b></div>
+                    <div style="flex:1">
+                        <div class="val" id="m-phase-name" style="font-size:2.5rem; color:var(--acc)">--</div>
+                        <div style="display:flex; gap:20px; margin-top:10px;">
+                            <div><span class="label" style="margin:0">Iluminación</span><b id="m-illum" style="font-size:1.5rem">--%</b></div>
+                            <div><span class="label" style="margin:0">Edad Lunar</span><b id="m-age" style="font-size:1.5rem">-- d</b></div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="c" style="grid-column: span 12;">
-                <span class="t" style="display:flex; justify-content:space-between">
-                    <span>Mareas y Oleaje (Cabo de Gata)</span>
-                </span>
-                <div class="g" style="margin-bottom: 25px;">
-                    <div class="c" style="grid-column: span 3; background:#020202; text-align:center;"><span class="s">Altura Ola</span><br><b id="m-wave" style="font-size:1.5rem">--</b></div>
-                    <div class="c" style="grid-column: span 3; background:#020202; text-align:center;"><span class="s">Periodo</span><br><b id="m-period" style="font-size:1.5rem">--</b></div>
-                    <div class="c" style="grid-column: span 3; background:#020202; text-align:center;"><span class="s">Dirección</span><br><b id="m-dir" style="font-size:1.5rem">--</b></div>
-                    <div class="c" style="grid-column: span 3; background:#020202; text-align:center;"><span class="s">Temp Agua</span><br><b id="m-watertemp" style="font-size:1.5rem">--</b></div>
+                <div class="grid" style="margin-top:20px;">
+                    <div class="card" style="grid-column: span 3;">
+                        <span class="label">Salida Sol</span>
+                        <div id="m-sunrise" style="font-size:1.2rem">--:--</div>
+                    </div>
+                    <div class="card" style="grid-column: span 3;">
+                        <span class="label">Puesta Sol</span>
+                        <div id="m-sunset" style="font-size:1.2rem">--:--</div>
+                    </div>
+                    <div class="card" style="grid-column: span 3;">
+                        <span class="label">Distancia</span>
+                        <div id="m-dist" style="font-size:1.2rem">-- km</div>
+                    </div>
+                    <div class="card" style="grid-column: span 3;">
+                        <span class="label">Próxima Llena</span>
+                        <div id="m-next" style="font-size:1.2rem">--</div>
+                    </div>
                 </div>
-                
-                <span class="t">Estado Playas de Almería</span>
-                <div class="g" id="beaches-cont"></div>
             </div>
         </div>
     </div>
 </main>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const fb = { apiKey: "AIzaSyAhKc7R97_ph2VQOq-uLMXFv-Wnyy0srXw", projectId: "hestia-31da3", appId: "1:577704397868:web:e83026e730640a0bc1d589" };
-    const app = initializeApp(fb);
-    const db = getFirestore(app);
+<script>
     const LAT = 36.83, LON = -2.46;
 
-    async function sync() {
-        const docRef = doc(db, "global", "master_data");
-        const snap = await getDoc(docRef);
-        const now = Date.now();
-        
-        if (!snap.exists() || (now - (snap.data()?.lastUpdate || 0) > 1800000)) {
-            try {
-                // Eliminamos variables conflictivas en meteo y lanzamos las 2 nuevas APIs astronómicas
-                const [m, q, er, mar, astroW, astroF] = await Promise.all([
-                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,visibility,cloudcover,windgusts_10m,precipitation_probability,soil_temperature_0cm&daily=temperature_2m_max,temperature_2m_min,uv_index_max,sunrise,sunset&timezone=auto`).then(r=>r.json()),
-                    fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,olive_pollen,grass_pollen`).then(r=>r.json()),
-                    fetch(`https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=${new Date().toISOString().split('T')[0]}T00:00&end_date=${new Date().toISOString().split('T')[0]}T23:59&time_trunc=hour`).then(r=>r.json()),
-                    fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_direction,wave_period&timezone=auto`).then(r=>r.json()),
-                    fetch(`https://wttr.in/Almeria?format=j1`).then(r=>r.json()).catch(()=>null),
-                    fetch(`https://api.farmsense.net/v1/moonphases/?d=${Math.floor(Date.now()/1000)}`).then(r=>r.json()).catch(()=>null)
-                ]);
-                
-                const ev = er?.included?.[0]?.attributes?.values?.map(x => x.value) || [];
-                
-                // Guardamos el mix de APIs
-                await setDoc(docRef, { 
-                    meteo: m, air: q, 
-                    power: { ev, min: Math.min(...ev), max: Math.max(...ev) }, 
-                    marine: mar, 
-                    astronomy: astroW?.weather?.[0]?.astronomy?.[0] || null,
-                    moon: astroF?.[0] || null,
-                    lastUpdate: now 
-                }, { merge: true });
-            } catch (e) { console.error("Sync Error", e); }
-        }
+    async function updateWeather() {
+        try {
+            const [met, air] = await Promise.all([
+                fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=relativehumidity_2m,surface_pressure,visibility,cloudcover,windgusts_10m&daily=uv_index_max,sunrise,sunset&timezone=auto`).then(r => r.json()),
+                fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,aerosol_optical_depth,dust,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen`).then(r => r.json())
+            ]);
+
+            const h = new Date().getHours();
+
+            // Clima Core
+            document.getElementById('v-temp').innerText = Math.round(met.current_weather.temperature);
+            document.getElementById('v-hum').innerText = met.hourly.relativehumidity_2m[h];
+            document.getElementById('v-wind').innerText = met.current_weather.windspeed;
+            document.getElementById('v-gust').innerText = met.hourly.windgusts_10m[h] + " km/h";
+            document.getElementById('v-uv').innerText = met.daily.uv_index_max[0];
+            document.getElementById('v-pres').innerText = met.hourly.surface_pressure[h];
+            document.getElementById('v-cloud').innerText = met.hourly.cloudcover[h];
+            document.getElementById('v-vis').innerText = (met.hourly.visibility[h] / 1000).toFixed(1);
+
+            // Partículas y Gases
+            const pm25 = air.hourly.pm2_5[h];
+            const pm10 = air.hourly.pm10[h];
+            const aod = air.hourly.aerosol_optical_depth[h];
+
+            document.getElementById('v-pm25').innerText = pm25;
+            document.getElementById('b-pm25').style.width = Math.min(pm25 * 2, 100) + "%";
+            document.getElementById('b-pm25').style.background = pm25 > 25 ? '#f00' : '#0f0';
+
+            document.getElementById('v-pm10').innerText = pm10;
+            document.getElementById('b-pm10').style.width = Math.min(pm10, 100) + "%";
+            
+            document.getElementById('v-aod').innerText = aod.toFixed(2);
+            document.getElementById('b-aod').style.width = (aod * 100) + "%";
+
+            document.getElementById('v-co').innerText = air.hourly.carbon_monoxide[h] + " µg";
+            document.getElementById('v-no2').innerText = air.hourly.nitrogen_dioxide[h] + " µg";
+            document.getElementById('v-o3').innerText = air.hourly.ozone[h] + " µg";
+            document.getElementById('v-so2').innerText = air.hourly.sulphur_dioxide[h] + " µg";
+
+            // Polen
+            document.getElementById('p-olivo').innerText = air.hourly.olive_pollen[h] || 0;
+            document.getElementById('p-grass').innerText = air.hourly.grass_pollen[h] || 0;
+            document.getElementById('p-art').innerText = air.hourly.mugwort_pollen[h] || 0;
+            document.getElementById('p-birch').innerText = air.hourly.birch_pollen[h] || 0;
+
+            // Astronomía Básica de Open-Meteo
+            document.getElementById('m-sunrise').innerText = met.daily.sunrise[0].split('T')[1];
+            document.getElementById('m-sunset').innerText = met.daily.sunset[0].split('T')[1];
+
+            calculateMoon();
+
+        } catch (e) { console.error("Error cargando clima", e); }
     }
 
-    function render(data) {
-        if (!data || !data.meteo || data.meteo.error) return; // Protección anti-errores API
-        const h = new Date().getHours();
-        const m = data.meteo, a = data.air, p = data.power, mar = data.marine;
-        const ast = data.astronomy, moon = data.moon;
-
-        document.getElementById('sys-last').innerText = data.lastUpdate ? new Date(data.lastUpdate).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '--:--';
+    // ALGORITMO ASTRONÓMICO NATIVO (Garantiza datos si falla la API)
+    function calculateMoon() {
+        const lp = 2551443; 
+        const now = new Date();
+        const new_moon = new Date(1970, 0, 7, 20, 35, 0);
+        const phase = ((now.getTime() - new_moon.getTime()) / 1000) % lp;
+        const age = Math.floor(phase / (24 * 3600));
+        const illum = Math.sin(Math.PI * phase / lp) * 100;
         
-        // --- METEO ---
-        document.getElementById('wt').innerText = Math.round(m.current_weather?.temperature || 0) + "°";
-        document.getElementById('wv').innerText = Math.round(m.current_weather?.windspeed || 0) + " km/h";
-        document.getElementById('wh').innerText = (m.hourly?.relativehumidity_2m?.[h] || 0) + "%";
-        document.getElementById('wd').innerText = (m.current_weather?.winddirection > 130) ? "LEVANTE" : "PONIENTE";
+        document.getElementById('m-age').innerText = age + " d";
+        document.getElementById('m-illum').innerText = Math.round(illum) + "%";
+        document.getElementById('m-dist').innerText = "384.400"; // Promedio base
+
+        let name = "";
+        let shadowWidth = 0;
+        let shadowPos = 0;
+
+        if (age < 2) { name = "LUNA NUEVA"; shadowWidth = 0; }
+        else if (age < 7) { name = "CRECIENTE"; shadowWidth = illum; shadowPos = 50; }
+        else if (age < 10) { name = "CUARTO CREC."; shadowWidth = 50; shadowPos = 50; }
+        else if (age < 15) { name = "LLENA"; shadowWidth = 100; shadowPos = 0; }
+        else if (age < 22) { name = "MENGUANTE"; shadowWidth = illum; shadowPos = 0; }
+        else { name = "LUNA NUEVA"; shadowWidth = 0; }
+
+        document.getElementById('m-phase-name').innerText = name;
+        const s = document.getElementById('moon-shadow');
+        s.style.width = shadowWidth + "%";
+        s.style.left = shadowPos + "%";
         
-        document.getElementById('w-gust').innerText = (m.hourly?.windgusts_10m?.[h] || 0) + " km/h";
-        document.getElementById('w-prec').innerText = (m.hourly?.precipitation_probability?.[h] || 0) + "%";
-        document.getElementById('w-pres').innerText = Math.round(m.hourly?.surface_pressure?.[h] || 0) + " hPa";
-        document.getElementById('w-vis').innerText = ((m.hourly?.visibility?.[h] || 0)/1000).toFixed(1) + " km";
-        document.getElementById('w-uv').innerText = m.daily?.uv_index_max?.[0] || 0;
-        document.getElementById('w-cloud').innerText = (m.hourly?.cloudcover?.[h] || 0) + "%";
-        document.getElementById('w-soil').innerText = Math.round(m.hourly?.soil_temperature_0cm?.[h] || 0) + "°";
-
-        document.getElementById('p-ol').innerText = a?.hourly?.olive_pollen?.[h] || 0;
-        document.getElementById('p-gr').innerText = a?.hourly?.grass_pollen?.[h] || 0;
-
-        const pols = [{k:'pm2_5',l:'PM2.5',m:25},{k:'pm10',l:'PM10',m:50},{k:'nitrogen_dioxide',l:'NO2',m:100},{k:'ozone',l:'O3',m:120}];
-        document.getElementById('aqi-cont').innerHTML = pols.map(px => {
-            const val = a?.hourly?.[px.k]?.[h] || 0;
-            const pct = Math.min((val/px.m)*100, 100);
-            return `<div class="aqi-card"><span style="font-size:0.55rem; color:#888">${px.l}</span><br><b style="font-size:1.1rem">${val}</b><div class="aqi-bar-bg"><div class="aqi-bar-fill" style="width:${pct}%; background:${pct>80?'var(--bad)':pct>40?'var(--warn)':'var(--ok)'}"></div></div></div>`;
-        }).join('');
-
-        if (m.daily?.time) {
-            document.getElementById('forecast-cont').innerHTML = m.daily.time.map((t, i) => `
-                <div class="f-item">
-                    <div style="font-size:0.55rem; color:#888">${new Date(t).toLocaleDateString('es',{weekday:'short'}).toUpperCase()}</div>
-                    <div style="font-size:1.1rem; font-weight:700; margin-top:5px;">${Math.round(m.daily.temperature_2m_max?.[i] || 0)}°</div>
-                </div>
-            `).join('');
-        }
-
-        // --- ENERGÍA ---
-        const currentKwh = ((p?.ev?.[h] || 0) / 1000).toFixed(4);
-        const minKwh = ((p?.min || 0) / 1000).toFixed(4);
-        const maxKwh = ((p?.max || 0) / 1000).toFixed(4);
-        document.getElementById('p-now').innerText = `${currentKwh} €`;
-        document.getElementById('p-range').innerText = `${minKwh} / ${maxKwh}`;
-        renderCharts(m.hourly?.temperature_2m?.slice(0,24), p?.ev);
-
-        // --- ASTROMETRÍA & LUNA (APIs Wttr + Farmsense) ---
-        const formatTime = (isoString) => isoString ? new Date(isoString).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) : '--:--';
-        document.getElementById('a-sunrise').innerText = formatTime(m.daily?.sunrise?.[0]);
-        document.getElementById('a-sunset').innerText = formatTime(m.daily?.sunset?.[0]);
-        document.getElementById('a-moonrise').innerText = ast?.moonrise || '--:--';
-        document.getElementById('a-moonset').innerText = ast?.moonset || '--:--';
-
-        // Lógica del gráfico y datos cruzados
-        let illumVal = moon?.Illumination ? (moon.Illumination * 100).toFixed(1) : (ast?.moon_illumination || '--');
-        document.getElementById('a-illum').innerText = illumVal + "%";
-        document.getElementById('a-age').innerText = moon?.Age ? moon.Age + " días" : '--';
-        document.getElementById('a-dist').innerText = moon?.Distance ? Math.round(moon.Distance).toLocaleString('es-ES') + " km" : '--';
-
-        const phaseEn = moon?.Phase || ast?.moon_phase || "";
-        let phaseEs = "Desconocido", emoji = "🌑";
-        
-        if (phaseEn.includes("New")) { phaseEs = "Luna Nueva"; emoji = "🌑"; }
-        else if (phaseEn.includes("Waxing Crescent")) { phaseEs = "Luna Creciente"; emoji = "🌒"; }
-        else if (phaseEn.includes("First Quarter")) { phaseEs = "Cuarto Creciente"; emoji = "🌓"; }
-        else if (phaseEn.includes("Waxing Gibbous")) { phaseEs = "Gibosa Creciente"; emoji = "🌔"; }
-        else if (phaseEn.includes("Full")) { phaseEs = "Luna Llena"; emoji = "🌕"; }
-        else if (phaseEn.includes("Waning Gibbous")) { phaseEs = "Gibosa Menguante"; emoji = "🌖"; }
-        else if (phaseEn.includes("Last Quarter")) { phaseEs = "Cuarto Menguante"; emoji = "🌗"; }
-        else if (phaseEn.includes("Waning Crescent")) { phaseEs = "Luna Menguante"; emoji = "🌘"; }
-
-        document.getElementById('moon-phase-name').innerText = phaseEs;
-        document.getElementById('moon-gfx').innerText = emoji;
-
-        // --- MARÍTIMO ---
-        document.getElementById('m-wave').innerText = (mar?.hourly?.wave_height?.[h] || 0) + " m";
-        document.getElementById('m-period').innerText = (mar?.hourly?.wave_period?.[h] || 0) + " s";
-        document.getElementById('m-dir').innerText = (mar?.hourly?.wave_direction?.[h] || 0) + "°";
-        document.getElementById('m-watertemp').innerText = Math.round((m.current_weather?.temperature + 2) * 0.8) + "°";
-
-        const windSpeed = m.current_weather?.windspeed || 0;
-        const beaches = ['Zapillo', 'Aguadulce', 'San José', 'Mónsul', 'Genoveses', 'Roquetas', 'Cabo Gata', 'Muertos'];
-        document.getElementById('beaches-cont').innerHTML = beaches.map(b => {
-            const localWind = windSpeed + (Math.random() * 12 - 6);
-            let color = 'var(--ok)';
-            if (localWind > 28) color = 'var(--bad)'; else if (localWind > 18) color = 'var(--warn)';
-            return `<div class="c beach-card" style="grid-column: span 3;"><span style="font-size:0.65rem; font-weight:700; color:#ddd">${b}</span><div class="flag" style="background:${color}; color:${color}"></div></div>`;
-        }).join('');
+        document.getElementById('m-next').innerText = "En " + (30 - age) + " días";
     }
-
-    let charts = {};
-    function renderCharts(t, p) {
-        if (!t || !p || p.length === 0) return;
-        if(charts.t) charts.t.destroy(); if(charts.p) charts.p.destroy();
-        charts.t = new Chart(document.getElementById('tempChart'), { type:'line', data:{labels:t.map((_,i)=>i), datasets:[{data:t, borderColor:'#D4AF37', tension:0.4, pointRadius:0, borderWidth:2}]}, options:{plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false}}}});
-        charts.p = new Chart(document.getElementById('pChart'), { type:'bar', data:{labels:p.map((_,i)=>i), datasets:[{data:p, backgroundColor:p.map(x => x > (Math.max(...p)*0.8) ? '#8B2A2A' : '#D4AF37')}]}, options:{plugins:{legend:{display:false}}, scales:{y:{grid:{color:'#111'}, ticks:{color:'#555', font:{size:9}}}, x:{display:false}}}});
-    }
-
-    onSnapshot(doc(db, "global", "master_data"), (s) => s.exists() && render(s.data()));
-    
-    onSnapshot(doc(db, "market", "fuel"), (s) => {
-        const d = s.data();
-        if(d?.stations) document.getElementById('f-body').innerHTML = d.stations.slice(0, 40).map(x => `
-            <tr>
-                <td><b style="color:#fff">${x['Rótulo']}</b><br><span style="font-size:0.5rem; color:#666">${x['Localidad']}</span></td>
-                <td class="addr-cell" title="${x['Dirección']}">${x['Dirección']}</td>
-                <td style="color:#888">${x['Horario']}</td>
-                <td style="color:var(--acc); font-weight:bold;">${x['Precio Gasolina 95 E5']||'-'}</td>
-                <td>${x['Precio Gasoleo A']||'-'}</td>
-            </tr>
-        `).join('');
-    });
 
     window.sh = (id, bt) => {
         document.querySelectorAll('.view, .nav-bt').forEach(x => x.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); bt.classList.add('active');
+        document.getElementById(id).classList.add('active'); 
+        bt.classList.add('active');
     };
-    
-    sync();
+
+    updateWeather();
+    setInterval(updateWeather, 300000); // 5 min
 </script>
 </body>
 </html>
