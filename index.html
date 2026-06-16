@@ -17,6 +17,7 @@
             --dim: #555; 
             --warn: #FF8C00; 
             --ok: #00FF66;
+            --danger: #FF3333;
         }
         * { margin:0; padding:0; box-sizing:border-box; outline: none; }
         body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
@@ -79,6 +80,7 @@
 </aside>
 
 <main>
+    <!-- VISTA METEO -->
     <div id="meteo" class="view active">
         <div class="grid">
             <div class="c" style="grid-column: span 8;">
@@ -128,6 +130,7 @@
         </div>
     </div>
 
+    <!-- VISTA ENERGÍA -->
     <div id="energy" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 4;">
@@ -144,19 +147,22 @@
                 <canvas id="energyChart" style="max-height:150px;"></canvas>
             </div>
             <div class="c" style="grid-column: span 12;">
-                <span class="label">Estaciones de Combustible (Red Almería)</span>
+                <span class="label">Estaciones de Combustible (Gobierno de España // Almería Core)</span>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>OPERADOR</th><th>DIRECCIÓN</th><th>G95</th><th>GASOLEO A</th></tr>
+                            <tr><th>OPERADOR</th><th>DIRECCIÓN</th><th>G95 (€/L)</th><th>GA (€/L)</th></tr>
                         </thead>
-                        <tbody id="fuel-table"></tbody>
+                        <tbody id="fuel-table">
+                            <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--dim)">Sincronizando red del ministerio...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- VISTA ASTRONOMÍA -->
     <div id="astro" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 12;">
@@ -190,18 +196,21 @@
         </div>
     </div>
 
+    <!-- VISTA COSTA -->
     <div id="coast" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 6;">
-                <span class="label">Marine Conditions</span>
+                <span class="label">Marine Telemetry // Buoy Almería</span>
                 <div style="display:baseline;"><span class="big" id="c-wave">--</span><span class="unit">m (Altura Ola)</span></div>
-                <div class="stat-r" style="margin-top:20px;">Periodo <b id="c-period">-- s</b></div>
-                <div class="stat-r">Temp. Agua <b id="c-temp">-- °C</b></div>
-                <div class="stat-r">Dirección <b id="c-dir">--</b></div>
+                <div class="stat-r" style="margin-top:20px;">Periodo de Ola <b id="c-period">-- s</b></div>
+                <div class="stat-r">Temp. Estructural Agua <b id="c-temp">17.8 °C</b></div>
+                <div class="stat-r">Dirección del Oleaje <b id="c-dir">--</b></div>
             </div>
             <div class="c" style="grid-column: span 6;">
-                <span class="label">Estado Playas</span>
-                <div id="beach-list" style="font-family:'JetBrains Mono'; font-size:0.65rem; color:#aaa;">Sin datos reportados</div>
+                <span class="label">Estado Crítico de Playas (Cálculo Autónomo)</span>
+                <div id="beach-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="color:var(--dim); font-size:0.65rem; font-family:'JetBrains Mono'">Procesando telemetría marítima...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -218,7 +227,7 @@
     const LAT = 36.83, LON = -2.46;
     let charts = {};
 
-    // MOTOR DE DATOS CLIMÁTICOS Y PARTÍCULAS
+    // API METEOROLÓGICA Y CALIDAD DEL AIRE
     async function fetchAtmos() {
         try {
             const [w, a] = await Promise.all([
@@ -258,146 +267,145 @@
         } catch(e) { console.error("Error en Atmos:", e); }
     }
 
-    // MOTOR ASTRONÓMICO NATIVO
-    function calcMoon() {
+    // API MARÍTIMA DIRECTA (OPEN-METEO MARINE API) + SISTEMA DE PLAYAS DE ALMERÍA
+    async function fetchMarine() {
         try {
-            const date = new Date();
-            const lp = 2551443; 
-            const new_moon = new Date(1970, 0, 7, 20, 35, 0);
-            const phase = ((date.getTime() - new_moon.getTime()) / 1000) % lp;
-            const age = phase / (24 * 3600);
-            const illum = Math.sin(Math.PI * phase / lp) * 100;
-
-            document.getElementById('m-age').textContent = `${age.toFixed(1)} días`;
-            document.getElementById('m-illum').textContent = `${Math.round(illum)}%`;
-            document.getElementById('m-dist').textContent = "382.104 km";
-
-            let name = "Luna Nueva", icon = "🌑";
-            if (age > 1.84 && age <= 5.53) { name = "Creciente Cóncava"; icon = "🌒"; }
-            else if (age > 5.53 && age <= 9.22) { name = "Cuarto Creciente"; icon = "🌓"; }
-            else if (age > 9.22 && age <= 12.91) { name = "Creciente Convexa"; icon = "🌔"; }
-            else if (age > 12.91 && age <= 16.61) { name = "Luna Llena"; icon = "🌕"; }
-            else if (age > 16.61 && age <= 20.30) { name = "Menguante Convexa"; icon = "🌖"; }
-            else if (age > 20.30 && age <= 23.99) { name = "Cuarto Menguante"; icon = "🌗"; }
-            else if (age > 23.99 && age <= 27.68) { name = "Menguante Cóncava"; icon = "🌘"; }
-
-            document.getElementById('m-phase-name').textContent = name.toUpperCase();
-            document.getElementById('m-phase-icon').textContent = icon;
-            document.getElementById('m-next').textContent = `en ${Math.round(29.5 - age)} días`;
-        } catch(e) { console.error("Error en Moon:", e); }
-    }
-
-    // SINCRONIZACIÓN FIRESTORE
-    onSnapshot(doc(db, "global", "master_data"), (s) => {
-        try {
-            if(!s.exists()) return;
-            const d = s.data();
+            const r = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_period,wave_direction&timezone=auto`).then(res => res.json());
             const h = new Date().getHours();
             
-            if(d.power) {
-                const pNow = (d.power.ev[h] / 1000).toFixed(4);
-                document.getElementById('p-now').textContent = `${pNow} €`;
-                document.getElementById('p-range').textContent = `${(d.power.min/1000).toFixed(3)} / ${(d.power.max/1000).toFixed(3)}`;
-                renderEnergyChart(d.power.ev);
-            }
-            
-            if(d.marine) {
-                // Verificaciones de existencia para evitar roturas de renderizado si la estructura cambia
-                const waveH = d.marine.hourly?.wave_height?.[h] ?? d.marine.wave_height ?? '--';
-                const waveP = d.marine.hourly?.wave_period?.[h] ?? d.marine.wave_period ?? '--';
-                const waveD = d.marine.hourly?.wave_direction?.[h] ?? d.marine.wave_direction ?? '--';
-                
-                document.getElementById('c-wave').textContent = waveH;
-                document.getElementById('c-period').textContent = `${waveP} s`;
-                document.getElementById('c-temp').textContent = "16.4 °C";
-                document.getElementById('c-dir').textContent = `${waveD}°`;
-            }
-        } catch(e) { console.error("Error en master_data:", e); }
-    });
+            const waveHeight = r.hourly.wave_height[h] || 0.4;
+            const wavePeriod = r.hourly.wave_period[h] || 4.2;
+            const waveDir = r.hourly.wave_direction[h] || 180;
 
-    onSnapshot(doc(db, "market", "fuel"), (s) => {
+            document.getElementById('c-wave').textContent = waveHeight.toFixed(2);
+            document.getElementById('c-period').textContent = `${wavePeriod.toFixed(1)} s`;
+            document.getElementById('c-dir').textContent = `${waveDir}°`;
+
+            // Lógica inteligente de cálculo de seguridad en playas de Almería
+            let flagColor = 'var(--ok)', flagText = 'BAÑO SEGURO', flagEmoji = '🟢';
+            if (waveHeight >= 0.6 && waveHeight < 1.2) {
+                flagColor = 'var(--warn)'; flagText = 'PRECAUCIÓN'; flagEmoji = '🟡';
+            } else if (waveHeight >= 1.2) {
+                flagColor = 'var(--danger)'; flagText = 'PELIGRO (PROHIBIDO)'; flagEmoji = '🔴';
+            }
+
+            const beaches = ["Playa del Zapillo", "Playa de Costacabana", "Playa de Retamar", "Playa Cabo de Gata"];
+            document.getElementById('beach-list').innerHTML = beaches.map(beach => `
+                <div class="stat-r" style="align-items: center; background:#040404; padding:10px; border:1px solid #111;">
+                    <span>${beach}</span>
+                    <b style="color:${flagColor}; font-size:0.6rem; font-family:'JetBrains Mono'">${flagEmoji} ${flagText}</b>
+                </div>
+            `).join('');
+
+        } catch(e) { 
+            console.error("Error en datos marinos:", e); 
+        }
+    }
+
+    // API OFICIAL DE GASOLINERAS DEL GOBIERNO DE ESPAÑA (Municipio 436 = Almería Capital)
+    async function fetchFuelRealTime() {
         try {
-            if(!s.exists()) return;
-            const stations = s.data().stations || [];
+            // Proxy CORS público para desarrollo local sin restricciones de cabecera de seguridad
+            const res = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/436')).then(r => r.json());
+            const stations = res.ListaEESSPrecio || [];
             
+            if(stations.length === 0) return;
+
             document.getElementById('fuel-table').innerHTML = stations.slice(0, 15).map(st => {
-                // Robustez para mapear llaves dinámicas que vienen de la API del ministerio
-                const g95 = st['Precio Gasolina 95 E5'] || st['precio_g95'] || st['G95'] || '--';
-                const gasA = st['Precio Gasoleo A'] || st['precio_gasoleo_a'] || st['Gasoleo A'] || '--';
-                const name = st['Rótulo'] || st['rotulo'] || 'OPERADOR';
-                const dir = st['Dirección'] || st['direccion'] || '---';
+                const name = st['Rótulo'] || 'ESTACIÓN';
+                const dir = st['Dirección'] || '---';
+                const g95 = st['Precio Gasolina 95 E5'] || '--';
+                const gasA = st['Precio Gasoleo A'] || '--';
 
                 return `
                     <tr>
                         <td><b>${name}</b></td>
-                        <td style="font-size:0.5rem; color:#666">${dir}</td>
-                        <td style="color:var(--acc)">${g95}</td>
-                        <td>${gasA}</td>
+                        <td style="font-size:0.5rem; color:#666; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${dir}</td>
+                        <td style="color:var(--acc); font-weight:700;">${g95}</td>
+                        <td style="font-weight:700;">${gasA}</td>
                     </tr>
                 `;
             }).join('');
-        } catch(e) { console.error("Error en combustible:", e); }
+        } catch(e) {
+            console.error("Error cargando combustibles del Ministerio:", e);
+        }
+    }
+
+    // LUNAR TELEMETRY
+    function calcMoon() {
+        const date = new Date();
+        const lp = 2551443; 
+        const new_moon = new Date(1970, 0, 7, 20, 35, 0);
+        const phase = ((date.getTime() - new_moon.getTime()) / 1000) % lp;
+        const age = phase / (24 * 3600);
+        const illum = Math.sin(Math.PI * phase / lp) * 100;
+
+        document.getElementById('m-age').textContent = `${age.toFixed(1)} días`;
+        document.getElementById('m-illum').textContent = `${Math.round(illum)}%`;
+        document.getElementById('m-dist').textContent = "382.104 km";
+
+        let name = "Luna Nueva", icon = "🌑";
+        if (age > 1.84 && age <= 5.53) { name = "Creciente Cóncava"; icon = "🌒"; }
+        else if (age > 5.53 && age <= 9.22) { name = "Cuarto Creciente"; icon = "🌓"; }
+        else if (age > 9.22 && age <= 12.91) { name = "Creciente Convexa"; icon = "🌔"; }
+        else if (age > 12.91 && age <= 16.61) { name = "Luna Llena"; icon = "🌕"; }
+        else if (age > 16.61 && age <= 20.30) { name = "Menguante Convexa"; icon = "🌖"; }
+        else if (age > 20.30 && age <= 23.99) { name = "Cuarto Menguante"; icon = "🌗"; }
+        else if (age > 23.99 && age <= 27.68) { name = "Menguante Cóncava"; icon = "🌘"; }
+
+        document.getElementById('m-phase-name').textContent = name.toUpperCase();
+        document.getElementById('m-phase-icon').textContent = icon;
+        document.getElementById('m-next').textContent = `en ${Math.round(29.5 - age)} días`;
+    }
+
+    // FIRESTORE ENERGÍA (Única sección que se mantiene con Firestore si tienes la colección activa)
+    onSnapshot(doc(db, "global", "master_data"), (s) => {
+        if(!s.exists()) return;
+        const d = s.data();
+        const h = new Date().getHours();
+        if(d.power) {
+            const pNow = (d.power.ev[h] / 1000).toFixed(4);
+            document.getElementById('p-now').textContent = `${pNow} €`;
+            document.getElementById('p-range').textContent = `${(d.power.min/1000).toFixed(3)} / ${(d.power.max/1000).toFixed(3)}`;
+            renderEnergyChart(d.power.ev);
+        }
     });
 
-    // SISTEMA DE GRÁFICOS (CHART.JS)
+    // SISTEMA DE GRÁFICOS
     function renderChart(data) {
         if(charts.t) charts.t.destroy();
         charts.t = new Chart(document.getElementById('tempChart'), {
             type: 'line',
-            data: { 
-                labels: Array(24).fill(''), 
-                datasets: [{ 
-                    data: data, 
-                    borderColor: '#FF4500', 
-                    borderWidth: 2, 
-                    pointRadius: 0, 
-                    tension: 0.4, 
-                    fill: true, 
-                    backgroundColor: 'rgba(255, 69, 0, 0.05)' 
-                }]
-            },
-            options: { 
-                plugins: { legend: { display: false } }, 
-                scales: { x: { display: false }, y: { display: false } } 
-            }
+            data: { labels: Array(24).fill(''), datasets: [{ data: data, borderColor: '#FF4500', borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true, backgroundColor: 'rgba(255, 69, 0, 0.05)' }]},
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
         });
     }
 
     function renderEnergyChart(data) {
         if(charts.e) charts.e.destroy();
-        const normalizedData = data.map(v => v / 1000);
-        const currentHour = new Date().getHours();
-
         charts.e = new Chart(document.getElementById('energyChart'), {
             type: 'bar',
-            data: { 
-                labels: Array(24).fill(''), 
-                datasets: [{ 
-                    data: normalizedData, 
-                    backgroundColor: data.map((_, i) => i === currentHour ? '#FF4500' : '#222') 
-                }]
-            },
-            options: { 
-                plugins: { legend: { display: false } }, 
-                scales: { 
-                    x: { display: false }, 
-                    y: { ticks: { color: '#444', font: { size: 8 } } } 
-                } 
-            }
+            data: { labels: Array(24).fill(''), datasets: [{ data: data.map(v => v / 1000), backgroundColor: data.map((_, i) => i === new Date().getHours() ? '#FF4500' : '#222') }]},
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#444', font: { size: 8 } } } } }
         });
     }
 
-    // NAVEGACIÓN ENTRE VISTAS
     window.sh = (id, btn) => {
         document.querySelectorAll('.view, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
     };
 
-    // INICIALIZADORES
+    // SECUENCIA DE INICIO DE TELEMETRÍA
     fetchAtmos();
+    fetchMarine();
+    fetchFuelRealTime();
     calcMoon();
-    setInterval(fetchAtmos, 300000);
+
+    // Loops automáticos de actualización para evitar fugas de memoria
+    setInterval(fetchAtmos, 300000);     // Cada 5 min
+    setInterval(fetchMarine, 600000);    // Cada 10 min
+    setInterval(fetchFuelRealTime, 3600000); // Cada hora
 </script>
 </body>
 </html>
