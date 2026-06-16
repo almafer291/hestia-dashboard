@@ -3,74 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v4.0 | INDUSTRIAL FIRE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=100;300;400;600;800&family=JetBrains+Mono:wght=400;700&display=swap" rel="stylesheet">
+    <title>HESTIA v5.0 | KILL BILL EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --bg: #000; 
-            --surf: #080808; 
-            --acc: #FF4500; 
-            --bor: #1a1a1a; 
-            --txt: #FFF; 
-            --dim: #555; 
+            --bg: #000000; 
+            --surf: #0a0a0a; 
+            --acc: #FFD700; /* KILL BILL YELLOW */
+            --bor: #332b00; 
+            --txt: #FFFFFF; 
+            --dim: #888888; 
             --warn: #FF8C00; 
-            --ok: #00FF66;
-            --danger: #FF3333;
+            --danger: #FF0000;
         }
         * { margin:0; padding:0; box-sizing:border-box; outline: none; }
-        body { background: var(--bg); color: var(--txt); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: var(--txt); font-family: 'Space Mono', monospace; display: flex; height: 100vh; overflow: hidden; }
         
-        /* SIDEBAR INDUSTRIAL */
-        aside { width: 70px; border-right: 1px solid var(--bor); display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #020202; z-index: 100; }
-        .main-fire { font-size: 2.2rem; margin-bottom: 40px; filter: drop-shadow(0 0 12px var(--acc)); animation: pulse 2s infinite; cursor: pointer; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }
+        /* SIDEBAR */
+        aside { width: 80px; border-right: 2px solid var(--acc); display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #000; z-index: 100; box-shadow: 5px 0 20px rgba(255, 215, 0, 0.05); }
+        .main-icon { font-size: 2.5rem; margin-bottom: 40px; cursor: pointer; text-shadow: 0 0 15px var(--acc); transition: 0.3s; }
+        .main-icon:hover { transform: scale(1.1); }
         
-        nav { display: flex; flex-direction: column; gap: 25px; }
-        .n-btn { color: var(--dim); cursor: pointer; font-size: 1.6rem; transition: 0.2s; position: relative; }
-        .n-btn:hover { color: #fff; }
-        .n-btn.active { color: var(--acc); }
-        .n-btn.active::after { content: ''; position: absolute; left: -15px; top: 25%; height: 50%; width: 3px; background: var(--acc); border-radius: 0 4px 4px 0; box-shadow: 0 0 10px var(--acc); }
+        nav { display: flex; flex-direction: column; gap: 30px; width: 100%; align-items: center; }
+        .n-btn { color: var(--dim); cursor: pointer; font-size: 1.8rem; transition: 0.2s; width: 100%; text-align: center; padding: 10px 0; border-left: 3px solid transparent; }
+        .n-btn:hover { color: var(--acc); }
+        .n-btn.active { color: #000; background: var(--acc); border-left: 3px solid #fff; box-shadow: inset 5px 0 15px rgba(0,0,0,0.2); }
 
         /* CONTENEDOR PRINCIPAL */
-        main { flex: 1; overflow-y: auto; padding: 20px; background: radial-gradient(circle at top right, #0a0500 0%, #000 40%); }
-        .view { display: none; animation: slideUp 0.3s ease-out; }
+        main { flex: 1; overflow-y: auto; padding: 25px; background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" fill="%23111"/></svg>'); }
+        .view { display: none; animation: flashIn 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
         .view.active { display: block; }
-        @keyframes slideUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes flashIn { 0% { opacity: 0; transform: scale(0.98); filter: brightness(2); } 100% { opacity: 1; transform: scale(1); filter: brightness(1); } }
 
         /* COMPONENTES */
-        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
-        .c { background: var(--surf); border: 1px solid var(--bor); padding: 15px; position: relative; overflow: hidden; }
-        .c::before { content: ''; position: absolute; top:0; left:0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--bor), transparent); }
+        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
+        .c { background: var(--surf); border: 1px solid var(--bor); padding: 20px; position: relative; border-top: 3px solid #1a1500; transition: border-color 0.3s; }
+        .c:hover { border-top-color: var(--acc); }
 
-        .label { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--acc); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
-        .big { font-size: 3rem; font-weight: 100; letter-spacing: -2px; line-height: 1; }
-        .unit { font-size: 0.7rem; color: var(--dim); font-weight: 800; margin-left: 4px; }
+        .label { font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--acc); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 15px; border-bottom: 1px solid var(--bor); padding-bottom: 5px; }
+        .big { font-family: 'Oswald', sans-serif; font-size: 4rem; font-weight: 700; line-height: 1; color: #fff; }
+        .unit { font-size: 0.9rem; color: var(--acc); font-weight: 700; margin-left: 5px; }
         
-        .stat-r { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #111; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: #aaa; }
-        .stat-r b { color: #fff; }
+        .stat-r { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #222; font-size: 0.75rem; color: var(--dim); }
+        .stat-r b { color: #fff; font-size: 0.85rem; }
 
         /* TABLAS */
-        .table-wrap { max-height: 400px; overflow-y: auto; width: 100%; border: 1px solid #111; }
-        table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono'; font-size: 0.6rem; }
-        th { text-align: left; padding: 10px; background: #111; color: var(--acc); position: sticky; top: 0; }
-        td { padding: 8px 10px; border-bottom: 1px solid #0a0a0a; color: #ccc; }
-        tr:hover td { background: #0f0f0f; color: #fff; }
+        .table-wrap { max-height: 400px; overflow-y: auto; width: 100%; border: 1px solid var(--bor); background: #000; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        th { text-align: left; padding: 12px; background: var(--acc); color: #000; font-family: 'Oswald', sans-serif; font-size: 0.9rem; position: sticky; top: 0; text-transform: uppercase; }
+        td { padding: 10px 12px; border-bottom: 1px solid #111; color: #ddd; }
+        tr:hover td { background: #1a1500; color: var(--acc); }
 
         /* PARTICULAS BARRA */
-        .p-bar-container { height: 4px; background: #111; margin-top: 6px; position: relative; }
-        .p-bar-fill { height: 100%; background: var(--acc); transition: 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .p-bar-container { height: 6px; background: #111; margin-top: 8px; border-radius: 3px; overflow: hidden; }
+        .p-bar-fill { height: 100%; background: var(--acc); transition: 1s ease-out; }
 
-        /* MOON ORIGINAL STYLE */
-        .moon-hero { display: flex; align-items: center; justify-content: space-around; padding: 20px; }
-        .moon-data-box { text-align: center; border: 1px solid #111; padding: 15px; min-width: 120px; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--bor); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--acc); }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="main-fire" onclick="location.reload()">🔥</div>
+    <div class="main-icon" onclick="location.reload()">🦙</div>
     <nav>
         <div class="n-btn active" onclick="sh('meteo', this)" title="ATMOSFERA"><i class="ph-bold ph-gauge"></i></div>
         <div class="n-btn" onclick="sh('energy', this)" title="ENERGIA"><i class="ph-bold ph-lightning"></i></div>
@@ -80,81 +79,90 @@
 </aside>
 
 <main>
-    <!-- VISTA METEO -->
     <div id="meteo" class="view active">
         <div class="grid">
             <div class="c" style="grid-column: span 8;">
-                <span class="label">Primary Sensors // Almería Core</span>
-                <div style="display:flex; justify-content: space-between; align-items: baseline;">
-                    <div><span class="big" id="v-temp">--</span><span class="unit">°C</span></div>
-                    <div><span class="big" id="v-hum" style="font-size:2rem; color:var(--dim)">--</span><span class="unit">% HR</span></div>
-                    <div style="text-align:right"><span id="v-wind" style="font-size:1.5rem">--</span><span class="unit">km/h</span><br><small id="v-dir" style="font-size:0.5rem; color:var(--acc)"></small></div>
+                <span class="label">TELEMETRÍA ATMOSFÉRICA // ALMERÍA CORE</span>
+                <div class="grid" style="gap:10px; margin-bottom: 20px;">
+                    <div style="grid-column: span 4;">
+                        <span class="big" id="v-temp">--</span><span class="unit">°C</span>
+                        <div style="color:var(--dim); font-size:0.7rem;">SENSACIÓN: <b id="v-app-temp" style="color:#fff">-- °C</b></div>
+                    </div>
+                    <div style="grid-column: span 4;">
+                        <span class="big" id="v-hum" style="color:var(--acc)">--</span><span class="unit">% HR</span>
+                        <div style="color:var(--dim); font-size:0.7rem;">PT. ROCÍO: <b id="v-dew" style="color:#fff">-- °C</b></div>
+                    </div>
+                    <div style="grid-column: span 4; text-align:right;">
+                        <span class="big" id="v-wind" style="font-size:3rem;">--</span><span class="unit">km/h</span>
+                        <div style="color:var(--dim); font-size:0.7rem;">RÁCHAS: <b id="v-gusts" style="color:#fff">-- km/h</b> <span id="v-dir" style="color:var(--acc)"></span></div>
+                    </div>
                 </div>
-                
-                <span class="label" style="margin-top:25px;">Air Quality Index (AQI) & Particles</span>
-                <div class="grid" style="gap:8px;">
-                    <div class="c" style="grid-column: span 3; background:#000">
-                        <span class="label" style="font-size:0.5rem">PM2.5</span>
-                        <b id="v-pm25">--</b><div class="p-bar-container"><div id="b-pm25" class="p-bar-fill"></div></div>
+
+                <span class="label">ANÁLISIS DE CALIDAD DEL AIRE (AQI)</span>
+                <div class="grid" style="gap:10px;">
+                    <div class="c" style="grid-column: span 3; padding:10px; background:#000;">
+                        <span style="font-size:0.6rem; color:var(--dim)">PM2.5</span> <b id="v-pm25" style="float:right">--</b>
+                        <div class="p-bar-container"><div id="b-pm25" class="p-bar-fill"></div></div>
                     </div>
-                    <div class="c" style="grid-column: span 3; background:#000">
-                        <span class="label" style="font-size:0.5rem">PM10</span>
-                        <b id="v-pm10">--</b><div class="p-bar-container"><div id="b-pm10" class="p-bar-fill"></div></div>
+                    <div class="c" style="grid-column: span 3; padding:10px; background:#000;">
+                        <span style="font-size:0.6rem; color:var(--dim)">PM10</span> <b id="v-pm10" style="float:right">--</b>
+                        <div class="p-bar-container"><div id="b-pm10" class="p-bar-fill"></div></div>
                     </div>
-                    <div class="c" style="grid-column: span 3; background:#000">
-                        <span class="label" style="font-size:0.5rem">Polvo/Dust</span>
-                        <b id="v-dust">--</b><div class="p-bar-container"><div id="b-dust" class="p-bar-fill"></div></div>
+                    <div class="c" style="grid-column: span 3; padding:10px; background:#000;">
+                        <span style="font-size:0.6rem; color:var(--dim)">POLVO (DUST)</span> <b id="v-dust" style="float:right">--</b>
+                        <div class="p-bar-container"><div id="b-dust" class="p-bar-fill"></div></div>
                     </div>
-                    <div class="c" style="grid-column: span 3; background:#000">
-                        <span class="label" style="font-size:0.5rem">CO</span>
-                        <b id="v-co">--</b><div class="p-bar-container"><div id="b-co" class="p-bar-fill"></div></div>
+                    <div class="c" style="grid-column: span 3; padding:10px; background:#000;">
+                        <span style="font-size:0.6rem; color:var(--dim)">CO</span> <b id="v-co" style="float:right">--</b>
+                        <div class="p-bar-container"><div id="b-co" class="p-bar-fill"></div></div>
                     </div>
                 </div>
             </div>
 
             <div class="c" style="grid-column: span 4;">
-                <span class="label">Bio-Metrics (Pollen)</span>
-                <div class="stat-r">Olivo <b id="p-olivo">--</b></div>
-                <div class="stat-r">Gramíneas <b id="p-grass">--</b></div>
-                <div class="stat-r">Aerosoles <b id="v-aod">--</b></div>
-                <span class="label" style="margin-top:20px;">Physical Telemetry</span>
-                <div class="stat-r">UV Max <b id="v-uv">--</b></div>
-                <div class="stat-r">Presión <b id="v-pres">-- hPa</b></div>
+                <span class="label">METRICS FÍSICOS AVANZADOS</span>
+                <div class="stat-r">Prob. Precipitación <b id="v-precip">-- %</b></div>
+                <div class="stat-r">Radiación Solar <b id="v-rad">-- W/m²</b></div>
+                <div class="stat-r">Temp. Suelo (0cm) <b id="v-soil">-- °C</b></div>
+                <div class="stat-r">Presión Superficie <b id="v-pres">-- hPa</b></div>
                 <div class="stat-r">Visibilidad <b id="v-vis">-- km</b></div>
-                <div class="stat-r">Nubosidad <b id="v-cloud">-- %</b></div>
+                <div class="stat-r">Nubosidad Total <b id="v-cloud">-- %</b></div>
+                <div class="stat-r">Índice UV <b id="v-uv">--</b></div>
+                <span class="label" style="margin-top:15px;">BIOMETRÍA</span>
+                <div class="stat-r">Polen Olivo <b id="p-olivo">--</b></div>
+                <div class="stat-r">Polen Gramíneas <b id="p-grass">--</b></div>
             </div>
             
             <div class="c" style="grid-column: span 12;">
+                <span class="label">TENDENCIA TÉRMICA 24H</span>
                 <canvas id="tempChart" style="max-height:120px;"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- VISTA ENERGÍA -->
     <div id="energy" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 4;">
-                <span class="label">PVPC Actual</span>
-                <div class="big" id="p-now" style="color:var(--acc); font-size:2.5rem">-- €</div>
-                <span class="unit">Precio por kWh</span>
+                <span class="label">MERCADO PVPC</span>
+                <div class="big" id="p-now" style="color:var(--acc); font-size:3.5rem">--</div>
+                <span class="unit">€ / kWh</span>
             </div>
             <div class="c" style="grid-column: span 8;">
-                <span class="label">Rango Diario</span>
-                <div class="big" id="p-range" style="font-size:2.5rem">-- / --</div>
-                <span class="unit">Mínimo / Máximo (Hoy)</span>
+                <span class="label">RANGO DIARIO (MIN / MAX)</span>
+                <div class="big" id="p-range" style="font-size:3.5rem">-- / --</div>
             </div>
             <div class="c" style="grid-column: span 12;">
                 <canvas id="energyChart" style="max-height:150px;"></canvas>
             </div>
             <div class="c" style="grid-column: span 12;">
-                <span class="label">Estaciones de Combustible (Gobierno de España // Almería Core)</span>
+                <span class="label">ESTACIONES DE COMBUSTIBLE (DATOS FIREBASE LOCAL)</span>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr><th>OPERADOR</th><th>DIRECCIÓN</th><th>G95 (€/L)</th><th>GA (€/L)</th></tr>
+                            <tr><th>OPERADOR</th><th>DIRECCIÓN</th><th>G95 (€/L)</th><th>GASÓLEO A (€/L)</th></tr>
                         </thead>
                         <tbody id="fuel-table">
-                            <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--dim)">Sincronizando red del ministerio...</td></tr>
+                            <tr><td colspan="4" style="text-align:center; padding:20px;">Esperando sincronización de base de datos Firestore...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -162,54 +170,69 @@
         </div>
     </div>
 
-    <!-- VISTA ASTRONOMÍA -->
     <div id="astro" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 12;">
-                <span class="label">Lunar & Deep Space Telemetry</span>
-                <div class="moon-hero">
-                    <div class="moon-data-box">
-                        <span class="label">Fase Actual</span>
-                        <div id="m-phase-icon" style="font-size:4rem; margin:10px 0;">🌑</div>
-                        <div id="m-phase-name" style="font-weight:800; font-size:0.8rem; color:var(--acc)">--</div>
+                <span class="label">TELEMETRÍA LUNAR Y ESPACIO PROFUNDO</span>
+                <div style="display: flex; align-items: center; justify-content: space-around; padding: 10px;">
+                    <div style="text-align: center; border: 1px solid var(--acc); padding: 20px; background:#050505;">
+                        <span class="label" style="border:none; margin:0;">FASE ACTUAL</span>
+                        <div id="m-phase-icon" style="font-size:5rem; margin:10px 0; line-height:1; text-shadow: 0 0 20px var(--dim);">🌑</div>
+                        <div id="m-phase-name" style="font-weight:700; font-family:'Oswald', sans-serif; font-size:1.2rem; color:var(--acc); letter-spacing:2px;">--</div>
                     </div>
                     <div style="flex:1; padding-left:40px;">
-                        <div class="stat-r">Iluminación <b id="m-illum">--%</b></div>
-                        <div class="stat-r">Edad Lunar <b id="m-age">-- días</b></div>
-                        <div class="stat-r">Distancia <b id="m-dist">-- km</b></div>
-                        <div class="stat-r">Próxima Llena <b id="m-next">--</b></div>
+                        <div class="stat-r">Iluminación Fraccional <b id="m-illum">--%</b></div>
+                        <div class="stat-r">Edad del Ciclo Lunar <b id="m-age">-- días</b></div>
+                        <div class="stat-r">Distancia a la Tierra <b id="m-dist">-- km</b></div>
+                        <div class="stat-r">Próxima Luna Nueva <b id="m-next-new">--</b></div>
+                        <div class="stat-r">Próxima Luna Llena <b id="m-next-full">--</b></div>
                     </div>
                 </div>
             </div>
             <div class="c" style="grid-column: span 6;">
-                <span class="label">Solar Cycle</span>
-                <div class="stat-r">Amanecer <b id="m-sunrise">--:--</b></div>
-                <div class="stat-r">Atardecer <b id="m-sunset">--:--</b></div>
-                <div class="stat-r">Mediodía <b id="m-noon">--:--</b></div>
+                <span class="label">CICLO SOLAR Y CREPÚSCULOS</span>
+                <div class="stat-r">Duración del Día <b id="s-duration" style="color:var(--acc)">-- h -- m</b></div>
+                <div class="stat-r">Amanecer <b id="s-sunrise">--:--</b></div>
+                <div class="stat-r">Atardecer <b id="s-sunset">--:--</b></div>
+                <div class="stat-r">Crepúsculo Civil (Inicio) <b id="s-civil-b">--:--</b></div>
+                <div class="stat-r">Crepúsculo Civil (Fin) <b id="s-civil-e">--:--</b></div>
             </div>
             <div class="c" style="grid-column: span 6;">
-                <span class="label">Planet Visibility</span>
-                <div class="stat-r">Venus <b style="color:var(--ok)">Visible</b></div>
-                <div class="stat-r">Marte <b style="color:var(--warn)">Bajo</b></div>
-                <div class="stat-r">Júpiter <b style="color:var(--ok)">Visible</b></div>
+                <span class="label">VISIBILIDAD PLANETARIA BÁSICA</span>
+                <div class="stat-r">Venus <b style="color:var(--acc)">Visible (Amanecer/Ocaso)</b></div>
+                <div class="stat-r">Marte <b style="color:var(--dim)">Bajo Horizonte</b></div>
+                <div class="stat-r">Júpiter <b style="color:var(--acc)">Óptimo</b></div>
+                <div class="stat-r">Saturno <b style="color:#fff">Magnitud Moderada</b></div>
             </div>
         </div>
     </div>
 
-    <!-- VISTA COSTA -->
     <div id="coast" class="view">
         <div class="grid">
-            <div class="c" style="grid-column: span 6;">
-                <span class="label">Marine Telemetry // Buoy Almería</span>
-                <div style="display:baseline;"><span class="big" id="c-wave">--</span><span class="unit">m (Altura Ola)</span></div>
-                <div class="stat-r" style="margin-top:20px;">Periodo de Ola <b id="c-period">-- s</b></div>
-                <div class="stat-r">Temp. Estructural Agua <b id="c-temp">17.8 °C</b></div>
-                <div class="stat-r">Dirección del Oleaje <b id="c-dir">--</b></div>
+            <div class="c" style="grid-column: span 7;">
+                <span class="label">ANÁLISIS MARÍTIMO REAL // BOYA ALMERÍA</span>
+                <div style="display:flex; justify-content: space-between; align-items: baseline;">
+                    <div><span class="big" id="c-wave">--</span><span class="unit">m (Altura Total)</span></div>
+                    <div style="text-align:right;"><span class="big" id="c-period" style="font-size:2.5rem; color:var(--acc)">--</span><span class="unit">s (Periodo)</span></div>
+                </div>
+                <div class="grid" style="margin-top:20px; gap:10px;">
+                    <div style="grid-column: span 6; background:#000; padding:15px; border:1px solid #222;">
+                        <span style="font-size:0.6rem; color:var(--dim); display:block; margin-bottom:5px;">OLA DE VIENTO (WIND WAVE)</span>
+                        <div style="font-size:1.2rem; font-weight:700;"><span id="c-wind-wave">--</span> m</div>
+                    </div>
+                    <div style="grid-column: span 6; background:#000; padding:15px; border:1px solid #222;">
+                        <span style="font-size:0.6rem; color:var(--dim); display:block; margin-bottom:5px;">OLA DE FONDO (SWELL)</span>
+                        <div style="font-size:1.2rem; font-weight:700; color:var(--acc)"><span id="c-swell">--</span> m</div>
+                    </div>
+                </div>
+                <div class="stat-r" style="margin-top:15px;">Dirección del Oleaje Principal <b id="c-dir">--°</b></div>
+                <div class="stat-r">Velocidad Corriente Oceánica <b id="c-current-v">-- km/h</b></div>
+                <div class="stat-r">Dirección Corriente Oceánica <b id="c-current-d">--°</b></div>
             </div>
-            <div class="c" style="grid-column: span 6;">
-                <span class="label">Estado Crítico de Playas (Cálculo Autónomo)</span>
+            <div class="c" style="grid-column: span 5;">
+                <span class="label">ESTADO DE PLAYAS (CÁLCULO ALGÓRITMICO)</span>
                 <div id="beach-list" style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="color:var(--dim); font-size:0.65rem; font-family:'JetBrains Mono'">Procesando telemetría marítima...</div>
+                    <div style="color:var(--dim); font-size:0.8rem;">Procesando telemetría...</div>
                 </div>
             </div>
         </div>
@@ -227,111 +250,95 @@
     const LAT = 36.83, LON = -2.46;
     let charts = {};
 
-    // API METEOROLÓGICA Y CALIDAD DEL AIRE
+    // 1. MOTOR METEOROLÓGICO Y ASTRONÓMICO AL LÍMITE (OPEN-METEO)
     async function fetchAtmos() {
         try {
-            const [w, a] = await Promise.all([
-                fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,surface_pressure,visibility,cloudcover,windgusts_10m&daily=uv_index_max,sunrise,sunset&timezone=auto`).then(r=>r.json()),
-                fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,aerosol_optical_depth,dust,olive_pollen,grass_pollen`).then(r=>r.json())
-            ]);
+            const urlMeteo = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,precipitation_probability,surface_pressure,visibility,cloudcover,windgusts_10m,soil_temperature_0cm,direct_radiation&daily=uv_index_max,sunrise,sunset,civil_twilight_begin,civil_twilight_end,daylight_duration&timezone=auto`;
+            const urlAQI = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,dust,olive_pollen,grass_pollen`;
 
+            const [w, a] = await Promise.all([ fetch(urlMeteo).then(r=>r.json()), fetch(urlAQI).then(r=>r.json()) ]);
             const h = new Date().getHours();
             
+            // Current Weather
             document.getElementById('v-temp').textContent = Math.round(w.current_weather.temperature);
+            document.getElementById('v-wind').textContent = Math.round(w.current_weather.windspeed);
+            document.getElementById('v-dir').textContent = `${w.current_weather.winddirection}°`;
+            
+            // Hourly specifics
             document.getElementById('v-hum').textContent = w.hourly.relativehumidity_2m[h];
-            document.getElementById('v-wind').textContent = w.current_weather.windspeed;
-            document.getElementById('v-dir').textContent = `${w.current_weather.winddirection}° NE`;
-            document.getElementById('v-uv').textContent = w.daily.uv_index_max[0];
-            document.getElementById('v-pres').textContent = `${w.hourly.surface_pressure[h]} hPa`;
+            document.getElementById('v-app-temp').textContent = w.hourly.apparent_temperature[h];
+            document.getElementById('v-dew').textContent = w.hourly.dewpoint_2m[h];
+            document.getElementById('v-gusts').textContent = w.hourly.windgusts_10m[h];
+            document.getElementById('v-precip').textContent = w.hourly.precipitation_probability[h] || 0;
+            document.getElementById('v-rad').textContent = w.hourly.direct_radiation[h];
+            document.getElementById('v-soil').textContent = w.hourly.soil_temperature_0cm[h];
+            document.getElementById('v-pres').textContent = w.hourly.surface_pressure[h];
             document.getElementById('v-vis').textContent = (w.hourly.visibility[h]/1000).toFixed(1);
             document.getElementById('v-cloud').textContent = w.hourly.cloudcover[h];
+            document.getElementById('v-uv').textContent = w.daily.uv_index_max[0];
 
+            // AQI & Pollen
             const updateP = (id, val, max) => {
                 if(!document.getElementById(`v-${id}`)) return;
-                document.getElementById(`v-${id}`).textContent = val.toFixed(1);
-                document.getElementById(`b-${id}`).style.width = `${Math.min((val/max)*100, 100)}%`;
+                const safeVal = val || 0;
+                document.getElementById(`v-${id}`).textContent = safeVal.toFixed(1);
+                document.getElementById(`b-${id}`).style.width = `${Math.min((safeVal/max)*100, 100)}%`;
             };
             updateP('pm25', a.hourly.pm2_5[h], 25);
             updateP('pm10', a.hourly.pm10[h], 50);
             updateP('dust', a.hourly.dust[h], 100);
-            updateP('co', a.hourly.carbon_monoxide[h]/100, 10);
+            updateP('co', (a.hourly.carbon_monoxide[h] || 0)/100, 10);
             
-            document.getElementById('v-aod').textContent = a.hourly.aerosol_optical_depth[h] ? a.hourly.aerosol_optical_depth[h].toFixed(2) : "0.00";
             document.getElementById('p-olivo').textContent = a.hourly.olive_pollen[h] || 0;
             document.getElementById('p-grass').textContent = a.hourly.grass_pollen[h] || 0;
 
-            document.getElementById('m-sunrise').textContent = w.daily.sunrise[0].split('T')[1];
-            document.getElementById('m-sunset').textContent = w.daily.sunset[0].split('T')[1];
+            // Solar Astro Data
+            const getTime = iso => iso.split('T')[1];
+            document.getElementById('s-sunrise').textContent = getTime(w.daily.sunrise[0]);
+            document.getElementById('s-sunset').textContent = getTime(w.daily.sunset[0]);
+            document.getElementById('s-civil-b').textContent = getTime(w.daily.civil_twilight_begin[0]);
+            document.getElementById('s-civil-e').textContent = getTime(w.daily.civil_twilight_end[0]);
+            
+            const dur = w.daily.daylight_duration[0] / 3600;
+            const hDur = Math.floor(dur);
+            const mDur = Math.round((dur - hDur) * 60);
+            document.getElementById('s-duration').innerHTML = `${hDur}h ${mDur}m`;
 
             renderChart(w.hourly.temperature_2m.slice(0, 24));
-        } catch(e) { console.error("Error en Atmos:", e); }
+        } catch(e) { console.error("Error Meteo:", e); }
     }
 
-    // API MARÍTIMA DIRECTA (OPEN-METEO MARINE API) + SISTEMA DE PLAYAS DE ALMERÍA
+    // 2. MOTOR MARÍTIMO REAL
     async function fetchMarine() {
         try {
-            const r = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_period,wave_direction&timezone=auto`).then(res => res.json());
+            const r = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=wave_height,wave_period,wave_direction,wind_wave_height,swell_wave_height,ocean_current_velocity,ocean_current_direction&timezone=auto`).then(res => res.json());
             const h = new Date().getHours();
             
-            const waveHeight = r.hourly.wave_height[h] || 0.4;
-            const wavePeriod = r.hourly.wave_period[h] || 4.2;
-            const waveDir = r.hourly.wave_direction[h] || 180;
+            const wh = r.hourly.wave_height[h] || 0.0;
+            document.getElementById('c-wave').textContent = wh.toFixed(2);
+            document.getElementById('c-period').textContent = (r.hourly.wave_period[h] || 0).toFixed(1);
+            document.getElementById('c-wind-wave').textContent = (r.hourly.wind_wave_height[h] || 0).toFixed(2);
+            document.getElementById('c-swell').textContent = (r.hourly.swell_wave_height[h] || 0).toFixed(2);
+            document.getElementById('c-dir').textContent = r.hourly.wave_direction[h] || '--';
+            document.getElementById('c-current-v').textContent = (r.hourly.ocean_current_velocity[h] || 0).toFixed(2);
+            document.getElementById('c-current-d').textContent = r.hourly.ocean_current_direction[h] || '--';
 
-            document.getElementById('c-wave').textContent = waveHeight.toFixed(2);
-            document.getElementById('c-period').textContent = `${wavePeriod.toFixed(1)} s`;
-            document.getElementById('c-dir').textContent = `${waveDir}°`;
+            // Algoritmo de Playas
+            let flagColor = '#FFD700', flagText = 'PRECAUCIÓN', flagEmoji = '🟡';
+            if (wh < 0.7) { flagColor = '#00FF66'; flagText = 'BAÑO SEGURO'; flagEmoji = '🟢'; } 
+            else if (wh >= 1.2) { flagColor = '#FF0000'; flagText = 'PELIGRO'; flagEmoji = '🔴'; }
 
-            // Lógica inteligente de cálculo de seguridad en playas de Almería
-            let flagColor = 'var(--ok)', flagText = 'BAÑO SEGURO', flagEmoji = '🟢';
-            if (waveHeight >= 0.6 && waveHeight < 1.2) {
-                flagColor = 'var(--warn)'; flagText = 'PRECAUCIÓN'; flagEmoji = '🟡';
-            } else if (waveHeight >= 1.2) {
-                flagColor = 'var(--danger)'; flagText = 'PELIGRO (PROHIBIDO)'; flagEmoji = '🔴';
-            }
-
-            const beaches = ["Playa del Zapillo", "Playa de Costacabana", "Playa de Retamar", "Playa Cabo de Gata"];
+            const beaches = ["ZAPILLO", "COSTACABANA", "RETAMAR", "CABO DE GATA", "AGUADULCE"];
             document.getElementById('beach-list').innerHTML = beaches.map(beach => `
-                <div class="stat-r" style="align-items: center; background:#040404; padding:10px; border:1px solid #111;">
-                    <span>${beach}</span>
-                    <b style="color:${flagColor}; font-size:0.6rem; font-family:'JetBrains Mono'">${flagEmoji} ${flagText}</b>
+                <div class="stat-r" style="align-items: center; background:#000; padding:12px; border:1px solid #222;">
+                    <span style="font-weight:700;">${beach}</span>
+                    <b style="color:${flagColor}; letter-spacing:1px;">${flagEmoji} ${flagText}</b>
                 </div>
             `).join('');
-
-        } catch(e) { 
-            console.error("Error en datos marinos:", e); 
-        }
+        } catch(e) { console.error("Error Marine:", e); }
     }
 
-    // API OFICIAL DE GASOLINERAS DEL GOBIERNO DE ESPAÑA (Municipio 436 = Almería Capital)
-    async function fetchFuelRealTime() {
-        try {
-            // Proxy CORS público para desarrollo local sin restricciones de cabecera de seguridad
-            const res = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroMunicipio/436')).then(r => r.json());
-            const stations = res.ListaEESSPrecio || [];
-            
-            if(stations.length === 0) return;
-
-            document.getElementById('fuel-table').innerHTML = stations.slice(0, 15).map(st => {
-                const name = st['Rótulo'] || 'ESTACIÓN';
-                const dir = st['Dirección'] || '---';
-                const g95 = st['Precio Gasolina 95 E5'] || '--';
-                const gasA = st['Precio Gasoleo A'] || '--';
-
-                return `
-                    <tr>
-                        <td><b>${name}</b></td>
-                        <td style="font-size:0.5rem; color:#666; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${dir}</td>
-                        <td style="color:var(--acc); font-weight:700;">${g95}</td>
-                        <td style="font-weight:700;">${gasA}</td>
-                    </tr>
-                `;
-            }).join('');
-        } catch(e) {
-            console.error("Error cargando combustibles del Ministerio:", e);
-        }
-    }
-
-    // LUNAR TELEMETRY
+    // 3. TELEMETRÍA LUNAR COMPLETA
     function calcMoon() {
         const date = new Date();
         const lp = 2551443; 
@@ -340,43 +347,74 @@
         const age = phase / (24 * 3600);
         const illum = Math.sin(Math.PI * phase / lp) * 100;
 
-        document.getElementById('m-age').textContent = `${age.toFixed(1)} días`;
-        document.getElementById('m-illum').textContent = `${Math.round(illum)}%`;
-        document.getElementById('m-dist').textContent = "382.104 km";
+        document.getElementById('m-age').textContent = `${age.toFixed(2)} días`;
+        document.getElementById('m-illum').textContent = `${Math.abs(illum).toFixed(1)}%`;
+        
+        // Simulación de distancia (Perigeo/Apogeo aprox)
+        const dist = 385000 - (Math.sin(Math.PI * phase / lp) * 20000);
+        document.getElementById('m-dist').textContent = `${Math.round(dist).toLocaleString("es-ES")} km`;
 
-        let name = "Luna Nueva", icon = "🌑";
-        if (age > 1.84 && age <= 5.53) { name = "Creciente Cóncava"; icon = "🌒"; }
-        else if (age > 5.53 && age <= 9.22) { name = "Cuarto Creciente"; icon = "🌓"; }
-        else if (age > 9.22 && age <= 12.91) { name = "Creciente Convexa"; icon = "🌔"; }
-        else if (age > 12.91 && age <= 16.61) { name = "Luna Llena"; icon = "🌕"; }
-        else if (age > 16.61 && age <= 20.30) { name = "Menguante Convexa"; icon = "🌖"; }
-        else if (age > 20.30 && age <= 23.99) { name = "Cuarto Menguante"; icon = "🌗"; }
-        else if (age > 23.99 && age <= 27.68) { name = "Menguante Cóncava"; icon = "🌘"; }
+        let name = "LUNA NUEVA", icon = "🌑";
+        if (age > 1.84 && age <= 5.53) { name = "CRECIENTE CÓNCAVA"; icon = "🌒"; }
+        else if (age > 5.53 && age <= 9.22) { name = "CUARTO CRECIENTE"; icon = "🌓"; }
+        else if (age > 9.22 && age <= 12.91) { name = "CRECIENTE CONVEXA"; icon = "🌔"; }
+        else if (age > 12.91 && age <= 16.61) { name = "LUNA LLENA"; icon = "🌕"; }
+        else if (age > 16.61 && age <= 20.30) { name = "MENGUANTE CONVEXA"; icon = "🌖"; }
+        else if (age > 20.30 && age <= 23.99) { name = "CUARTO MENGUANTE"; icon = "🌗"; }
+        else if (age > 23.99 && age <= 27.68) { name = "MENGUANTE CÓNCAVA"; icon = "🌘"; }
 
-        document.getElementById('m-phase-name').textContent = name.toUpperCase();
+        document.getElementById('m-phase-name').textContent = name;
         document.getElementById('m-phase-icon').textContent = icon;
-        document.getElementById('m-next').textContent = `en ${Math.round(29.5 - age)} días`;
+        
+        const daysToNextFull = age < 14.76 ? 14.76 - age : (29.53 - age) + 14.76;
+        document.getElementById('m-next-full').textContent = `en ${Math.round(daysToNextFull)} días`;
+        document.getElementById('m-next-new').textContent = `en ${Math.round(29.53 - age)} días`;
     }
 
-    // FIRESTORE ENERGÍA (Única sección que se mantiene con Firestore si tienes la colección activa)
+    // 4. RESTAURACIÓN DE FIREBASE (ENERGÍA Y FUEL ORIGINAL)
     onSnapshot(doc(db, "global", "master_data"), (s) => {
         if(!s.exists()) return;
         const d = s.data();
-        const h = new Date().getHours();
         if(d.power) {
+            const h = new Date().getHours();
             const pNow = (d.power.ev[h] / 1000).toFixed(4);
-            document.getElementById('p-now').textContent = `${pNow} €`;
+            document.getElementById('p-now').textContent = pNow;
             document.getElementById('p-range').textContent = `${(d.power.min/1000).toFixed(3)} / ${(d.power.max/1000).toFixed(3)}`;
             renderEnergyChart(d.power.ev);
         }
     });
 
-    // SISTEMA DE GRÁFICOS
+    onSnapshot(doc(db, "market", "fuel"), (s) => {
+        if(!s.exists()) {
+            document.getElementById('fuel-table').innerHTML = '<tr><td colspan="4" style="text-align:center;">Colección vacía.</td></tr>';
+            return;
+        }
+        const stations = s.data().stations || [];
+        document.getElementById('fuel-table').innerHTML = stations.slice(0, 15).map(st => {
+            const g95 = st['Precio Gasolina 95 E5'] || st['precio_g95'] || st['G95'] || '--';
+            const gasA = st['Precio Gasoleo A'] || st['precio_gasoleo_a'] || st['Gasoleo A'] || '--';
+            const name = st['Rótulo'] || st['rotulo'] || 'OPERADOR';
+            const dir = st['Dirección'] || st['direccion'] || '---';
+            return `
+                <tr>
+                    <td style="font-weight:700;">${name}</td>
+                    <td style="color:var(--dim); font-size:0.65rem;">${dir}</td>
+                    <td style="color:var(--acc); font-weight:700; font-size:0.9rem">${g95}</td>
+                    <td style="font-weight:700; font-size:0.9rem">${gasA}</td>
+                </tr>
+            `;
+        }).join('');
+    });
+
+    // SISTEMA DE GRÁFICOS CON ESTÉTICA KILL BILL
+    Chart.defaults.font.family = "'Space Mono', monospace";
+    Chart.defaults.color = '#888';
+
     function renderChart(data) {
         if(charts.t) charts.t.destroy();
         charts.t = new Chart(document.getElementById('tempChart'), {
             type: 'line',
-            data: { labels: Array(24).fill(''), datasets: [{ data: data, borderColor: '#FF4500', borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true, backgroundColor: 'rgba(255, 69, 0, 0.05)' }]},
+            data: { labels: Array(24).fill(''), datasets: [{ data: data, borderColor: '#FFD700', borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: 'rgba(255, 215, 0, 0.1)' }]},
             options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
         });
     }
@@ -385,8 +423,8 @@
         if(charts.e) charts.e.destroy();
         charts.e = new Chart(document.getElementById('energyChart'), {
             type: 'bar',
-            data: { labels: Array(24).fill(''), datasets: [{ data: data.map(v => v / 1000), backgroundColor: data.map((_, i) => i === new Date().getHours() ? '#FF4500' : '#222') }]},
-            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#444', font: { size: 8 } } } } }
+            data: { labels: Array(24).fill(''), datasets: [{ data: data.map(v => v / 1000), backgroundColor: data.map((_, i) => i === new Date().getHours() ? '#FFD700' : '#111') }]},
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#666', font: { size: 9 } }, grid: { color: '#111' } } } }
         });
     }
 
@@ -396,16 +434,12 @@
         btn.classList.add('active');
     };
 
-    // SECUENCIA DE INICIO DE TELEMETRÍA
+    // INICIO
     fetchAtmos();
     fetchMarine();
-    fetchFuelRealTime();
     calcMoon();
-
-    // Loops automáticos de actualización para evitar fugas de memoria
-    setInterval(fetchAtmos, 300000);     // Cada 5 min
-    setInterval(fetchMarine, 600000);    // Cada 10 min
-    setInterval(fetchFuelRealTime, 3600000); // Cada hora
+    setInterval(fetchAtmos, 300000);
+    setInterval(fetchMarine, 600000);
 </script>
 </body>
 </html>
