@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v5.3 | DIAGNOSTIC SYSTEM</title>
+    <title>HESTIA v5.4 | DIAGNOSTIC SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,7 +46,7 @@
         .unit { font-size: 0.8rem; color: var(--acc); font-weight: 700; margin-left: 4px; vertical-align: super; }
         
         .stat-r { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #161616; font-size: 0.75rem; color: #aaa; }
-        .stat-r b { color: #fff; }
+        .stat-r b { color: #fff; text-align: right; }
 
         .table-wrap { max-height: 380px; overflow-y: auto; width: 100%; border: 1px solid var(--bor); }
         table { width: 100%; border-collapse: collapse; font-size: 0.70rem; }
@@ -58,7 +58,6 @@
         .p-bar-fill { height: 100%; background: var(--acc); transition: 0.5s ease-out; }
         .error-text { color: var(--danger) !important; font-size: 2rem !important; }
 
-        /* NUEVOS ESTILOS: LUNA REALISTA Y PLAYAS */
         .moon-realistic {
             width: 130px; height: 130px; border-radius: 50%;
             background-image: url('https://www.solarsystemscope.com/textures/download/2k_moon.jpg');
@@ -70,11 +69,11 @@
         
         .beach-card {
             background: #000; border: 1px solid #1a1a1a; padding: 15px;
-            display: flex; flex-direction: column; gap: 8px;
+            display: flex; flex-direction: column; gap: 6px;
             transition: border-color 0.3s;
         }
         .beach-card:hover { border-color: var(--acc); }
-        .beach-title { font-family: 'Oswald'; color: #fff; font-size: 1rem; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        .beach-title { font-family: 'Oswald'; color: #fff; font-size: 0.95rem; border-bottom: 1px dashed #333; padding-bottom: 5px; margin-bottom: 5px;}
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
@@ -94,7 +93,6 @@
 </aside>
 
 <main>
-    <!-- TAB 1: METEO -->
     <div id="meteo" class="view active">
         <div class="grid">
             <div class="c" style="grid-column: span 8;">
@@ -150,19 +148,18 @@
             </div>
             
             <div class="c" style="grid-column: span 12;">
-                <canvas id="tempChart" style="max-height:110px;"></canvas>
+                <canvas id="tempChart" style="max-height:180px;"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- TAB 2: ENERGY -->
     <div id="energy" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 4;">
                 <span class="label">MERCADO PVPC (TIEMPO REAL)</span>
                 <div class="big" id="p-now" style="color:var(--acc); font-size:3.8rem">--</div>
                 <span class="unit">€ / kWh</span>
-                <div style="font-size:0.7rem; color:var(--dim); margin-top:10px;">FUENTE: Red Eléctrica de España (ESIOS)</div>
+                <div style="font-size:0.7rem; color:var(--dim); margin-top:10px;">FUENTE: ESIOS (Red Eléctrica de España)</div>
             </div>
             <div class="c" style="grid-column: span 8;">
                 <span class="label">UMBRALES DEL DÍA (MIN / MAX)</span>
@@ -194,7 +191,6 @@
         </div>
     </div>
 
-    <!-- TAB 3: ASTRO -->
     <div id="astro" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 12;">
@@ -240,13 +236,15 @@
         </div>
     </div>
 
-    <!-- TAB 4: COAST -->
     <div id="coast" class="view">
         <div class="grid">
+            <div class="c" style="grid-column: span 12; margin-bottom: 15px;">
+                <span class="label">EVOLUCIÓN DEL OLEAJE (BAHÍA CENTRAL - 24H)</span>
+                <canvas id="coastChart" style="max-height:140px;"></canvas>
+            </div>
             <div class="c" style="grid-column: span 12;">
                 <span class="label">ANÁLISIS MARÍTIMO DE PRECISIÓN // RED DE PLAYAS ALMERÍA</span>
                 <div class="grid" id="beach-grid" style="gap:15px; margin-top: 15px;">
-                    <!-- Las tarjetas de las playas se inyectan aquí con JS -->
                     <div style="grid-column: span 12; color:var(--dim); text-align:center;">Calibrando sonares de costa...</div>
                 </div>
             </div>
@@ -271,7 +269,6 @@
         if(el) { el.textContent = "ERR"; el.classList.add('error-text'); }
     }
 
-    // --- 1. METEO FIX (Nombres de variables corregidos para Open-Meteo V1) ---
     async function fetchMeteoCore() {
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,surface_pressure,visibility,cloud_cover,wind_gusts_10m,soil_temperature_0cm,direct_radiation&daily=uv_index_max,sunrise,sunset,daylight_duration&timezone=auto`;
@@ -287,7 +284,6 @@
             document.getElementById('v-wind').textContent = Math.round(currentWindSpeed);
             document.getElementById('v-dir').textContent = `${currentWindDir}°`;
             
-            // Arreglados los nombres de las keys (con guiones bajos)
             document.getElementById('v-hum').textContent = r.hourly.relative_humidity_2m[h] ?? '--';
             document.getElementById('v-app-temp').textContent = (r.hourly.apparent_temperature[h] ?? 0).toFixed(1);
             document.getElementById('v-dew').textContent = (r.hourly.dew_point_2m[h] ?? 0).toFixed(1);
@@ -307,7 +303,7 @@
             const seconds = r.daily.daylight_duration[0] || 0;
             document.getElementById('s-duration').textContent = `${Math.floor(seconds / 3600)}h ${Math.round((seconds % 3600) / 60)}m`;
 
-            renderChart(r.hourly.temperature_2m.slice(0, 24));
+            renderMeteoChart(r.hourly.temperature_2m.slice(0, 24));
 
         } catch(e) { 
             console.error("METEO_ERROR:", e);
@@ -317,7 +313,6 @@
 
     async function fetchAirQuality() {
         try {
-            // Nombres de variables AQI corregidos
             const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,dust,olive_pollen,grass_pollen`);
             if(!res.ok) throw new Error("AQI API Error");
             const a = await res.json();
@@ -342,22 +337,26 @@
         }
     }
 
-    // --- 2. ENERGÍA FIX (API Oficial PVPC para cuadrar con TarifaLuzAhora) ---
     async function fetchLuzOficial() {
         try {
-            // API pública directa de PVPC (sin necesidad de Firebase)
             const res = await fetch('https://api.preciodelaluz.org/v1/prices/all?zone=PCB');
             const data = await res.json();
             
-            const hoursArray = Object.values(data);
-            const currentHourStr = new Date().getHours().toString().padStart(2, '0');
+            const prices = [];
+            let currentPrice = 0;
+            const currentHour = new Date().getHours();
             
-            const currentData = hoursArray.find(h => h.date.split('-')[3] === currentHourStr) || hoursArray[new Date().getHours()];
+            // Reconstrucción del parseo (seguro para el formato de claves 00-01, 01-02...)
+            for (let i = 0; i < 24; i++) {
+                const hourKey = `${i.toString().padStart(2, '0')}-${(i + 1).toString().padStart(2, '0')}`;
+                const p = data[hourKey] ? data[hourKey].price : 0;
+                prices.push(p);
+                if (i === currentHour) currentPrice = p;
+            }
             
-            document.getElementById('p-now').textContent = (currentData.price / 1000).toFixed(4);
+            document.getElementById('p-now').textContent = (currentPrice / 1000).toFixed(4);
             
-            const prices = hoursArray.map(h => h.price);
-            const min = Math.min(...prices);
+            const min = Math.min(...prices.filter(p => p > 0));
             const max = Math.max(...prices);
             
             document.getElementById('p-range').textContent = `${(min/1000).toFixed(3)} / ${(max/1000).toFixed(3)}`;
@@ -369,54 +368,58 @@
         }
     }
 
-    // --- 3. COSTA FIX (Tarjetas dinámicas e independientes por playa) ---
     async function fetchPlayasDetalladas() {
         const playas = [
-            { id: "zap", name: "EL ZAPILLO (Capital)", lat: 36.828, lon: -2.447, t: "bahia" },
-            { id: "agu", name: "AGUADULCE (Poniente)", lat: 36.809, lon: -2.564, t: "refugio" },
-            { id: "gen", name: "GENOVESES (Cabo Gata)", lat: 36.741, lon: -2.115, t: "salvaje" },
-            { id: "san", name: "SAN JOSÉ (Levante)", lat: 36.762, lon: -2.106, t: "abierta" }
+            { id: "zap", name: "ZAPILLO (Capital)", lat: 36.828, lon: -2.447 },
+            { id: "agu", name: "AGUADULCE", lat: 36.809, lon: -2.564 },
+            { id: "roq", name: "ROQUETAS DE MAR", lat: 36.764, lon: -2.614 },
+            { id: "alm", name: "ALMERIMAR", lat: 36.698, lon: -2.793 },
+            { id: "gen", name: "GENOVESES", lat: 36.741, lon: -2.115 },
+            { id: "san", name: "SAN JOSÉ", lat: 36.762, lon: -2.106 },
+            { id: "neg", name: "LAS NEGRAS", lat: 36.880, lon: -2.005 }
         ];
 
         const grid = document.getElementById('beach-grid');
         grid.innerHTML = '';
 
         for (const p of playas) {
-            // Inyectamos la estructura vacía primero
             grid.innerHTML += `
                 <div class="c beach-card" style="grid-column: span 3;" id="card-${p.id}">
                     <div class="beach-title">${p.name}</div>
-                    <div class="stat-r" style="border:none; padding:0;">Marea <b id="${p.id}-marea" style="color:var(--water)">Calculando...</b></div>
+                    <div class="stat-r" style="border:none; padding:0;">Marea <b id="${p.id}-marea" style="color:var(--water)">--</b></div>
                     <div class="stat-r" style="border:none; padding:0;">Temp. Agua <b id="${p.id}-ta">-- °C</b></div>
                     <div class="stat-r" style="border:none; padding:0;">Ola Signif. <b id="${p.id}-ola">-- m</b></div>
                     <div class="stat-r" style="border:none; padding:0;">Periodo <b id="${p.id}-per">-- s</b></div>
+                    <div class="stat-r" style="border:none; padding:0;">Corr. Marina <b id="${p.id}-corr">-- km/h</b></div>
                     <div style="margin-top:10px; padding:5px; background:#111; text-align:center; font-weight:bold;" id="${p.id}-bandera">--</div>
                 </div>
             `;
         }
 
-        // Llamamos a la API Marina por cada coordenada específica
         const h = new Date().getHours();
         
-        for (const p of playas) {
+        for (let i = 0; i < playas.length; i++) {
+            const p = playas[i];
             try {
-                const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${p.lat}&longitude=${p.lon}&hourly=wave_height,wave_period,ocean_current_velocity,sea_surface_temperature&timezone=auto`);
+                const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${p.lat}&longitude=${p.lon}&hourly=wave_height,wave_period,ocean_current_velocity,ocean_current_direction,sea_surface_temperature&timezone=auto`);
                 const data = await res.json();
                 
                 const wave = data.hourly.wave_height[h] || 0.1;
                 const tempAgua = data.hourly.sea_surface_temperature[h] || '--';
                 const periodo = data.hourly.wave_period[h] || 0;
+                const corrVel = data.hourly.ocean_current_velocity[h] || 0;
+                const corrDir = data.hourly.ocean_current_direction[h] || 0;
                 
-                // Simulación sencilla de Marea basada en hora (ciclo lunar real sería más complejo)
+                // Marea simulada sencilla por hora local
                 const tideHour = h % 12;
-                const tideStatus = tideHour < 6 ? "↑ Subiendo" : "↓ Bajando";
+                const tideStatus = tideHour < 6 ? "↑ Pleamar" : "↓ Bajamar";
 
                 document.getElementById(`${p.id}-marea`).textContent = tideStatus;
                 document.getElementById(`${p.id}-ta`).textContent = `${tempAgua} °C`;
                 document.getElementById(`${p.id}-ola`).textContent = `${wave.toFixed(2)} m`;
                 document.getElementById(`${p.id}-per`).textContent = `${periodo.toFixed(1)} s`;
+                document.getElementById(`${p.id}-corr`).textContent = `${corrVel.toFixed(1)} km/h (${corrDir}°)`;
 
-                // Cálculo de Bandera
                 let color = "var(--ok)", texto = "🟢 LIBRE";
                 if (wave > 0.6) { color = "var(--warn)"; texto = "🟡 PRECAUCIÓN"; }
                 if (wave > 1.2) { color = "var(--danger)"; texto = "🔴 PROHIBIDO"; }
@@ -425,13 +428,15 @@
                 bnd.style.color = color;
                 bnd.textContent = texto;
 
-            } catch (e) {
-                console.error(`Error cargando playa ${p.name}:`, e);
-            }
+                // Solo para la bahía principal (Zapillo), pintamos la gráfica de la costa
+                if (i === 0) {
+                    renderCoastChart(data.hourly.wave_height.slice(0, 24));
+                }
+
+            } catch (e) { console.error(`Error playa ${p.name}:`, e); }
         }
     }
 
-    // --- 4. ASTRO FIX (Sombra Lunar y datos realistas) ---
     function calcMoon() {
         const date = new Date();
         const lp = 2551443; 
@@ -439,8 +444,6 @@
         const phase = ((date.getTime() - new_moon.getTime()) / 1000) % lp;
         const age = phase / (24 * 3600);
         const illum = Math.sin(Math.PI * phase / lp) * 100;
-        
-        // Fase de 0 a 1 para calcular la sombra de CSS
         const phaseRatio = age / 29.53; 
 
         document.getElementById('m-age').textContent = `${age.toFixed(2)} d`;
@@ -460,22 +463,17 @@
         document.getElementById('m-next-full').textContent = `en ${Math.round(age < 14.7 ? 14.7 - age : 29.5 - age + 14.7)} días`;
         document.getElementById('m-next-new').textContent = `en ${Math.round(29.53 - age)} días`;
         
-        // Magia CSS para simular la sombra de la luna rotando
-        const shadowOffset = (phaseRatio - 0.5) * 260; // Desplazamiento de la sombra
+        const shadowOffset = (phaseRatio - 0.5) * 260;
         document.getElementById('m-phase-icon').style.boxShadow = `inset ${shadowOffset}px 0 30px rgba(0,0,0,0.95), 0 0 15px rgba(255, 255, 255, 0.15)`;
     }
 
-    // --- SINCROMIZACIÓN FIREBASE (Solo Gasolineras) ---
     onSnapshot(doc(db, "market", "fuel"), (s) => {
         if(!s.exists()) {
-            document.getElementById('fuel-table').innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--danger)">ERROR: Colección [market/fuel] no encontrada en Firestore</td></tr>';
+            document.getElementById('fuel-table').innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--danger)">ERROR: Colección no encontrada</td></tr>';
             return;
         }
         const stations = s.data().stations || [];
-        if(stations.length === 0) {
-            document.getElementById('fuel-table').innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--warn)">Base conectada, pero sin registros.</td></tr>';
-            return;
-        }
+        if(stations.length === 0) return;
         
         document.getElementById('fuel-table').innerHTML = stations.slice(0, 15).map(st => {
             const dir = st['Dirección'] || st['direccion'] || '---';
@@ -494,20 +492,30 @@
                 <td style="font-weight:700; font-size:0.80rem; color:var(--warn)">${gasP}</td>
             </tr>`;
         }).join('');
-    }, e => {
-        document.getElementById('fuel-table').innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--danger)">ERROR: Permisos denegados o base offline.</td></tr>';
-    });
+    }, e => { console.error("Firebase Error"); });
 
-    // --- GRÁFICOS ---
+    // --- GRÁFICOS (Configuración Global) ---
     Chart.defaults.font.family = "'Space Mono', monospace";
     Chart.defaults.color = '#555';
+    const hoursLabels = Array.from({length: 24}, (_, i) => `${i}:00`);
 
-    function renderChart(data) {
+    function renderMeteoChart(data) {
         if(charts.t) charts.t.destroy();
         charts.t = new Chart(document.getElementById('tempChart'), {
             type: 'line',
-            data: { labels: Array(24).fill(''), datasets: [{ data: data, borderColor: '#FFD700', borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: 'rgba(255, 215, 0, 0.03)' }]},
-            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+            data: { 
+                labels: hoursLabels, 
+                datasets: [{ label: 'Temperatura Hoy (°C)', data: data, borderColor: '#FFD700', borderWidth: 2, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(255, 215, 0, 0.05)' }]
+            },
+            options: { 
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, labels: { color: '#ccc' } } }, 
+                scales: { 
+                    x: { display: true, ticks: { color: '#888', maxTicksLimit: 12 }, grid: { color: '#1a1a1a' } }, 
+                    y: { display: true, ticks: { color: '#888' }, grid: { color: '#1a1a1a' } } 
+                } 
+            }
         });
     }
 
@@ -515,19 +523,35 @@
         if(charts.e) charts.e.destroy();
         charts.e = new Chart(document.getElementById('energyChart'), {
             type: 'bar',
-            data: { labels: Array(24).fill(''), datasets: [{ data: data.map(v => v / 1000), backgroundColor: data.map((_, i) => i === new Date().getHours() ? '#FFD700' : '#141414') }]},
+            data: { labels: hoursLabels, datasets: [{ data: data.map(v => v / 1000), backgroundColor: data.map((_, i) => i === new Date().getHours() ? '#FFD700' : '#141414') }]},
             options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { color: '#444', font: { size: 9 } }, grid: { color: '#111' } } } }
         });
     }
 
-    // --- NAVEGACIÓN TABS ---
+    function renderCoastChart(data) {
+        if(charts.c) charts.c.destroy();
+        charts.c = new Chart(document.getElementById('coastChart'), {
+            type: 'line',
+            data: { 
+                labels: hoursLabels, 
+                datasets: [{ label: 'Altura de Ola (Metros)', data: data, borderColor: '#00e5ff', borderWidth: 2, pointRadius: 1, tension: 0.4, fill: true, backgroundColor: 'rgba(0, 229, 255, 0.05)' }]
+            },
+            options: { 
+                plugins: { legend: { display: true, labels: { color: '#ccc' } } }, 
+                scales: { 
+                    x: { display: true, ticks: { color: '#888', maxTicksLimit: 8 }, grid: { color: '#1a1a1a' } }, 
+                    y: { display: true, ticks: { color: '#888' }, grid: { color: '#1a1a1a' }, suggestedMin: 0 } 
+                } 
+            }
+        });
+    }
+
     window.sh = (id, btn) => {
         document.querySelectorAll('.view, .n-btn').forEach(x => x.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
     };
 
-    // --- INICIALIZACIÓN SECUENCIAL PARA NO SATURAR ---
     fetchMeteoCore();
     fetchAirQuality();
     fetchLuzOficial();
