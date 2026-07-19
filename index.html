@@ -93,7 +93,7 @@
     <div id="meteo" class="view active">
         <div class="grid">
             <div class="c" style="grid-column: span 8;">
-                <span class="label">SENSÓRICA NUCLEAR // ESTACIÓN CENTRAL</span>
+                <span class="label">SENSÓRICA NUCLEAR // ESTACIÓN CENTRAL ALMERÍA</span>
                 <div class="grid" style="gap:15px; margin-bottom: 20px;">
                     <div style="grid-column: span 4;">
                         <span class="big" id="v-temp">--</span><span class="unit">°C</span>
@@ -249,7 +249,7 @@
             </div>
             
             <div class="c" style="grid-column: span 12;">
-                <span class="label">RED COSTERA // ESTACIONES DE MONITOREO</span>
+                <span class="label">RED COSTERA DE ALMERÍA // ESTACIONES DE MONITOREO</span>
                 <div class="grid" id="beach-grid" style="gap:15px; margin-top: 15px;">
                     <div style="grid-column: span 12; color:var(--dim); text-align:center;">Recibiendo telemetría marina de Open-Meteo...</div>
                 </div>
@@ -266,8 +266,8 @@
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
 
-    // INSERTA AQUÍ TUS COORDENADAS BASE
-    const LAT = 0.0000, LON = 0.0000;
+    // COORDENADAS BASE ALMERÍA
+    const LAT = 36.8381, LON = -2.4597;
     let charts = {};
     let globalMoonIllum = 0;
 
@@ -391,12 +391,12 @@
     }
 
     async function fetchPlayasDetalladas() {
-        // INSERTA AQUÍ TUS PLAYAS
+        // PLAYAS DE ALMERÍA
         const playas = [
-            { id: "p1", name: "ESTACIÓN MARÍTIMA 1", lat: 0.000, lon: 0.000 },
-            { id: "p2", name: "ESTACIÓN MARÍTIMA 2", lat: 0.000, lon: 0.000 },
-            { id: "p3", name: "ESTACIÓN MARÍTIMA 3", lat: 0.000, lon: 0.000 },
-            { id: "p4", name: "ESTACIÓN MARÍTIMA 4", lat: 0.000, lon: 0.000 }
+            { id: "p1", name: "CABO DE GATA", lat: 36.7823, lon: -2.2421 },
+            { id: "p2", name: "SAN JOSÉ", lat: 36.7615, lon: -2.1102 },
+            { id: "p3", name: "AGUADULCE", lat: 36.8143, lon: -2.5707 },
+            { id: "p4", name: "ROQUETAS DE MAR", lat: 36.7643, lon: -2.6148 }
         ];
 
         const grid = document.getElementById('beach-grid');
