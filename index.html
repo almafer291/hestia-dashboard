@@ -93,7 +93,7 @@
     <div id="meteo" class="view active">
         <div class="grid">
             <div class="c" style="grid-column: span 8;">
-                <span class="label">SENSÓRICA NUCLEAR // ESTACIÓN CENTRAL (GRANADA)</span>
+                <span class="label">SENSÓRICA NUCLEAR // ESTACIÓN CENTRAL</span>
                 <div class="grid" style="gap:15px; margin-bottom: 20px;">
                     <div style="grid-column: span 4;">
                         <span class="big" id="v-temp">--</span><span class="unit">°C</span>
@@ -249,7 +249,7 @@
             </div>
             
             <div class="c" style="grid-column: span 12;">
-                <span class="label">RED COSTERA // COSTA TROPICAL & COSTA DE ALMERÍA (16 ESTACIONES)</span>
+                <span class="label">RED COSTERA // ESTACIONES DE MONITOREO</span>
                 <div class="grid" id="beach-grid" style="gap:15px; margin-top: 15px;">
                     <div style="grid-column: span 12; color:var(--dim); text-align:center;">Recibiendo telemetría marina de Open-Meteo...</div>
                 </div>
@@ -266,7 +266,8 @@
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
 
-    const LAT = 37.1773, LON = -3.5986;
+    // INSERTA AQUÍ TUS COORDENADAS BASE
+    const LAT = 0.0000, LON = 0.0000;
     let charts = {};
     let globalMoonIllum = 0;
 
@@ -390,23 +391,12 @@
     }
 
     async function fetchPlayasDetalladas() {
+        // INSERTA AQUÍ TUS PLAYAS
         const playas = [
-            { id: "alm", name: "ALMUÑÉCAR", lat: 36.73, lon: -3.69 },
-            { id: "her", name: "LA HERRADURA", lat: 36.73, lon: -3.73 },
-            { id: "sal", name: "SALOBREÑA", lat: 36.74, lon: -3.59 },
-            { id: "mot", name: "PLAYA GRANADA (Motril)", lat: 36.71, lon: -3.54 },
-            { id: "zap", name: "ZAPILLO (Almería)", lat: 36.828, lon: -2.447 },
-            { id: "agu", name: "AGUADULCE", lat: 36.809, lon: -2.564 },
-            { id: "roq", name: "ROQUETAS DE MAR", lat: 36.764, lon: -2.614 },
-            { id: "mar", name: "ALMERIMAR", lat: 36.698, lon: -2.793 },
-            { id: "gen", name: "GENOVESES", lat: 36.741, lon: -2.115 },
-            { id: "san", name: "SAN JOSÉ", lat: 36.762, lon: -2.106 },
-            { id: "neg", name: "LAS NEGRAS", lat: 36.880, lon: -2.005 },
-            { id: "cab", name: "CABO DE GATA", lat: 36.782, lon: -2.245 },
-            { id: "ret", name: "RETAMAR PLAYA", lat: 36.836, lon: -2.290 },
-            { id: "car", name: "CARBONERAS", lat: 36.996, lon: -1.894 },
-            { id: "moj", name: "MOJÁCAR PLAYA", lat: 37.130, lon: -1.825 },
-            { id: "ter", name: "S. J. DE TERREROS", lat: 37.356, lon: -1.658 }
+            { id: "p1", name: "ESTACIÓN MARÍTIMA 1", lat: 0.000, lon: 0.000 },
+            { id: "p2", name: "ESTACIÓN MARÍTIMA 2", lat: 0.000, lon: 0.000 },
+            { id: "p3", name: "ESTACIÓN MARÍTIMA 3", lat: 0.000, lon: 0.000 },
+            { id: "p4", name: "ESTACIÓN MARÍTIMA 4", lat: 0.000, lon: 0.000 }
         ];
 
         const grid = document.getElementById('beach-grid');
