@@ -25,8 +25,8 @@
         body { background: var(--bg); color: var(--txt); font-family: 'Space Mono', monospace; display: flex; height: 100vh; overflow: hidden; }
         
         aside { width: 80px; border-right: 2px solid var(--acc); display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #000; z-index: 100; }
-        .main-icon { font-size: 2.5rem; margin-bottom: 40px; cursor: pointer; transition: 0.3s; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
-        .main-icon:hover { transform: scale(1.1); text-shadow: 0 0 25px rgba(255, 215, 0, 0.9); }
+        .main-icon { font-size: 2.5rem; margin-bottom: 40px; cursor: pointer; text-shadow: 0 0 15px var(--flame); transition: 0.3s; color: var(--flame); }
+        .main-icon:hover { transform: scale(1.1); text-shadow: 0 0 25px var(--flame); }
         
         nav { display: flex; flex-direction: column; gap: 25px; width: 100%; align-items: center; }
         .n-btn { color: var(--dim); cursor: pointer; font-size: 1.8rem; transition: 0.2s; width: 100%; text-align: center; padding: 12px 0; }
@@ -79,8 +79,7 @@
 <body>
 
 <aside>
-    <!-- Configuración persistente del Icono del Sistema -->
-    <div class="main-icon" onclick="location.reload()" title="HESTIA CORE">🦙</div>
+    <div class="main-icon" onclick="location.reload()" title="HESTIA SACRED FLAME">🔥</div>
     <nav>
         <div class="n-btn active" onclick="sh('meteo', this)" title="ATMOSFERA"><i class="ph-bold ph-gauge"></i></div>
         <div class="n-btn" onclick="sh('energy', this)" title="ENERGIA"><i class="ph-bold ph-lightning"></i></div>
@@ -263,22 +262,19 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Configuración Firebase (Mantenida la original)
     const fbConfig = { apiKey: "AIzaSyAhKc7R97_ph2VQOq-uLMXFv-Wnyy0srXw", projectId: "hestia-31da3", appId: "1:577704397868:web:e83026e730640a0bc1d589" };
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
 
-    // Coordenadas base: Granada Centro (Para datos meteorológicos generales)
     const LAT = 37.1773, LON = -3.5986;
     let charts = {};
-    let globalMoonIllum = 0; // Para modular la marea
+    let globalMoonIllum = 0;
 
     function showError(id) {
         const el = document.getElementById(id);
         if(el) { el.textContent = "ERR"; el.classList.add('error-text'); }
     }
 
-    // 1. METEO CORE (Extrae MUCHOS más datos reales)
     async function fetchMeteoCore() {
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,surface_pressure,visibility,cloud_cover,wind_gusts_10m,soil_temperature_0cm,direct_radiation,diffuse_radiation,uv_index,evapotranspiration&daily=sunrise,sunset,daylight_duration&timezone=auto`;
@@ -306,7 +302,6 @@
             
             document.getElementById('s-dif').textContent = Math.round(r.hourly.diffuse_radiation[h] ?? 0);
             
-            // Cálculo aproximado de elevación solar real basado en latitud y hora
             const declination = 23.45 * Math.sin((360/365) * (new Date().getDay() - 81) * (Math.PI/180));
             const hourAngle = 15 * (Math.abs(h - 12)) * (Math.PI/180);
             const latRad = LAT * (Math.PI/180);
@@ -329,7 +324,6 @@
         }
     }
 
-    // 2. CALIDAD DEL AIRE
     async function fetchAirQuality() {
         try {
             const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&hourly=pm10,pm2_5,carbon_monoxide,dust,olive_pollen,grass_pollen`);
@@ -353,7 +347,6 @@
         } catch(e) { console.error("AQI_ERROR:", e); }
     }
 
-    // 3. ENERGÍA PVPC (Blindada)
     async function fetchLuzOficial() {
         const directUrl = 'https://api.preciodelaluz.org/v1/prices/all?zone=PCB';
         const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
@@ -396,15 +389,12 @@
         }
     }
 
-    // 4. SISTEMA COSTERO AMPLIADO A GRANADA Y ALMERÍA (16 PLAYAS)
     async function fetchPlayasDetalladas() {
         const playas = [
-            // Costa Tropical (Granada)
             { id: "alm", name: "ALMUÑÉCAR", lat: 36.73, lon: -3.69 },
             { id: "her", name: "LA HERRADURA", lat: 36.73, lon: -3.73 },
             { id: "sal", name: "SALOBREÑA", lat: 36.74, lon: -3.59 },
             { id: "mot", name: "PLAYA GRANADA (Motril)", lat: 36.71, lon: -3.54 },
-            // Costa de Almería
             { id: "zap", name: "ZAPILLO (Almería)", lat: 36.828, lon: -2.447 },
             { id: "agu", name: "AGUADULCE", lat: 36.809, lon: -2.564 },
             { id: "roq", name: "ROQUETAS DE MAR", lat: 36.764, lon: -2.614 },
@@ -439,10 +429,8 @@
 
         const h = new Date().getHours();
         
-        // Cargar todas las playas asíncronamente
         await Promise.all(playas.map(async (p, i) => {
             try {
-                // Incorporamos llamadas más precisas a oleaje y vientos marinos
                 const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${p.lat}&longitude=${p.lon}&hourly=wave_height,sea_surface_temperature,swell_wave_height,swell_wave_period,wind_wave_height&timezone=auto`);
                 const data = await res.json();
                 
@@ -470,7 +458,6 @@
                 bnd.style.color = color;
                 bnd.textContent = texto;
 
-                // Generar gráfica costa con la primera playa (Almuñécar)
                 if (i === 0) {
                     renderCoastChart(data.hourly.wave_height.slice(0, 24));
                 }
@@ -478,11 +465,9 @@
             } catch (e) { console.error(`Error playa ${p.name}:`, e); }
         }));
         
-        // Renderizar Marea modulada por la Luna después de cargar playas
         renderTideChart(h, globalMoonIllum);
     }
 
-    // 5. ASTRO Y LUNA
     function calcMoon() {
         const date = new Date();
         const lp = 2551443; 
@@ -490,7 +475,7 @@
         const phase = ((date.getTime() - new_moon.getTime()) / 1000) % lp;
         const age = phase / (24 * 3600);
         const illum = Math.abs(Math.sin(Math.PI * phase / lp) * 100);
-        globalMoonIllum = illum; // Guardar globalmente para las mareas
+        globalMoonIllum = illum; 
         const phaseRatio = age / 29.53; 
 
         document.getElementById('m-age').textContent = `${age.toFixed(2)} d`;
@@ -514,7 +499,6 @@
         document.getElementById('m-phase-icon').style.boxShadow = `inset ${shadowOffset}px 0 30px rgba(0,0,0,0.95), 0 0 15px rgba(255, 255, 255, 0.15)`;
     }
 
-    // Sincronización Firestore Gasolineras
     onSnapshot(doc(db, "market", "fuel"), (s) => {
         if(!s.exists()) {
             document.getElementById('fuel-table').innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--danger)">ERROR: Colección no encontrada</td></tr>';
@@ -536,7 +520,6 @@
         }).join('');
     }, e => { console.error("Firebase Error"); });
 
-    // --- RENDER DE GRÁFICOS ---
     Chart.defaults.font.family = "'Space Mono', monospace";
     Chart.defaults.color = '#555';
     const hoursLabels = Array.from({length: 24}, (_, i) => `${i}:00`);
@@ -577,11 +560,9 @@
         });
     }
 
-    // Gráfico de Marea Astro-dinámico (Afectado por iluminación lunar)
     function renderTideChart(currentHour, moonIllumination) {
         if(charts.tide) charts.tide.destroy();
         
-        // La amplitud base de la marea cambia según si es Luna Nueva/Llena (Mareas vivas/muertas)
         const moonInfluence = (moonIllumination / 100); 
         const tideAmplitude = 0.25 + (0.35 * (moonInfluence > 0.8 || moonInfluence < 0.2 ? 1 : 0.4)); 
 
@@ -614,12 +595,11 @@
         btn.classList.add('active');
     };
 
-    // INIT
     calcMoon();
     fetchMeteoCore();
     fetchAirQuality();
     fetchLuzOficial();
-    fetchPlayasDetalladas(); // Ahora renderiza marea dentro de sí misma usando la variable global de la luna
+    fetchPlayasDetalladas(); 
 
 </script>
 </body>
