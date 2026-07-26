@@ -26,7 +26,7 @@
         
         aside { width: 80px; border-right: 2px solid var(--acc); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #000; z-index: 100; }
         
-        /* LOGOTIPO MEJORADO (MINIMALISTA) */
+        /* LOGOTIPO HESTIA: LLAMA DE FUEGO MINIMALISTA */
         .main-icon { 
             color: var(--flame); 
             cursor: pointer; 
@@ -121,7 +121,6 @@
                     <div style="grid-column: span 4;">
                         <span class="big" id="v-temp">--</span><span class="unit">°C</span>
                         <div style="color:var(--dim); font-size:0.7rem; margin-top:5px; margin-bottom: 4px;">REAL FEEL: <b id="v-app-temp">-- °C</b></div>
-                        <!-- NUEVOS DATOS: MAX Y MIN -->
                         <div style="color:var(--dim); font-size:0.75rem;">RANGO HOY: <b style="color:var(--water)" id="v-tmin">-- °C</b> / <b style="color:var(--flame)" id="v-tmax">-- °C</b></div>
                     </div>
                     <div style="grid-column: span 4;">
@@ -176,7 +175,7 @@
         </div>
     </div>
 
-    <!-- VIEW ENERGY (Se mantiene intacto código y lógica Firestore PVPC) -->
+    <!-- VIEW ENERGY -->
     <div id="energy" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 4;">
@@ -292,7 +291,6 @@
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
 
-    // COORDENADAS BASE ALMERÍA
     const LAT = 36.8381, LON = -2.4597;
     let charts = {};
     let globalMoonIllum = 0;
@@ -304,7 +302,6 @@
 
     async function fetchMeteoCore() {
         try {
-            // SE AÑADE temperature_2m_max y temperature_2m_min EN daily
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,surface_pressure,visibility,cloud_cover,wind_gusts_10m,soil_temperature_0cm,direct_radiation,diffuse_radiation,uv_index,evapotranspiration&daily=sunrise,sunset,daylight_duration,temperature_2m_max,temperature_2m_min&timezone=auto`;
             const res = await fetch(url);
             if(!res.ok) throw new Error("Meteo API Error");
@@ -330,7 +327,6 @@
             
             document.getElementById('s-dif').textContent = Math.round(r.hourly.diffuse_radiation[h] ?? 0);
             
-            // Inyección de MAX y MIN
             document.getElementById('v-tmax').textContent = (r.daily.temperature_2m_max[0] ?? '--').toFixed(1);
             document.getElementById('v-tmin').textContent = (r.daily.temperature_2m_min[0] ?? '--').toFixed(1);
 
@@ -341,7 +337,7 @@
             const elevation = Math.asin(Math.sin(latRad)*Math.sin(decRad) + Math.cos(latRad)*Math.cos(decRad)*Math.cos(hourAngle));
             document.getElementById('s-elev').textContent = (elevation * (180/Math.PI)).toFixed(1);
 
-            const parseTime = iso => iso ? iso.split('T')[1] : '--:--';
+            const parseTime = function(iso) { return iso ? iso.split('T')[1] : '--:--'; };
             document.getElementById('s-sunrise').textContent = parseTime(r.daily.sunrise[0]);
             document.getElementById('s-sunset').textContent = parseTime(r.daily.sunset[0]);
             
@@ -363,7 +359,7 @@
             const a = await res.json();
             const h = new Date().getHours();
 
-            const renderMeter = (id, val, max) => {
+            const renderMeter = function(id, val, max) {
                 const cleanVal = val || 0;
                 document.getElementById(`v-${id}`).innerHTML = `${cleanVal.toFixed(1)} <span class="unit" style="font-size: 0.6rem">µg/m³</span>`;
                 document.getElementById(`b-${id}`).style.width = `${Math.min((cleanVal/max)*100, 100)}%`;
@@ -401,11 +397,11 @@
             let currentPrice = 0;
             const currentHour = new Date().getHours();
             
-            for (let i = 0; i < 24; i++) {
+            for (let i = 0; i !== 24; i++) {
                 const hourKey = `${i.toString().padStart(2, '0')}-${(i + 1).toString().padStart(2, '0')}`;
                 let p = data[hourKey] ? data[hourKey].price : null;
                 if (p === null) {
-                    const altKey = Object.keys(data).find(k => k.startsWith(i.toString().padStart(2, '0')));
+                    const altKey = Object.keys(data).find(function(k) { return k.startsWith(i.toString().padStart(2, '0')); });
                     p = altKey ? data[altKey].price : 0;
                 }
                 prices.push(p);
@@ -413,7 +409,7 @@
             }
             
             document.getElementById('p-now').textContent = (currentPrice / 1000).toFixed(4);
-            const valid = prices.filter(p => p > 0);
+            const valid = prices.filter(function(p) { return p !== 0 && p !== null; });
             document.getElementById('p-range').textContent = `${(Math.min(...valid)/1000).toFixed(3)} / ${(Math.max(...valid)/1000).toFixed(3)}`;
             renderEnergyChart(prices);
         } else {
@@ -443,7 +439,7 @@
         const grid = document.getElementById('beach-grid');
         grid.innerHTML = '';
 
-        playas.forEach(p => {
+        playas.forEach(function(p) {
             grid.innerHTML += `
                 <div class="c beach-card" style="grid-column: span 3;" id="card-${p.id}">
                     <div class="beach-title">${p.name}</div>
@@ -460,7 +456,7 @@
 
         const h = new Date().getHours();
         
-        await Promise.all(playas.map(async (p, i) => {
+        await Promise.all(playas.map(async function(p, i) {
             try {
                 const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${p.lat}&longitude=${p.lon}&hourly=wave_height,sea_surface_temperature,swell_wave_height,swell_wave_period,wind_wave_height&timezone=auto`);
                 const data = await res.json();
@@ -472,7 +468,7 @@
                 const windWave = data.hourly.wind_wave_height[h] || 0;
                 
                 const tideHour = h % 12;
-                const tideStatus = tideHour < 6 ? "↑ Pleamar" : "↓ Bajamar";
+                const tideStatus = tideHour <= 5 ? "↑ Pleamar" : "↓ Bajamar";
 
                 document.getElementById(`${p.id}-marea`).textContent = tideStatus;
                 document.getElementById(`${p.id}-ta`).textContent = `${tempAgua} °C`;
@@ -482,8 +478,8 @@
                 document.getElementById(`${p.id}-vmar`).textContent = `${windWave.toFixed(2)} m`;
 
                 let color = "var(--ok)", texto = "🟢 LIBRE";
-                if (wave > 0.7 || swellPeriod > 8) { color = "var(--warn)"; texto = "🟡 PRECAUCIÓN"; }
-                if (wave > 1.3 || windWave > 1.0) { color = "var(--danger)"; texto = "🔴 PROHIBIDO"; }
+                if (wave >= 0.7 || swellPeriod >= 8) { color = "var(--warn)"; texto = "🟡 PRECAUCIÓN"; }
+                if (wave >= 1.3 || windWave >= 1.0) { color = "var(--danger)"; texto = "🔴 PROHIBIDO"; }
                 
                 const bnd = document.getElementById(`${p.id}-bandera`);
                 bnd.style.color = color;
@@ -514,23 +510,23 @@
         document.getElementById('m-dist').textContent = `${Math.round(385000 - (Math.sin(Math.PI * phase / lp) * 18000)).toLocaleString("es-ES")} km`;
 
         let name = "LUNA NUEVA";
-        if (age > 1 && age <= 6) name = "CRECIENTE CÓNCAVA";
-        else if (age > 6 && age <= 9) name = "CUARTO CRECIENTE";
-        else if (age > 9 && age <= 13) name = "CRECIENTE CONVEXA";
-        else if (age > 13 && age <= 16) name = "LUNA LLENA";
-        else if (age > 16 && age <= 20) name = "MENGUANTE CONVEXA";
-        else if (age > 20 && age <= 23) name = "CUARTO MENGUANTE";
-        else if (age > 23 && age <= 28) name = "MENGUANTE CÓNCAVA";
+        if (age >= 1.01 && age <= 6) name = "CRECIENTE CÓNCAVA";
+        else if (age >= 6.01 && age <= 9) name = "CUARTO CRECIENTE";
+        else if (age >= 9.01 && age <= 13) name = "CRECIENTE CONVEXA";
+        else if (age >= 13.01 && age <= 16) name = "LUNA LLENA";
+        else if (age >= 16.01 && age <= 20) name = "MENGUANTE CONVEXA";
+        else if (age >= 20.01 && age <= 23) name = "CUARTO MENGUANTE";
+        else if (age >= 23.01 && age <= 28) name = "MENGUANTE CÓNCAVA";
 
         document.getElementById('m-phase-name').textContent = name;
-        document.getElementById('m-next-full').textContent = `en ${Math.round(age < 14.7 ? 14.7 - age : 29.5 - age + 14.7)} días`;
+        document.getElementById('m-next-full').textContent = `en ${Math.round(age <= 14.7 ? 14.7 - age : 29.5 - age + 14.7)} días`;
         document.getElementById('m-next-new').textContent = `en ${Math.round(29.53 - age)} días`;
         
         const shadowOffset = (phaseRatio - 0.5) * 260;
         document.getElementById('m-phase-icon').style.boxShadow = `inset ${shadowOffset}px 0 30px rgba(0,0,0,0.95), 0 0 15px rgba(255, 255, 255, 0.15)`;
     }
 
-    onSnapshot(doc(db, "market", "fuel"), (s) => {
+    onSnapshot(doc(db, "market", "fuel"), function(s) {
         if(!s.exists()) {
             document.getElementById('fuel-table').innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--danger)">ERROR: Colección no encontrada</td></tr>';
             return;
@@ -538,7 +534,7 @@
         const stations = s.data().stations || [];
         if(stations.length === 0) return;
         
-        document.getElementById('fuel-table').innerHTML = stations.slice(0, 15).map(st => {
+        document.getElementById('fuel-table').innerHTML = stations.slice(0, 15).map(function(st) {
             const dir = st['Dirección'] || st['direccion'] || '---';
             return `<tr>
                 <td style="font-weight:700; color:var(--acc);">${st['Rótulo'] || 'OPERADOR'}</td>
@@ -549,11 +545,11 @@
                 <td style="font-weight:700; font-size:0.80rem; color:var(--warn)">${st['Precio Gasoleo Premium'] || '--'}</td>
             </tr>`;
         }).join('');
-    }, e => { console.error("Firebase Error"); });
+    }, function(e) { console.error("Firebase Error"); });
 
     Chart.defaults.font.family = "'Space Mono', monospace";
     Chart.defaults.color = '#555';
-    const hoursLabels = Array.from({length: 24}, (_, i) => `${i}:00`);
+    const hoursLabels = Array.from({length: 24}, function(_, i) { return `${i}:00`; });
 
     function renderMeteoChart(data) {
         if(charts.t) charts.t.destroy();
@@ -573,7 +569,7 @@
             type: 'bar',
             data: { 
                 labels: hoursLabels, 
-                datasets: [{ label: 'Precio Mercado Regulado PVPC (€/kWh)', data: data.map(v => v / 1000), backgroundColor: data.map((_, i) => i === new Date().getHours() ? '#FFD700' : '#141414') }]
+                datasets: [{ label: 'Precio Mercado Regulado PVPC (€/kWh)', data: data.map(function(v) { return v / 1000; }), backgroundColor: data.map(function(_, i) { return i === new Date().getHours() ? '#FFD700' : '#141414'; }) }]
             },
             options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#111' } }, y: { grid: { color: '#111' } } } }
         });
@@ -595,10 +591,10 @@
         if(charts.tide) charts.tide.destroy();
         
         const moonInfluence = (moonIllumination / 100); 
-        const tideAmplitude = 0.25 + (0.35 * (moonInfluence > 0.8 || moonInfluence < 0.2 ? 1 : 0.4)); 
+        const tideAmplitude = 0.25 + (0.35 * (moonInfluence >= 0.8 || moonInfluence <= 0.2 ? 1 : 0.4)); 
 
         const tideData = [];
-        for (let i = 0; i < 24; i++) {
+        for (let i = 0; i !== 24; i++) {
             const val = tideAmplitude * Math.sin((i - 2) * (2 * Math.PI / 12.4)) + 0.5;
             tideData.push(val);
         }
@@ -611,8 +607,8 @@
                     label: 'Amplitud de Marea Estimada (Modulada por Luna)',
                     data: tideData,
                     borderColor: '#00e5ff', borderWidth: 2,
-                    pointBackgroundColor: (ctx) => ctx.dataIndex === currentHour ? '#FFD700' : '#00e5ff',
-                    pointRadius: (ctx) => ctx.dataIndex === currentHour ? 6 : 1,
+                    pointBackgroundColor: function(ctx) { return ctx.dataIndex === currentHour ? '#FFD700' : '#00e5ff'; },
+                    pointRadius: function(ctx) { return ctx.dataIndex === currentHour ? 6 : 1; },
                     tension: 0.4, fill: true, backgroundColor: 'rgba(0, 229, 255, 0.02)'
                 }]
             },
@@ -620,31 +616,8 @@
         });
     }
 
-    window.sh = (id, btn) => {
-        document.querySelectorAll('.view, .n-btn').forEach(x => x.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    };
-
-    calcMoon();
-    fetchMeteoCore();
-    fetchAirQuality();
-    fetchLuzOficial();
-    fetchPlayasDetalladas(); 
-
-</script>
-</body>
-</html>                    pointBackgroundColor: (ctx) => ctx.dataIndex === currentHour ? '#FFD700' : '#00e5ff',
-                    pointRadius: (ctx) => ctx.dataIndex === currentHour ? 6 : 1,
-                    tension: 0.4, fill: true, backgroundColor: 'rgba(0, 229, 255, 0.02)'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#1a1a1a' } }, y: { grid: { color: '#1a1a1a' }, suggestedMin: 0, suggestedMax: 1.2 } } }
-        });
-    }
-
-    window.sh = (id, btn) => {
-        document.querySelectorAll('.view, .n-btn').forEach(x => x.classList.remove('active'));
+    window.sh = function(id, btn) {
+        document.querySelectorAll('.view, .n-btn').forEach(function(x) { x.classList.remove('active'); });
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
     };
