@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HESTIA v5.5 | ADVANCED DIAGNOSTIC SYSTEM</title>
+    <title>HESTIA v5.6 | ADVANCED DIAGNOSTIC SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,29 +24,46 @@
         * { margin:0; padding:0; box-sizing:border-box; outline: none; }
         body { background: var(--bg); color: var(--txt); font-family: 'Space Mono', monospace; display: flex; height: 100vh; overflow: hidden; }
         
-        aside { width: 80px; border-right: 2px solid var(--acc); display: flex; flex-direction: column; align-items: center; padding: 20px 0; background: #000; z-index: 100; }
-        .main-icon { font-size: 2.5rem; margin-bottom: 40px; cursor: pointer; text-shadow: 0 0 15px var(--flame); transition: 0.3s; color: var(--flame); }
-        .main-icon:hover { transform: scale(1.1); text-shadow: 0 0 25px var(--flame); }
+        aside { width: 80px; border-right: 2px solid var(--acc); display: flex; flex-direction: column; align-items: center; padding: 25px 0; background: #000; z-index: 100; }
+        
+        /* LOGOTIPO MEJORADO (MINIMALISTA) */
+        .main-icon { 
+            color: var(--flame); 
+            cursor: pointer; 
+            margin-bottom: 45px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: all 0.3s ease; 
+            filter: drop-shadow(0 0 10px rgba(255, 69, 0, 0.6)); 
+        }
+        .main-icon:hover { 
+            transform: scale(1.15); 
+            filter: drop-shadow(0 0 20px var(--flame)); 
+        }
         
         nav { display: flex; flex-direction: column; gap: 25px; width: 100%; align-items: center; }
         .n-btn { color: var(--dim); cursor: pointer; font-size: 1.8rem; transition: 0.2s; width: 100%; text-align: center; padding: 12px 0; }
-        .n-btn:hover { color: var(--acc); }
+        .n-btn:hover { color: var(--acc); text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         .n-btn.active { color: #000; background: var(--acc); font-weight: bold; box-shadow: inset 4px 0 10px rgba(0,0,0,0.3); }
 
-        main { flex: 1; overflow-y: auto; padding: 25px; background: radial-gradient(circle at 10% 10%, #111000 0%, #000 50%); }
+        main { flex: 1; overflow-y: auto; padding: 25px; background: radial-gradient(circle at 10% 10%, #111000 0%, #000 50%); scroll-behavior: smooth; }
         .view { display: none; }
         .view.active { display: block; animation: visualShock 0.25s ease-out; }
         @keyframes visualShock { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
-        .c { background: var(--surf); border: 1px solid var(--bor); padding: 20px; position: relative; }
-        .c::after { content: ''; position: absolute; bottom: 0; right: 0; width: 6px; height: 6px; background: var(--bor); }
+        .c { background: var(--surf); border: 1px solid var(--bor); padding: 20px; position: relative; transition: border-color 0.3s ease; }
+        .c:hover { border-color: rgba(255, 215, 0, 0.3); }
+        .c::after { content: ''; position: absolute; bottom: 0; right: 0; width: 6px; height: 6px; background: var(--bor); transition: background 0.3s ease; }
+        .c:hover::after { background: var(--acc); }
 
         .label { font-family: 'Oswald', sans-serif; font-size: 0.9rem; color: var(--acc); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 15px; border-left: 3px solid var(--acc); padding-left: 8px; }
         .big { font-family: 'Oswald', sans-serif; font-size: 4.5rem; font-weight: 700; line-height: 1; color: #fff; }
         .unit { font-size: 0.8rem; color: var(--acc); font-weight: 700; margin-left: 4px; vertical-align: super; }
         
-        .stat-r { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #161616; font-size: 0.75rem; color: #aaa; }
+        .stat-r { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #161616; font-size: 0.75rem; color: #aaa; transition: background 0.2s; }
+        .stat-r:hover { background: rgba(255, 255, 255, 0.02); }
         .stat-r b { color: #fff; text-align: right; }
 
         .table-wrap { max-height: 380px; overflow-y: auto; width: 100%; border: 1px solid var(--bor); }
@@ -55,7 +72,7 @@
         td { padding: 10px 12px; border-bottom: 1px solid #111; color: #eee; }
         tr:hover td { background: #151300; color: var(--acc); }
 
-        .p-bar-container { height: 4px; background: #1a1a1a; margin-top: 8px; }
+        .p-bar-container { height: 4px; background: #1a1a1a; margin-top: 8px; border-radius: 2px; overflow: hidden; }
         .p-bar-fill { height: 100%; background: var(--acc); transition: 0.5s ease-out; }
         .error-text { color: var(--danger) !important; font-size: 2rem !important; }
 
@@ -73,13 +90,19 @@
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--acc); }
+        ::-webkit-scrollbar-thumb { background: var(--bor); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--acc); }
     </style>
 </head>
 <body>
 
 <aside>
-    <div class="main-icon" onclick="location.reload()" title="HESTIA SACRED FLAME">🔥</div>
+    <!-- Logotipo HESTIA actualizado (SVG Minimalista Fuego) -->
+    <div class="main-icon" onclick="location.reload()" title="HESTIA SACRED FLAME">
+        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+        </svg>
+    </div>
     <nav>
         <div class="n-btn active" onclick="sh('meteo', this)" title="ATMOSFERA"><i class="ph-bold ph-gauge"></i></div>
         <div class="n-btn" onclick="sh('energy', this)" title="ENERGIA"><i class="ph-bold ph-lightning"></i></div>
@@ -97,7 +120,9 @@
                 <div class="grid" style="gap:15px; margin-bottom: 20px;">
                     <div style="grid-column: span 4;">
                         <span class="big" id="v-temp">--</span><span class="unit">°C</span>
-                        <div style="color:var(--dim); font-size:0.7rem; margin-top:5px;">REAL FEEL: <b id="v-app-temp">-- °C</b></div>
+                        <div style="color:var(--dim); font-size:0.7rem; margin-top:5px; margin-bottom: 4px;">REAL FEEL: <b id="v-app-temp">-- °C</b></div>
+                        <!-- NUEVOS DATOS: MAX Y MIN -->
+                        <div style="color:var(--dim); font-size:0.75rem;">RANGO HOY: <b style="color:var(--water)" id="v-tmin">-- °C</b> / <b style="color:var(--flame)" id="v-tmax">-- °C</b></div>
                     </div>
                     <div style="grid-column: span 4;">
                         <span class="big" id="v-hum" style="color:var(--acc)">--</span><span class="unit">% HR</span>
@@ -112,19 +137,19 @@
                 <span class="label">CALIDAD DEL AIRE EXTREMA (AQI REALTIME)</span>
                 <div class="grid" style="gap:10px;">
                     <div class="c" style="grid-column: span 3; padding:12px; background:#000;">
-                        <span style="font-size:0.65rem; color:var(--dim)">PM2.5 (Finas)</span> <b id="v-pm25" style="float:right;">--</b>
+                        <span style="font-size:0.65rem; color:var(--dim)">PM2.5 (Finas)</span> <b id="v-pm25" style="float:right;">-- <span class="unit" style="font-size: 0.6rem">µg/m³</span></b>
                         <div class="p-bar-container"><div id="b-pm25" class="p-bar-fill"></div></div>
                     </div>
                     <div class="c" style="grid-column: span 3; padding:12px; background:#000;">
-                        <span style="font-size:0.65rem; color:var(--dim)">PM10 (Polvo)</span> <b id="v-pm10" style="float:right;">--</b>
+                        <span style="font-size:0.65rem; color:var(--dim)">PM10 (Polvo)</span> <b id="v-pm10" style="float:right;">-- <span class="unit" style="font-size: 0.6rem">µg/m³</span></b>
                         <div class="p-bar-container"><div id="b-pm10" class="p-bar-fill"></div></div>
                     </div>
                     <div class="c" style="grid-column: span 3; padding:12px; background:#000;">
-                        <span style="font-size:0.65rem; color:var(--dim)">POLVO EN SUSP.</span> <b id="v-dust" style="float:right;">--</b>
+                        <span style="font-size:0.65rem; color:var(--dim)">POLVO EN SUSP.</span> <b id="v-dust" style="float:right;">-- <span class="unit" style="font-size: 0.6rem">µg/m³</span></b>
                         <div class="p-bar-container"><div id="b-dust" class="p-bar-fill"></div></div>
                     </div>
                     <div class="c" style="grid-column: span 3; padding:12px; background:#000;">
-                        <span style="font-size:0.65rem; color:var(--dim)">MONÓXIDO CO</span> <b id="v-co" style="float:right;">--</b>
+                        <span style="font-size:0.65rem; color:var(--dim)">MONÓXIDO CO</span> <b id="v-co" style="float:right;">-- <span class="unit" style="font-size: 0.6rem">µg/m³</span></b>
                         <div class="p-bar-container"><div id="b-co" class="p-bar-fill"></div></div>
                     </div>
                 </div>
@@ -151,7 +176,7 @@
         </div>
     </div>
 
-    <!-- VIEW ENERGY -->
+    <!-- VIEW ENERGY (Se mantiene intacto código y lógica Firestore PVPC) -->
     <div id="energy" class="view">
         <div class="grid">
             <div class="c" style="grid-column: span 4;">
@@ -163,6 +188,7 @@
             <div class="c" style="grid-column: span 8;">
                 <span class="label">UMBRALES DEL DÍA (MIN / MAX)</span>
                 <div class="big" id="p-range" style="font-size:3.8rem">-- / --</div>
+                <span class="unit">€ / kWh</span>
             </div>
             <div class="c" style="grid-column: span 12;">
                 <canvas id="energyChart" style="max-height:140px;"></canvas>
@@ -201,7 +227,7 @@
                         <div id="m-phase-name" style="font-weight:700; font-family:'Oswald', sans-serif; font-size:1.1rem; color:var(--acc); margin-top:15px;">--</div>
                     </div>
                     <div style="flex:1; min-width:300px; padding-left:20px; border-left: 1px dashed var(--bor);">
-                        <div class="stat-r">Superficie Iluminada <b id="m-illum">--%</b></div>
+                        <div class="stat-r">Superficie Iluminada <b id="m-illum">-- %</b></div>
                         <div class="stat-r">Edad de la Órbita <b id="m-age">-- días</b></div>
                         <div class="stat-r">Distancia Proximal Eje <b id="m-dist">-- km</b></div>
                         <div class="stat-r">Ciclo Luna Nueva Sig. <b id="m-next-new">--</b></div>
@@ -278,7 +304,8 @@
 
     async function fetchMeteoCore() {
         try {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,surface_pressure,visibility,cloud_cover,wind_gusts_10m,soil_temperature_0cm,direct_radiation,diffuse_radiation,uv_index,evapotranspiration&daily=sunrise,sunset,daylight_duration&timezone=auto`;
+            // SE AÑADE temperature_2m_max y temperature_2m_min EN daily
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,surface_pressure,visibility,cloud_cover,wind_gusts_10m,soil_temperature_0cm,direct_radiation,diffuse_radiation,uv_index,evapotranspiration&daily=sunrise,sunset,daylight_duration,temperature_2m_max,temperature_2m_min&timezone=auto`;
             const res = await fetch(url);
             if(!res.ok) throw new Error("Meteo API Error");
             const r = await res.json();
@@ -303,6 +330,10 @@
             
             document.getElementById('s-dif').textContent = Math.round(r.hourly.diffuse_radiation[h] ?? 0);
             
+            // Inyección de MAX y MIN
+            document.getElementById('v-tmax').textContent = (r.daily.temperature_2m_max[0] ?? '--').toFixed(1);
+            document.getElementById('v-tmin').textContent = (r.daily.temperature_2m_min[0] ?? '--').toFixed(1);
+
             const declination = 23.45 * Math.sin((360/365) * (new Date().getDay() - 81) * (Math.PI/180));
             const hourAngle = 15 * (Math.abs(h - 12)) * (Math.PI/180);
             const latRad = LAT * (Math.PI/180);
@@ -334,7 +365,7 @@
 
             const renderMeter = (id, val, max) => {
                 const cleanVal = val || 0;
-                document.getElementById(`v-${id}`).textContent = cleanVal.toFixed(1);
+                document.getElementById(`v-${id}`).innerHTML = `${cleanVal.toFixed(1)} <span class="unit" style="font-size: 0.6rem">µg/m³</span>`;
                 document.getElementById(`b-${id}`).style.width = `${Math.min((cleanVal/max)*100, 100)}%`;
             };
 
@@ -391,7 +422,6 @@
     }
 
     async function fetchPlayasDetalladas() {
-        // RED COSTERA EXTENDIDA DE ALMERÍA
         const playas = [
             { id: "p1", name: "CABO DE GATA", lat: 36.7823, lon: -2.2421 },
             { id: "p2", name: "SAN JOSÉ", lat: 36.7615, lon: -2.1102 },
@@ -480,7 +510,7 @@
         const phaseRatio = age / 29.53; 
 
         document.getElementById('m-age').textContent = `${age.toFixed(2)} d`;
-        document.getElementById('m-illum').textContent = `${illum.toFixed(1)}%`;
+        document.getElementById('m-illum').textContent = `${illum.toFixed(1)} %`;
         document.getElementById('m-dist').textContent = `${Math.round(385000 - (Math.sin(Math.PI * phase / lp) * 18000)).toLocaleString("es-ES")} km`;
 
         let name = "LUNA NUEVA";
@@ -582,6 +612,29 @@
                     data: tideData,
                     borderColor: '#00e5ff', borderWidth: 2,
                     pointBackgroundColor: (ctx) => ctx.dataIndex === currentHour ? '#FFD700' : '#00e5ff',
+                    pointRadius: (ctx) => ctx.dataIndex === currentHour ? 6 : 1,
+                    tension: 0.4, fill: true, backgroundColor: 'rgba(0, 229, 255, 0.02)'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: '#1a1a1a' } }, y: { grid: { color: '#1a1a1a' }, suggestedMin: 0, suggestedMax: 1.2 } } }
+        });
+    }
+
+    window.sh = (id, btn) => {
+        document.querySelectorAll('.view, .n-btn').forEach(x => x.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    };
+
+    calcMoon();
+    fetchMeteoCore();
+    fetchAirQuality();
+    fetchLuzOficial();
+    fetchPlayasDetalladas(); 
+
+</script>
+</body>
+</html>                    pointBackgroundColor: (ctx) => ctx.dataIndex === currentHour ? '#FFD700' : '#00e5ff',
                     pointRadius: (ctx) => ctx.dataIndex === currentHour ? 6 : 1,
                     tension: 0.4, fill: true, backgroundColor: 'rgba(0, 229, 255, 0.02)'
                 }]
